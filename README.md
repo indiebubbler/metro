@@ -7,6 +7,8 @@ Might be used as regular metrononome, but the full potential lies in ability to 
 
 Can be used to train odd rhythms (indian classical/arabic/turkish/balkan/folk music etc)
 
+It has ability to store user presets in cookies.
+
 It's work in progress still so it has just two basic instruments. 
 
 
