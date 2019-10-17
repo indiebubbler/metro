@@ -13,7 +13,7 @@ Developed for musicians willing to improve speed of their excercises/routines/id
 - define own grooves using accents
 - store and recall your ideas (save/load presets)
 
-Available at: (https://indiebubbler.github.io/metro/)
+Available at: https://indiebubbler.github.io/metro/
 
 Uses Tone.js (https://tonejs.github.io/) - great javascript sound library.
 
