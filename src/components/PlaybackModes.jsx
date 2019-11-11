@@ -1,4 +1,4 @@
-export const playbackModes = {
+export const PlaybackModes = {
 	STOP: "stop",
 	CYCLE: "cycle",
 	REPEAT: "repeat",

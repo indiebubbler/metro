@@ -31,10 +31,10 @@ body {
 .App .pane {
     background-color: #555;
     /* border: 1px solid #faa; */
-    background-image: linear-gradient( #777, #555);
-    -webkit-box-shadow: 14px 10px 413px 3px rgba(0, 0, 0, 0.6);
-    -moz-box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.6);
-    box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.6);
+    background-image: linear-gradient( #777, #666666);
+    -webkit-box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.3);
+    box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.3);
 }
 
 .App .container {
@@ -50,11 +50,12 @@ body {
 .App .pane .pane-title {
     text-transform: uppercase;
     padding: 0 1rem;
-    margin-bottom: 0.5rem;
+    /* margin-bottom: 0.5rem; */
     background-color: #404141;
     text-align: left;
     border-radius: 5px 5px 0 0;
 }
+
 
 .App .badge {
     font-weight: 100;
@@ -72,7 +73,7 @@ body {
 .App .pane-body {
     /* padding: 0 1rem; */
     display: block;
-    margin: 0 1rem;
+    padding: 1rem;
 }
 
 .App .badge-light {
@@ -91,9 +92,9 @@ body {
     background-color: #6c757d;
 }
 
-.Planner .step {
+.step {
     cursor: pointer;
-    background-color: #6c757d40;
+    background-color: #90a1b128;
     margin-bottom: 1px;
 }
 
@@ -130,11 +131,13 @@ body {
     /* text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073; */
 }
 
-.PresetsManager .preset {
-    font-size: 0.8rem;
+.PresetsManager {
+    font-size: 80%;
+}
+/* .PresetsManager .preset {
     cursor: pointer;
     box-shadow: 1px 0 0 0 #888, 0 1px 0 0 #888, 1px 1px 0 0 #888, 1px 0 0 0 #888 inset, 0 1px 0 0 #888 inset;
-}
+} */
 
 .PresetsManager .preset .x {
     position: absolute;

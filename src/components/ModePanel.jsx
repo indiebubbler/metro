@@ -9,51 +9,60 @@ import {
 	DropdownItem,
 	DropdownMenu
 } from "reactstrap";
-import { playModes } from "./PlayModes";
-import { playbackModes } from "./PlaybackModes";
+import { PlayModes } from "./PlayModes";
+import { PlaybackModes } from "./PlaybackModes";
 import GeometricSlider from "./GeometricSlider";
 import AdvancedRange from "./AdvancedRange"
 import AdvancedSlider from "./AdvancedSlider"
 import Utils from "./Utils";
+import { InitPreset } from "./PresetsLib";
 
 class ModePanel extends Component {
 	state = {
-		playbackMode: playbackModes.STOP,
-		playMode: playModes.BY_TIME,
-		bpmStep: 10,
+		bpmStep: this.props.bpmStep,
+		bpmRange: this.props.bpmRange,
+		//bpmStableSlider={this.props.bpmStableSlider}
+		currentBpm: this.props.bpmRange[0],
+		playbackMode: this.props.playbackMode,
+		playMode: this.props.playMode,
+		// interval: this.props.interval ,
+	
+		// bpmStep: 10,
 		bpmStepDropdownOpen: false,
-		byTimeInterval: 5,
-		byBarInterval: 2,
-		stableBpmSlider: 300,
-		bpmRange: [100, 250]
-	};
+		byTimeInterval: this.props.byTimeInterval,
+		byBarInterval: this.props.byBarInterval,
+		constantBpmSlider: 300
+	}
+	// constructor(props) {
+	// 	super(props);
+		
+	// 	if (props.playMode === PlayModes.BY_BAR) {
+	// 		this.state.byBarInterval = props.interval;
+	// 	} else {
+	// 		this.state.byTimeInterval = props.interval;
+	// 	}
+	// }
 
-	constructor(props) {
-		super(props);
-		this.state.playMode = props.playMode;
-		if (props.playMode === playModes.BY_BAR) {
-			this.state.byBarInterval = props.interval;
-		} else {
-			this.state.byTimeInterval = props.interval;
-		}
-		this.state.bpmStep = props.bpmStep;
-		this.state.bpmRange = props.bpmRange;
-		// console.log('<ModePanel> constructor')
+	onAfterChange() {
+		console.log('ModePanel.onAfterChange')
+		this.props.onChange()
 	}
 
 	onModeChange(newMode) {
-		this.setState({ playMode: newMode }, this.props.onAfterChange);
+		this.setState({ playMode: newMode, interval: newMode === PlayModes.BY_BAR ? this.state.byBarInterval : this.state.byTimeInterval }, this.onAfterChange);
+		// this.setState({ playMode: newMode, interval: newMode === PlayModes.BY_BAR ? this.state.byBarInterval : this.state.byTimeInterval }, this.onAfterChange);
 	}
 
+	
 
 	onBpmRangeChange(bpmRange) {
-		// console.log('<ModePanel>onBpmRangeChange(' + bpmRange[0] + ')')
-		this.setState({ bpmRange: bpmRange }, this.props.onAfterChange);
+		console.log('<ModePanel>onBpmRangeChange(' + bpmRange[0] + ')')
+		this.setState({ bpmRange: bpmRange }, this.onAfterChange);
 	}
 
 	onBpmSliderChange = (value) => {
 		// console.log('onBpmSliderChange', value)
-		this.setState({ stableBpmSlider: value }, this.props.onAfterChange);
+		this.setState({ constantBpmSlider: value }, this.onAfterChange);
 	}
 
 	onBpmStepChange() {
@@ -63,7 +72,7 @@ class ModePanel extends Component {
 	}
 
 	onBpmStepSelect(value) {
-		this.setState({ bpmStep: value }, this.props.onAfterChange);
+		this.setState({ bpmStep: value }, this.onAfterChange);
 	}
 
 	getValue() {
@@ -74,54 +83,53 @@ class ModePanel extends Component {
 			playMode: this.state.playMode,
 			playbackMode: this.state.playbackMode,
 			interval:
-				this.state.playMode === playModes.BY_BAR
+				this.state.playMode === PlayModes.BY_BAR
 					? this.state.byBarInterval
 					: this.state.byTimeInterval,
 			bpmStep: this.state.bpmStep,
-			bpmRange: this.state.playMode !== playModes.STABLE ? this.state.bpmRange : this.props.bpmRange,//this.refs.bpmRange.getValue() : null,
-			stableBpmSlider: this.state.stableBpmSlider
+			bpmRange: this.state.playMode !== PlayModes.CONSTANT ? this.state.bpmRange : this.props.bpmRange,//this.refs.bpmRange.getValue() : null,
+			constantBpmSlider: this.state.constantBpmSlider
 		};
 		// debugger
 		return o;
 	}
 
 	setValue(o) {
-		// console.log("<ModePanel>setValue", o)
-		this.setState(
-			{
-				playMode: o.playMode,
-				playBackMode: o.playBackMode || this.state.playBackMode,
-				bpmStep: o.bpmStep,
-				byBarInterval:
-					o.playMode === playModes.BY_BAR
-						? o.interval
-						: this.state.byBarInterval,
-				byTimeInterval:
-					o.playMode === playModes.BY_TIME
-						? o.interval
-						: this.state.byTimeInterval,
-				bpmRange: o.bpmRange,
-				stableBpmSlider: o.stableBpmSlider || this.state.stableBpmSlider
-			},
-			this.props.onAfterChange
-		);
-
-
+		console.log('ModePanel.setValue',o)
 		const slider =
-			o.playMode === playModes.BY_BAR
+			o.playMode === PlayModes.BY_BAR
 				? this.refs.byBarSlider
 				: this.refs.byTimeSlider;
 		slider.setValue(o.interval);
 
 		this.refs.bpmRange.setState({ bounds: o.bpmRange })
+		this.setState(
+			{
+				playMode: o.playMode,
+				playbackMode: o.playbackMode || this.props.playbackMode,
+				bpmStep: o.bpmStep,
+				byBarInterval:
+					o.playMode === PlayModes.BY_BAR
+						? o.interval
+						: this.state.byBarInterval,
+				byTimeInterval:
+					o.playMode === PlayModes.BY_TIME
+						? o.interval
+						: this.state.byTimeInterval,
+				bpmRange: o.bpmRange,
+				constantBpmSlider: o.constantBpmSlider || this.state.constantBpmSlider
+			},
+			this.onAfterChange
+		);
+
 	}
 
 	onTimeIntervalChange(v) {
-		this.setState({ byTimeInterval: v }, this.props.onAfterChange);
+		this.setState({ byTimeInterval: v, interval: v }, this.onAfterChange);
 	}
 
 	onBarIntervalChange(v) {
-		this.setState({ byBarInterval: v }, this.props.onAfterChange);
+		this.setState({ byBarInterval: v, interval: v}, this.onAfterChange);
 	}
 
 	byBarFormatter(barsNum) {
@@ -135,28 +143,12 @@ class ModePanel extends Component {
 	}
 
 	byTimeFormatter(time) {
-		let s = Utils.formatTime(time) + " ";
-
-		if (time === 1) {
-			s += "second";
-		} else if (time < 60) {
-			s += "seconds";
-		} else if (time < 120) {
-			s += "minute";
-		} else {
-			s += "minutes";
-		}
-		return s;
-	}
-
-	onPlaybackChange(newPlaybackMode) {
-		this.setState({ playbackMode: newPlaybackMode });
+		return Utils.formatTimeLong(time)
 	}
 
 	renderIncreaseBpmDropdown() {
 		return (
 			<>
-				increase speed by
 				<ButtonDropdown
 					style={{ margin: "0px 5px" }}
 					isOpen={this.state.bpmStepDropdownOpen}
@@ -218,8 +210,8 @@ class ModePanel extends Component {
 				min={30}
 				max={600}
 				defaultValue={[
-					this.state.bpmRange[0],
-					this.state.bpmRange[1]
+					this.props.bpmRange[0],
+					this.props.bpmRange[1]
 				]}
 				pushable={true}
 				onAfterChange={(value) => this.onBpmRangeChange(value)}
@@ -229,14 +221,15 @@ class ModePanel extends Component {
 
 	render() {
 		return (
-			<SimplePanel className="ModePanel" title="Mode">
+			<SimplePanel className="ModePanel" title="Mode" width="300px">
+				<h6>Increase speed</h6>
 				<ButtonGroup size="sm">
 					<Button
 						size="sm"
 						outline
 						color="light"
-						onClick={() => this.onModeChange(playModes.BY_BAR)}
-						active={this.state.playMode === playModes.BY_BAR}
+						onClick={() => this.onModeChange(PlayModes.BY_BAR)}
+						active={this.state.playMode === PlayModes.BY_BAR}
 					>
 						By bar
 					</Button>
@@ -244,8 +237,8 @@ class ModePanel extends Component {
 						size="sm"
 						outline
 						color="light"
-						onClick={() => this.onModeChange(playModes.BY_TIME)}
-						active={this.state.playMode === playModes.BY_TIME}
+						onClick={() => this.onModeChange(PlayModes.BY_TIME)}
+						active={this.state.playMode === PlayModes.BY_TIME}
 					>
 						By time
 					</Button>
@@ -253,20 +246,20 @@ class ModePanel extends Component {
 						size="sm"
 						outline
 						color="light"
-						onClick={() => this.onModeChange(playModes.STABLE)}
-						active={this.state.playMode === playModes.STABLE}
+						onClick={() => this.onModeChange(PlayModes.CONSTANT)}
+						active={this.state.playMode === PlayModes.CONSTANT}
 					>
 						Stable
 					</Button>
 				</ButtonGroup>
 
-				<Collapse isOpen={this.state.playMode !== playModes.STABLE}>
+				<Collapse isOpen={this.state.playMode !== PlayModes.CONSTANT}>
 					{/* {this.state.playMode !== playModes.STABLE ? this.renderSpeedRange() : ''} */}
 					{this.renderSpeedRange()}
 				</Collapse>
 
 
-				<Collapse isOpen={this.state.playMode === playModes.BY_BAR}>
+				<Collapse isOpen={this.state.playMode === PlayModes.BY_BAR}>
 
 					<div>
 						Increase speed every
@@ -281,14 +274,14 @@ class ModePanel extends Component {
 						/>
 					</div>
 				</Collapse>
-				<Collapse isOpen={this.state.playMode === playModes.BY_TIME}>
+				<Collapse isOpen={this.state.playMode === PlayModes.BY_TIME}>
 
 					<div>
 						Increase speed every
 						<GeometricSlider
 							ref="byTimeSlider"
 							defaultValue={this.state.byTimeInterval}
-							badgeFormatter={this.byTimeFormatter}
+							badgeFormatter={Utils.formatTimeLong}
 							markFormatter={Utils.formatTime}
 							onChange={v => this.onTimeIntervalChange(v)}
 							min={1}
@@ -297,64 +290,24 @@ class ModePanel extends Component {
 						/>
 					</div>
 				</Collapse>
-				{this.state.playMode !== playModes.STABLE ? this.renderIncreaseBpmDropdown() : ''}
-				<Collapse isOpen={this.state.playMode === playModes.STABLE}>
+				
+				{this.state.playMode !== PlayModes.CONSTANT ? this.renderIncreaseBpmDropdown() : ''}
+				<Collapse isOpen={this.state.playMode === PlayModes.CONSTANT}>
 					<div>
 						Choose bpm
 
 						<AdvancedSlider
-							ref="stableBpmSlider"
+							ref="constantBpmSlider"
 							included={false}
 							min={10}
 							max={600}
 							marks={{ 30: '30', 100: '100', 200: '200', 300: '300', 400: '400', 500: '500', 600: '600' }}
-							value={this.state.stableBpmSlider}
+							value={this.state.constantBpmSlider}
 							onChange={this.onBpmSliderChange}
 						/>
 					</div>
 				</Collapse>
 
-				<Collapse isOpen={this.state.playMode !== playModes.STABLE}>
-					<div>After plan</div>
-					<ButtonGroup size="sm">
-						<Button
-							size="sm"
-							outline
-							color="light"
-							onClick={() => this.onPlaybackChange(playbackModes.STOP)}
-							active={this.state.playbackMode === playbackModes.STOP}
-						>
-							Stop
-						</Button>
-						<Button
-							size="sm"
-							outline
-							color="light"
-							onClick={() => this.onPlaybackChange(playbackModes.CYCLE)}
-							active={this.state.playbackMode === playbackModes.CYCLE}
-						>
-							Cycle back
-						</Button>
-						<Button
-							size="sm"
-							outline
-							color="light"
-							onClick={() => this.onPlaybackChange(playbackModes.CONTINUE)}
-							active={this.state.playbackMode === playbackModes.CONTINUE}
-						>
-							Last speed
-						</Button>
-						<Button
-							size="sm"
-							outline
-							color="light"
-							onClick={() => this.onPlaybackChange(playbackModes.REPEAT)}
-							active={this.state.playbackMode === playbackModes.REPEAT}
-						>
-							Start over
-						</Button>
-					</ButtonGroup>
-				</Collapse>
 			</SimplePanel>
 		);
 	}
@@ -363,5 +316,17 @@ class ModePanel extends Component {
 export default ModePanel;
 
 ModePanel.defaultProps = {
+	playMode: InitPreset.playMode,
+	playbackMode: InitPreset.playbackMode,
+	interval: InitPreset.interval,
+	bpmStep: InitPreset.bpmStep,
+	bpmRange: InitPreset.bpmRange,
+	byTimeInterval: InitPreset.byTimeInterval,
+	byBarInterval: InitPreset.byBarInterval,
+	//bpmStableSlider={this.props.bpmStableSlider}
+	currentBpm: InitPreset.bpmRange[0],
+	// defaultValue={{playMode: this.props.playMode, interval: this.props.interval, bpmStep: this.props.bpmStep}}
+	// onAfterChange={() => this.onModePanelChanged()}
 	onAfterChange: null
+
 };

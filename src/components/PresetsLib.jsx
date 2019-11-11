@@ -1,13 +1,12 @@
-import {playModes} from "./PlayModes"
-import {playbackModes} from "./PlaybackModes"
-import { instruments } from "./InstrumentLib";
-
+import {PlayModes} from "./PlayModes"
+import {PlaybackModes} from "./PlaybackModes"
+import { Instruments }  from "./Instruments"; // TODO get rid of old lowercase 'instruments'
 
 export const PresetsLib = [
     {
         title: "4 beats every 4 bars",
         beatsPerStep: 4,
-        playMode: playModes.BY_BAR,
+        playMode: PlayModes.BY_BAR,
         interval: 4,
         bpmStep: 20,
         bpmRange: [100, 400],
@@ -15,11 +14,11 @@ export const PresetsLib = [
     },
     {
         title: "Jhaptal tabla",
-        instrument: instruments.TABLA,
+        instrument: 'metronome',
 		beatsPerStep: 10,
 		bpmRange: [200, 400],
         accents: [0, 1, 0, 0, 1, 2, 1, 0, 0, 1 ],
-        playMode: playModes.BY_TIME,
+        playMode: PlayModes.BY_TIME,
         interval: 5*60,
         bpmStep: 10
     },
@@ -33,13 +32,16 @@ export const PresetsLib = [
 
 export const InitPreset = {
     title: "INIT",
-    instrument: instruments.TABLA,
-    beatsPerStep: 4,
+    instrument: Instruments.METRONOME,
+    // beatsPerStep: 5,
     bpmRange: [300, 400],
     accents: [1, 0, 0, 0],
-    playMode: playModes.BY_TIME,
-    playbackMode: playbackModes.STOP,
-    interval: 10,
+    playMode: PlayModes.BY_TIME,
+    playbackMode: PlaybackModes.STOP,
+    // interval: 10,
+    byTimeInterval: 10,
+    byBarInterval: 4,
+    // constantBpmSlider: 300,
     bpmStep: 50,
     isHidden: true
 }

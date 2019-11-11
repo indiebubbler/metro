@@ -1,0 +1,36 @@
+metro_
+
+
+TODO:
+
+- po wejściu na strone zmien beats per step,planner rozwali sie
+- increase speed every 1 seconds
+
+- zmiana BeatsPerStep nie zmienia transport (onCHange on control?)
+- panel-body Control to correctly use padding
+- new vis to display concentric circles with marks on beats and a clock hand
+
+
+
+
+* smooth bpm transition!
+* sprawdzić google search on metro website
+
+
+* planner to display ie. 10 bars (seconds) in 253 bpm and so on
+* make Delete confirm popup
+
+DONE:
+* preset doesn't save 'after plan' setting
+* calc total plan time
+
+
+---
+300 uderzen na minute
+
+300/ 60 
+6 uderzen na sekunde
+
+
+2 takty to 8 uderzen 
+czyli 

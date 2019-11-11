@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import {Container, Row, Col } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 import EditPresetModal from "./EditPresetModal"
+import {PresetsLib} from './PresetsLib'
 
 class PresetsManager extends Component {
 	state = {
@@ -10,29 +11,32 @@ class PresetsManager extends Component {
 
 	constructor(props) {
 		super(props);
+
+		// this.userPresets = '{}'
+		console.log('PresetsManager constructor')
 		this.userPresets = this.props.cookies.get('userPresets');
-		
+
 		this.state.showDelete = this.userPresets ? Array(this.userPresets.length).fill(false) : []
 		this.state.showEdit = this.userPresets ? Array(this.userPresets.length).fill(false) : []
 	}
-	
+
 	onPresetClick(preset) {
 		this.props.onSelect(preset);
 	}
 
 	onSavePreset(title, o) {
-		const preset = {title: title, ...o}
-		
+		const preset = { title: title, ...o }
+
 		let userPresets = this.props.cookies.get('userPresets');
 
 		if (!userPresets) {
 			userPresets = [];
 		}
-		
+
 		// overwrite by title 
 		let idx = -1;
 
-		for (let i = 0 ; i < userPresets.length; i++) {
+		for (let i = 0; i < userPresets.length; i++) {
 			if (userPresets[i].title.toLowerCase() === title.toLowerCase()) {
 				idx = i;
 			}
@@ -48,31 +52,31 @@ class PresetsManager extends Component {
 	}
 
 	saveInCookie(presets) {
-		this.props.cookies.set('userPresets', JSON.stringify(presets),{ path: '/' });
+		this.props.cookies.set('userPresets', JSON.stringify(presets), { path: '/' });
 		this.userPresets = presets;
 	}
 
 	showDeleteBtn(e, idx) {
-		let showDelete = {...this.state};
+		let showDelete = { ...this.state };
 		showDelete[idx] = true;
-		this.setState({showDelete});
+		this.setState({ showDelete });
 	}
 
 	showEditBtn(e, idx) {
-		let showEdit = {...this.state};
+		let showEdit = { ...this.state };
 		showEdit[idx] = true;
-		this.setState({showEdit});
+		this.setState({ showEdit });
 	}
 	hideEditBtn(e) {
-		this.setState({showEdit: false})
+		this.setState({ showEdit: false })
 	}
 
 	onPresetDelete(preset) {
-		let idx = this.userPresets.indexOf(preset) 
+		let idx = this.userPresets.indexOf(preset)
 		if (idx < 0) {
-			throw new Error("Selected preset " +  preset.title + " has not been found in the store" )
+			throw new Error("Selected preset " + preset.title + " has not been found in the store")
 		}
-		this.userPresets.splice(idx,1);
+		this.userPresets.splice(idx, 1);
 		this.saveInCookie(this.userPresets);
 	}
 
@@ -80,7 +84,7 @@ class PresetsManager extends Component {
 		// console.log('preset EDIT',e,idx);
 		/// prevent from triggerring onClick 
 		e.stopPropagation()
-		
+
 
 		if (idx !== undefined) {
 			this.refs.presetEditor.edit(this.userPresets[idx], true)
@@ -93,16 +97,18 @@ class PresetsManager extends Component {
 	}
 
 	setPreset(preset) {
-		
+
 	}
 
 	render() {
-		const userPresets = this.props.cookies.cookies.userPresets ?  JSON.parse(  this.props.cookies.cookies.userPresets ) : [];
+		// const userPresets = this.props.cookies.cookies.userPresets ? JSON.parse(this.props.cookies.cookies.userPresets) : [];
+		const userPresets = []
+
 		// // console.log('<PresetsManager>userPresets', userPresets)
 		return (
 			<Container className="PresetsManager">
-				<Row>
-					{this.props.presets.map((item, idx) => (						
+				{/* <Row>
+					{this.props.presets.map((item, idx) => (
 						<Col className="preset" hidden={item.isHidden}
 							onClick={() => this.onPresetClick(item)}
 							key={"preset_" + idx}
@@ -110,7 +116,18 @@ class PresetsManager extends Component {
 							{item.title}
 						</Col>
 					))}
-				</Row>
+				</Row> */}
+				{/* <Row> */}
+					{PresetsLib.map((item, idx) => (
+						<Row
+							onClick={() => this.onPresetClick(item)}
+							className={"step"}
+							key={"preset_" + idx}
+						>
+							{item.title}
+						</Row>
+					))}
+				{/* </Row> */}
 				<Row>
 					Saved presets:
 				</Row>
@@ -123,13 +140,13 @@ class PresetsManager extends Component {
 							key={"preset_" + idx}
 						>
 							{item.title}
-							<div className='x' style={{visibility: this.state.showEdit[idx] ? '' : 'hidden'}} onClick={(e) => this.onPresetEdit(e,idx)}>Edit</div>
+							<div className='x' style={{ visibility: this.state.showEdit[idx] ? '' : 'hidden' }} onClick={(e) => this.onPresetEdit(e, idx)}>Edit</div>
 						</Col>
-						
+
 					))}
 				</Row>
-				<Row>					
-					<EditPresetModal ref='presetEditor' onDeleteBtn={(preset) => this.onPresetDelete(preset)} onSaveBtn={(e,idx) => this.onPresetEdit(e,idx)} onSave={(title, preset) => this.onSavePreset(title, preset)}/>
+				<Row>
+					<EditPresetModal ref='presetEditor' onDeleteBtn={(preset) => this.onPresetDelete(preset)} onSaveBtn={(e, idx) => this.onPresetEdit(e, idx)} onSave={(title, preset) => this.onSavePreset(title, preset)} />
 				</Row>
 			</Container>
 		);
@@ -139,5 +156,5 @@ class PresetsManager extends Component {
 export default PresetsManager;
 
 PresetsManager.defaultProps = {
-	onSelect: function(preset) {}
- };
+	onSelect: function (preset) { }
+};

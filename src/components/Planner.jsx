@@ -1,12 +1,20 @@
 import React, { Component } from "react";
-import { Badge } from "reactstrap";
-import { playModes } from "./PlayModes";
+import Tone from 'tone'
+
+import {Collapse,ButtonGroup, Badge, Button } from "reactstrap";
+import SimplePanel from "./SimplePanel"
+import { PlayModes } from "./PlayModes";
+import { PlaybackModes } from "./PlaybackModes";
 import SimpleProgress from "./SimpleProgress";
 import Utils from "./Utils";
+import { InitPreset } from "./PresetsLib";
 
+// import Control from "./Control"
 class Planner extends Component {
 	state = {
-		bars: [],
+		playbackMode: this.props.playbackMode,
+		steps: [],
+		currentStepIdx: this.props.currentStepIdx,
 		stepProgress: 0,
 		isPaused: false
 	};
@@ -15,161 +23,356 @@ class Planner extends Component {
 		ref: null,
 		startTime: null
 	};
-	stepsCounter = 0;
+	stepIdx = 0;
 	// stepProgressUpdateInterval = 1000 / 30; // 30 fps
 
 	makePlan(s) {
 		let segments = [];
-
-		if (s.playMode === playModes.BY_BAR) {
+		if (s.playMode === PlayModes.BY_BAR) {
 			const min = s.bpmRange[0];
 			const max = s.bpmRange[1];
 			let bpm = min;
 			while (bpm <= max) {
 				let segment = {
 					bpm: bpm,
-					duration: s.interval,
-					end: s.interval 	// TODO <--- remove this 
+					duration: s.byBarInterval
 				};
 				segments.push(segment);
 				bpm += s.bpmStep;
 			}
 		}
-		else if (s.playMode === playModes.BY_TIME) {
+		else if (s.playMode === PlayModes.BY_TIME) {
 			const min = s.bpmRange[0];
 			const max = s.bpmRange[1];
 			let bpm = min;
 
-			let i = 0;
 			while (bpm <= max) {
 				let segment = {
-					time: i * s.interval,
-					start: i * s.interval,
-					end: i * s.interval + s.interval,
-					duration: s.interval,
+					// time: i * s.interval,
+					// start: i * s.interval,
+					// end: i * s.interval + s.interval,
+					duration: s.byTimeInterval,
 					bpm: bpm
 				};
 				segments.push(segment);
 				bpm += s.bpmStep;
 			}
-		} else if (s.playMode === playModes.STABLE) {
+		} else if (s.playMode === PlayModes.CONSTANT) {
 			let segment = {
-				time: Infinity, // TODO <--remove
+				// time: Infinity, // TODO <--remove
 				duration: Infinity,
 				bpm: s.stableBpmSlider
 			};
 			segments.push(segment);
 		}
+		// debugger
 		return segments;
 	}
+	// makePlan(s) {
+	// 	let segments = [];
 
-	// TODO: this is ugly
-	setPlan(uiStateObject) {
+	// 	if (s.playMode === playModes.BY_BAR) {
+	// 		const min = s.bpmRange[0];
+	// 		const max = s.bpmRange[1];
+	// 		let bpm = min;
+	// 		while (bpm <= max) {
+	// 			let segment = {
+	// 				bpm: bpm,
+	// 				duration: s.interval,
+	// 				end: s.interval 	// TODO <--- remove this 
+	// 			};
+	// 			segments.push(segment);
+	// 			bpm += s.bpmStep;
+	// 		}
+	// 	}
+	// 	else if (s.playMode === playModes.BY_TIME) {
+	// 		const min = s.bpmRange[0];
+	// 		const max = s.bpmRange[1];
+	// 		let bpm = min;
+
+	// 		let i = 0;
+	// 		while (bpm <= max) {
+	// 			let segment = {
+	// 				time: i * s.interval,
+	// 				start: i * s.interval,
+	// 				end: i * s.interval + s.interval,
+	// 				duration: s.interval,
+	// 				bpm: bpm
+	// 			};
+	// 			segments.push(segment);
+	// 			bpm += s.bpmStep;
+	// 		}
+	// 	} else if (s.playMode === playModes.STABLE) {
+	// 		let segment = {
+	// 			time: Infinity, // TODO <--remove
+	// 			duration: Infinity,
+	// 			bpm: s.stableBpmSlider
+	// 		};
+	// 		segments.push(segment);
+	// 	}
+	// 	return segments;
+	// }
+
+	setPlan(config) {
+		console.log("<Planner>SetPlan")
+		const plan = this.makePlan(config);
 		// debugger
-		const plan = this.makePlan(uiStateObject);
+		var steps = [];
 
-		// console.log("<Planner>setPlan", plan);
-		var bars = [];
+		// debugger
+
+		const timeSignature = config.accents.length;
+
 
 		let totalPlanTime = 0;
-		const playMode = uiStateObject.playMode;
 		let i = 0;
 
-		switch (uiStateObject.playMode) {
-			case playModes.BY_BAR:
+		switch (config.playMode) {
+			case PlayModes.BY_BAR:
+
 				for (i = 0; i < plan.length; i++) {
+					const bpm = plan[i].bpm;
+					const beatDuration = 60 / bpm;
+					const duration = beatDuration * timeSignature * plan[i].duration;
 					const bar = {
 						bpm: plan[i].bpm,
-						duration: plan[i].end,
-						end: plan[i].end,
-						step: this.stepsCounter++,
-						playMode: playModes.BY_BAR
-						
+						duration: duration,
+						durationBars: plan[i].duration,
+						durationFormatted: Utils.formatTime(duration),
+						step: this.stepIdx++,
+						playMode: PlayModes.BY_BAR,
+						accents: config.accents
 					};
 
-					totalPlanTime +=
-						(60 / plan[i].bpm) *
-						uiStateObject.beatsPerStep *
-						plan[i].end;
-					bars.push(bar);
+					totalPlanTime += duration
+					steps.push(bar);
 				}
 				break;
-			case playModes.BY_TIME:
+
+			case PlayModes.BY_TIME:
 				for (i = 0; i < plan.length; i++) {
+					const bpm = plan[i].bpm;
+					const beatDuration = 60 / bpm;
+					const duration = plan[i].duration;
+					const durationInBars = plan[i].duration / (beatDuration * timeSignature);
 					const bar = {
-						time: plan[i].time,
-						duration: plan[i].end - plan[i].time,	// TODO: remove other unnecesary parameters
-						timeEnd: plan[i].end,
-						segmentDuration: plan[i].end - plan[i].time,
-						startTimeFormatted: Utils.formatTime(plan[i].start),
-						endTimeFormatted: Utils.formatTime(plan[i].end),
 						bpm: plan[i].bpm,
-						playMode: playModes.BY_TIME,
-						step: this.stepsCounter++
+						duration: duration,
+						durationBars: durationInBars.toFixed(1),
+						durationFormatted: Utils.formatTime(duration),
+						step: this.stepIdx++,
+						accents: config.accents,
+						playMode: PlayModes.BY_TIME
 					};
 
-					totalPlanTime += plan[i].end;
+					totalPlanTime += duration
+					steps.push(bar);
 
-					bars.push(bar);
+					// console.log('calc time', beat * timeSignature * plan[i].interval)
+
 				}
 				break;
-			case playModes.STABLE:
+			case PlayModes.CONSTANT:
 				totalPlanTime = Infinity;
-				bars.push({
+				steps.push({
 					bpm: plan[0].bpm,
 					duration: Infinity,
-					playMode: playModes.STABLE,
+					playMode: PlayModes.CONSTANT,
+					accents: config.accents,
 					time: Infinity,
 					step: 0
 				});
-				// console.log("plan set to play at {0} bpm", plan[0].bpm);
+				console.log("plan set to play at {0} bpm", plan[0].bpm);
 				break;
 			default:
 				break;
 		}
 
 		// update to new state
-		this.stepsCounter = 0;
+		this.stepIdx = 0;
 
 		this.setState(
 			prevState => ({
 				totalPlanTime: totalPlanTime,
-				currentStep: 0,
-				bars: bars,
-				playMode: playMode
+				currentStepIdx: 0,
+				steps: steps
+				// playMode: playMode
 			}),
 			() => this.stepChanged()
 		);
+
 	}
+	// setPlan2(uiStateObject, transport) {
+	// 	// // debugger
+	// 	const plan = this.makePlan(uiStateObject);
+
+	// 	var bars = [];
+
+	// 	transport.timeSignature = uiStateObject.accents.length;
+
+	// 	let totalPlanTime = 0;
+	// 	const playMode = uiStateObject.playMode;
+	// 	let i = 0;
+
+	// 	switch (uiStateObject.playMode) {
+	// 		case PlayModes.BY_BAR:
+	// 		case PlayModes.BY_TIME:
+	// 			for (i = 0; i < plan.length; i++) {
+	// 				transport.bpm.value = plan[i].bpm;
+
+	// 				const t = new Tone.Time(plan[i].duration + (uiStateObject.playMode === PlayModes.BY_BAR ? 'm' : ''));
+	// 				// console.log(t)
+	// 				const bar = {
+	// 					bpm: plan[i].bpm,
+	// 					duration: t.toSeconds(),
+	// 					durationBars: t.toBarsBeatsSixteenths().split(':')[0],
+	// 					durationFormatted: Utils.formatTime(t.toSeconds()),
+	// 					// end: plan[i].end,
+	// 					step: this.stepsCounter++//,
+	// 					 playMode: playModes.BY_BAR
+	// 				};
+
+	// 				totalPlanTime += t.toSeconds();
+	// 				bars.push(bar);
+	// 			}
+	// 			break;
+	// 		case PlayModes.CONSTANT:
+	// 			totalPlanTime = Infinity;
+	// 			bars.push({
+	// 				bpm: plan[0].bpm,
+	// 				duration: Infinity,
+	// 				playMode: PlayModes.CONSTANT,
+	// 				time: Infinity,
+	// 				step: 0
+	// 			});
+	// 			// console.log("plan set to play at {0} bpm", plan[0].bpm);
+	// 			break;
+	// 		default:
+	// 			break;
+	// 	}
+
+	// 	// debugger
+	// 	// update to new state
+	// 	this.stepsCounter = 0;
+
+	// 	this.setState(
+	// 		prevState => ({
+	// 			totalPlanTime: totalPlanTime,
+	// 			currentStep: 0,
+	// 			bars: bars
+	// 			// playMode: playMode
+	// 		}),
+	// 		() => this.stepChanged()
+	// 	);
+	// }
+	// setPlan(uiStateObject) {
+	// 	// debugger
+	// 	const plan = this.makePlan(uiStateObject);
+
+	// 	// console.log("<Planner>setPlan", plan);
+	// 	var bars = [];
+
+	// 	let totalPlanTime = 0;
+	// 	const playMode = uiStateObject.playMode;
+	// 	let i = 0;
+
+	// 	switch (uiStateObject.playMode) {
+	// 		case playModes.BY_BAR:
+
+	// 			for (i = 0; i < plan.length; i++) {
+	// 				const bar = {
+	// 					bpm: plan[i].bpm,
+	// 					duration: plan[i].end,
+	// 					//		durationAsTime: Tone.Time(plan[i].end +'m'),
+	// 					end: plan[i].end,
+	// 					step: this.stepsCounter++,
+	// 					playMode: playModes.BY_BAR
+
+	// 				};
+
+	// 				totalPlanTime +=
+	// 					(60 / plan[i].bpm) *
+	// 					uiStateObject.beatsPerStep *
+	// 					plan[i].end;
+	// 				bars.push(bar);
+	// 			}
+	// 			break;
+	// 		case playModes.BY_TIME:
+	// 			for (i = 0; i < plan.length; i++) {
+	// 				const segmentDuration = plan[i].end - plan[i].time;
+	// 				const bar = {
+	// 					time: plan[i].time,
+	// 					duration: segmentDuration,	// TODO: remove other unnecesary parameters
+	// 					//	durationAsTime: Tone.Time(segmentDuration).quantize('1m'),
+	// 					timeEnd: plan[i].end,
+	// 					// segmentDuration: segmentDuration,
+	// 					startTimeFormatted: Utils.formatTime(plan[i].start),
+	// 					endTimeFormatted: Utils.formatTime(plan[i].end),
+	// 					bpm: plan[i].bpm,
+	// 					playMode: playModes.BY_TIME,
+	// 					step: this.stepsCounter++
+	// 				};
+
+	// 				totalPlanTime += plan[i].end;
+
+	// 				bars.push(bar);
+	// 			}
+	// 			break;
+	// 		case playModes.STABLE:
+	// 			totalPlanTime = Infinity;
+	// 			bars.push({
+	// 				bpm: plan[0].bpm,
+	// 				duration: Infinity,
+	// 				playMode: playModes.STABLE,
+	// 				time: Infinity,
+	// 				step: 0
+	// 			});
+	// 			// console.log("plan set to play at {0} bpm", plan[0].bpm);
+	// 			break;
+	// 		default:
+	// 			break;
+	// 	}
+
+	// 	// update to new state
+	// 	this.stepsCounter = 0;
+
+	// 	this.setState(
+	// 		prevState => ({
+	// 			totalPlanTime: totalPlanTime,
+	// 			currentStep: 0,
+	// 			bars: bars,
+	// 			playMode: playMode
+	// 		}),
+	// 		() => this.stepChanged()
+	// 	);
+	// }
 
 	stop() {
 		// console.log("lockBpm", this.props.lockBpm);
-		this.pause();
 		this.resetStep();
 	}
 
 	setStep(stepIdx) {
 		// console.log('this.state.currentStep !== stepIdx',this.state.currentStep , stepIdx)
-
-		if (this.state.currentStep !== stepIdx) {
-			this.setState({currentStep: stepIdx}, this.stepChanged)
+		if (this.state.currentStepIdx !== stepIdx) {
+			this.setState({ currentStepIdx: stepIdx }, this.stepChanged)
 		}
 	}
 
 	isLastStep() {
-		return this.state.currentStep === this.state.bars.length -1;
+		return this.state.currentStepIdx === this.state.steps.length - 1;
 	}
-	
+
 	isFirstStep() {
-		return this.state.currentStep === 0;
+		return this.state.currentStepIdx === 0;
 	}
 
 
 	stepForward() {
 		// console.log("<Planner>stepForward()")
 		// check if we're not at the end of plan
-		if (this.state.currentStep + 1 < this.state.bars.length) {
-			this.setStep(this.state.currentStep + 1)
+		if (this.state.currentStepIdx + 1 < this.state.steps.length) {
+			this.setStep(this.state.currentStepIdx + 1)
 		}
 		else {
 			// console.log('no more steps')
@@ -180,58 +383,144 @@ class Planner extends Component {
 		// console.log("<Planner>stepBackward()")
 
 
-		if (this.state.currentStep - 1 >= 0) {
-			this.setStep(this.state.currentStep - 1)
+		if (this.state.currentStepIdx - 1 >= 0) {
+			this.setStep(this.state.currentStepIdx - 1)
 		}
 	}
 
-	// onInterval() {
-	// 	this.stepForward();
-	// 	// if (this.timer) {
-	// 	// 	// set time when we changed step to be able to render progress easily
-	// 	// 	this.timer.startTime = new Date();
-	// 	// }
-	// }
-
-	start() {
-		
-	}
-
 	setProgress(progress) {
-		this.setState({stepProgress: progress});
+		this.setState({ stepProgress: progress });
 	}
-	
+
+
+	onStepEvent = (time) => {
+		// console.log('onStepEvent', time);
+		if (this.stepEvent.initialized && this.stepEvent.initialized === true) {
+			this.stepEvent.cancel();
+			// console.log('onStepEvent','finished')
+
+			this.onStepEnd(time);
+			return;
+		}
+
+		if (!this.stepEvent.initialized) {
+			// console.log('onStepEvent','started', Date.now())
+			this.stepEvent.initialized = true;
+		}
+	}
+
+
+	startStepEvent(interval) {
+		if (this.stepEvent) {
+			this.stepEvent.cancel();
+			this.stepEvent.dispose();
+			this.stepEvent = undefined
+		}
+
+		let stepEvent = new Tone.Loop(time => this.onStepEvent(time), interval);
+		// stepEvent.iterations = 1;
+		this.stepEvent = stepEvent;
+
+		this.stepEvent.start();
+
+
+		console.log('scheduled event to execute after ', interval.toFixed(2), 'seconds');
+		this.timer = Date.now()
+		// Tone.Transport.schedule(time => this.props.onLoopEnd(time), interval)
+
+	}
+
 	stepChanged() {
-		// console.log("<Planner>stepChanged")
 		const step = this.getCurrentStep();
+
+		console.log("<Planner>stepChanged", step)
+
+		// if (this.transport.state = 'started')
+
+		// debugger
+
 		this.props.onStep(step);
+		//this.startStepEvent(step.duration);
+
 	}
+
+
 
 	resetStep() {
-		// console.log('<Planner> resetStep()')
 		this.setStep(0)
 	}
 
 	getCurrentStep() {
-		if (this.state.currentStep >= this.state.bars.length) {
+		if (this.state.currentStepIdx >= this.state.steps.length) {
 			throw new Error("Trying to get step that doesn't exists");
 		}
-		return this.state.bars[this.state.currentStep];
+		return this.state.steps[this.state.currentStepIdx];
+	}
+
+	onPlaybackChange(newPlaybackMode) {
+		this.setState({ playbackMode: newPlaybackMode });
+	}
+
+	onStepEnd(time) {
+		console.log("Planner.onStepEnd executed after ", ((Date.now() - this.timer) / 1000).toFixed(1))
+		
+		const pm = this.state.playbackMode;
+		switch (pm) {
+			case PlaybackModes.CYCLE:
+				this.playbackDirection === true ? this.stepForward() : this.stepBackward();
+
+				if (this.isLastStep() || this.isFirstStep()) {
+					this.playbackDirection = !this.playbackDirection;
+				}
+
+				break;
+			case PlaybackModes.REPEAT:
+				if (this.isLastStep()) {
+					this.setStep(0);
+				} else {
+					this.stepForward();
+				}
+				break;
+			case PlaybackModes.CONTINUE:
+				if (this.isLastStep()) {
+					let currentMode = this.getCurrentStep().playMode;
+					currentMode.playMode = PlayModes.CONSTANT;
+					currentMode.stableBpmSlider = this.state.currentBpm;
+					this.refs.modePanel.setValue(currentMode);
+				}
+				else {
+					this.stepForward();
+				}
+				break;
+			case PlaybackModes.STOP:
+				if (this.isLastStep()) {
+					// passing null as step will cause machine to stop
+					this.props.onStep(null);
+				}
+				else {
+					this.stepForward();
+				}
+				break;
+			default:
+				this.stepForward();
+		}
+
+
 	}
 
 	barRender = b => {
-		const cls = this.state.currentStep === b.step ? "current-step" : "";
-
+		const cls = this.state.currentStepIdx === b.step ? "current-step" : "";
 		return (
 			<div
 				onClick={() => this.setStep(b.step)}
 				className={"step " + cls}
 				key={"key_" + b.bpm}
 			>
-				{b.segmentDuration !== undefined
-					? Utils.formatTime(b.segmentDuration.toFixed(0)) + " "
-					: b.end + " bars "}
-				at {b.bpm.toFixed(0)}
+				{
+					b.duration !== Infinity
+						? <>{b.durationFormatted} ({b.durationBars} bars) </>
+						: ''}
+				@ {b.bpm.toFixed(0)} bpm
 			</div>
 		);
 	};
@@ -239,38 +528,114 @@ class Planner extends Component {
 	formatTime(date) {
 		return date.getMinutes() + ":" + date.getSeconds();
 	}
- 
+
+	componentDidMount() {
+		console.log("<Planner>Setting initial plan")
+		// this.setPlan(this.refs.control.getValue())
+	}
+
+	start() {
+		console.log('<SM>Start', this.props)
+		// this.currentBeat = 0;
+		this.setState({ isPlaying: true })
+		// this.setState({ isPlaying: true });
+		// this.transport.position = 0;
+		// this.loop.position = 0;
+		// this.transport.position = 0;
+
+		// this.transport.start();
+
+		// this.stepEvent.start();
+	}
+
+
+	// toggle() {
+	// 	if (Tone.Transport.state === 'started') {
+	// 		this.stop();
+	// 	} else {
+	// 		// this.setStep(this.currentStep);
+	// 		this.start(this.getCurrentStep());
+	// 		// // this.start(this.currentStep);
+	// 	}
+	// }
+
 	render() {
-		if (this.state.bars.length === 0) {
-			return <div>No plan</div>;
-		}
-		else if (this.state.bars[0].time === Infinity) {
-			return (
-				<div>
-					{/* Playing at constant speed {this.state.bars[0].bpm} bpm */}
-					<h2><Badge color="dark">BPM: {this.props.currentBpm}</Badge></h2>
-				</div>
-			);
-		}
+		// if (this.state.bars.length === 0) {
+		// 	return <div>No plan</div>;
+		// }
+		// else if (this.state.bars[0].time === Infinity) {
+		// 	return (
+		// 		<div>
+		// 			{/* Playing at constant speed {this.state.bars[0].bpm} bpm */}
+		// 			<h2><Badge color="dark">BPM: {this.props.currentBpm}</Badge></h2>
+		// 		</div>
+		// 	);
+		// }
 
 		return (
-			<div className="Planner">
-				<h2><Badge color="dark">BPM: {this.props.currentBpm}</Badge></h2>
-				{/* <div>Next step in {this.state.stepProgress.toFixed(1)} seconds</div> */}
-				<SimpleProgress value={this.state.stepProgress * 100} />
+			<>
+				{/* <Control ref='control' cookies={this.props.cookies} planner={this} /> */}
+				{/* <Control ref='control' sm={this.smRef} planner={this.refs.planner}/> */}
 
-				{/* <Button onClick={() => this.togglePause()}>
+				<div className="Planner">
+					{/* <div>Next step in {this.state.stepProgress.toFixed(1)} seconds</div> */}
+					<SimpleProgress value={this.state.stepProgress * 100} />
+
+					{/* <Button onClick={() => this.togglePause()}>
 					isPaused:
 					{this.state.isPaused === true ? "paused" : "normal"}
 				</Button> */}
 
-				<div style={this.props.lockBpm ? { opacity: 0.5 } : {}}>
-					{this.state.bars.map(bar => this.barRender(bar))}
+					<div style={this.props.lockBpm ? { opacity: 0.5 } : {}}>
+						{this.state.steps.map(bar => this.barRender(bar))}
+					</div>
+					<div>
+						Total time: {Utils.formatTime(this.state.totalPlanTime)}
+					</div>
 				</div>
-				<div>
-					Total time: {Utils.formatTime(this.state.totalPlanTime)}
-				</div>
-			</div>
+				<Collapse isOpen={this.state.playMode !== PlayModes.CONSTANT}>
+					<div>After plan</div>
+					<ButtonGroup size="sm">
+						<Button
+							size="sm"
+							outline
+							color="light"
+							onClick={() => this.onPlaybackChange(PlaybackModes.STOP)}
+							active={this.state.playbackMode === PlaybackModes.STOP}
+						>
+							Stop
+						</Button>
+						<Button
+							size="sm"
+							outline
+							color="light"
+							onClick={() => this.onPlaybackChange(PlaybackModes.CYCLE)}
+							active={this.state.playbackMode === PlaybackModes.CYCLE}
+						>
+							Cycle back
+						</Button>
+						<Button
+							size="sm"
+							outline
+							color="light"
+							onClick={() => this.onPlaybackChange(PlaybackModes.CONTINUE)}
+							active={this.state.playbackMode === PlaybackModes.CONTINUE}
+						>
+							Last speed
+						</Button>
+						<Button
+							size="sm"
+							outline
+							color="light"
+							onClick={() => this.onPlaybackChange(PlaybackModes.REPEAT)}
+							active={this.state.playbackMode === PlaybackModes.REPEAT}
+						>
+							Start over
+						</Button>
+					</ButtonGroup>
+				</Collapse>
+	
+			</>
 		);
 	}
 }
@@ -278,7 +643,8 @@ class Planner extends Component {
 export default Planner;
 
 Planner.defaultProps = {
-	playMode: playModes.BY_BAR,
-	currentStep: 0,
-	onStep: function(step) {}
+	// playMode: PlayModes.BY_BAR,
+	playbackMode: InitPreset.playbackMode,
+	currentStepIdx: NaN,
+	onStep: function (step) { }
 };
