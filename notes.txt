@@ -3,11 +3,10 @@ metro_
 
 TODO:
 
-- po wejściu na strone zmien beats per step,planner rozwali sie
-- increase speed every 1 seconds
+- progres wywala po dwoch stepach jesli sa tylko 3 (nextStep event is shit logic)
 
-- zmiana BeatsPerStep nie zmienia transport (onCHange on control?)
-- panel-body Control to correctly use padding
+
+
 - new vis to display concentric circles with marks on beats and a clock hand
 
 

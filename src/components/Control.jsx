@@ -26,31 +26,12 @@ class Control extends Component {
         this.refs.playbackPanel.setActiveBeat(idx)
     }
 
-    getPreset() {
-        debugger
-    }
-
     onPresetSelect(preset) {
-        // this.props.onPresetSelect(preset)
-        
         this.refs.modePanel.setValue(preset)
         this.refs.playbackPanel.setValue(preset);
-
-        debugger
-            // console.log("setting preset", preset);
-    
-        //     this.refs.beatsPerStep.setState({ value: preset.beatsPerStep });
-        //     this.refs.sm.setBeatsPerStep(preset.beatsPerStep);
-    
-        //     // this.onInstrumentSelect(preset.instrument || instruments.TABLA);
-        //     this.refs.sm.setInstrument(preset.instrument)
-        //     this.refs.barManager.setAccents(preset.accents, preset.beatsPerStep);
-    
-        //     this.refs.modePanel.setValue(preset);
-    
-        // }
-    
+        this.props.onPresetSelect(preset)
     }
+
     render() { 
         return (
         <><Row>

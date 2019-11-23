@@ -1,9 +1,9 @@
 export const accentTypes = {
-	ACCENT_1: 0,
-	ACCENT_2: 1,
-	ACCENT_3: 2
+	UP: 0,
+	MIDDLE: 1,
+	DOWN: 2
 };
 
 export const accentTypesArr = [
-	accentTypes.ACCENT_1, accentTypes.ACCENT_2, accentTypes.ACCENT_3
+	accentTypes.UP, accentTypes.MIDDLE, accentTypes.DOWN
 ];

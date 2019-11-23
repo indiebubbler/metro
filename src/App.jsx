@@ -46,8 +46,8 @@ class App extends Component {
 		});
 		ReactGA.pageview(window.location.pathname + window.location.search);
 
-		
-	 	// this.refs.planner.setStep(0);
+
+		// this.refs.planner.setStep(0);
 	}
 
 
@@ -62,19 +62,19 @@ class App extends Component {
 			case 27: // 
 				this.refs.sm.stop();
 				// this.refs.sm.refs.planner.resetStep()
-				
+
 				break;
 			case 38: // Arrow up
 				e.preventDefault();
-				
+
 				if (this.refs.sm.state.bpm < 600) {
-					this.refs.sm.setBpm(this.refs.sm.state.bpm +  10);
+					this.refs.sm.setBpm(this.refs.sm.state.bpm + 10);
 				}
 				break;
 			case 40: // arrow down
 				e.preventDefault();
-				if (this.refs.sm.state.bpm> 10) {
-					this.refs.sm.setBpm(this.refs.sm.state.bpm  - 10);
+				if (this.refs.sm.state.bpm > 10) {
+					this.refs.sm.setBpm(this.refs.sm.state.bpm - 10);
 				}
 				break;
 			case 37: // Arrow left
@@ -89,7 +89,7 @@ class App extends Component {
 		}
 	}
 
-	renderBottomPane() {
+	renderKeyboardPanel() {
 		return (
 			<Container>
 				{/* <Row>
@@ -105,9 +105,7 @@ class App extends Component {
 						</SimplePanel>
 					</Col>
 				</Row>
-
 			</Container>
-
 		);
 	}
 
@@ -119,29 +117,14 @@ class App extends Component {
 	// 	console.log('bpm changed', bpm)
 	// 	this.setState({ currentBpm: bpm })
 	// }
- 
+
 	renderLeftPane() {
-		
+
 		return (
-			<Container>
-				
-					<SoundMachine
-						ref="sm"
-						cookies={this.props.cookies}
-						// planner={this.refs.planner}
-						// vis={this.refs.visClock}
-						beatsPerStep={this.state.beatsPerStep}
-						onLoopEnd={() => this.onLoopEnd()}
-						// onBeat={beat => this.onBeat(beat)}
-						// onBpmChange={bpm => this.onBpmChange(bpm)}
-						instrument={this.state.instrument}
-						// // onToggle={(state) => this.onSoundMachineToggle(state)}
-						// onProgress={(progress) => this.onProgress(progress)}
-						// onReady={() => this.onSoundMachineReady()}>
-						>
-					</SoundMachine>
-					
-				{/* <Row>
+
+
+
+			{/* <Row>
 					<Col>
 						<ModePanel
 							ref="modePanel"
@@ -163,10 +146,9 @@ class App extends Component {
 						<PlaybackPanel ref='playbackPanel' sm={this.refs.sm} />
 					</Col>
 				</Row> */}
-			</Container>
 		);
 	}
- 
+
 
 	// onPresetSelect(preset) {
 	// 	// console.log("setting preset", preset);
@@ -185,7 +167,7 @@ class App extends Component {
 	renderRightPane() {
 		return (
 			<Container>
-				
+
 			</Container>
 		);
 	}
@@ -248,14 +230,15 @@ class App extends Component {
 
 				<Container className="app-container">
 					<Row>
-						<Col>
-							{this.renderLeftPane()}
+						<Col sm={9}>
+							<SoundMachine 
+								ref="sm"
+								cookies={this.props.cookies}
+							>
+							</SoundMachine>
 						</Col>
 						<Col>
-							{this.renderRightPane()}
-						</Col>
-						<Col>
-							{this.renderBottomPane()}
+							{this.renderKeyboardPanel()}
 						</Col>
 					</Row>
 					<Row>
@@ -324,7 +307,7 @@ class App extends Component {
 	getUiState() {
 
 		// const state = this.refs.control.state;
-		
+
 		const s1 = this.refs.control.refs.playbackPanel.state;// this.refs.playbackPanel.state;
 		// const s1 = {
 		// 	beatsPerStep: this.refs.beatsPerStep.getValue(),

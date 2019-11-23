@@ -46,7 +46,6 @@ body {
     
 }
  
-
 .App .pane .pane-title {
     text-transform: uppercase;
     padding: 0 1rem;
@@ -222,4 +221,8 @@ body {
 .about code {
     font-size: 15px;
     color: #f55
+}
+
+.visClockContainer {
+     margin: 0 auto;
 }

@@ -1,29 +1,64 @@
 import React, { Component } from 'react';
+import { accentTypes, accentTypesArr } from './AccentTypes';
 
 class Vis extends Component {
     state = {}
-    ctx;
-    width = 300;
-    height = 200;
     values = [];
-    radius = 10;
     progress = 0;
- 
+
+    latencyFallback = 0.05
+
     redraw() {
 
         // console.log('redraw called')
         // this.ctx.clearRect(0, 0,this.width,this.height);
         // console.log('<Vis>redraw', this.width, this.height)
         // this.ctx.clearRect(0,0,this.width, this.height)
-        
+
         // this.ctx.rect(0, 0, this.width, this.height);
         // this.ctx.stroke();
-        this.radius = Math.min(this.width, this.height) / 2;
-        
+        // console.log('w',this.width)
+        this.radius = (this.width /2)  - 10;
+        // console.log('this.radius',this.radius)
         this.drawFace(this.ctx, this.radius)
-        this.drawHand(this.ctx, this.progress  * 2 * Math.PI, this.radius * .8, 2);
+        this.drawBeats(this.ctx, this.radius * .8)
 
+        // HACK bit naughty way to make hand fall in mid of the beat circle
+        this.drawHand(this.ctx, this.progress === 0 ? this.progress : (this.progress - this.latencyFallback) * 2 * Math.PI, this.radius * .8, 4);
 
+    }
+
+    getInnerRadius(accent, maxRadius) {
+        const idx = accentTypesArr.indexOf(accent);
+        if (idx < 0) {
+            throw new Error("Accent invalid" + accent)
+        }
+        return 50 + 20 * idx;//(this.radius / this.accents.length)
+    }
+
+    drawBeats(ctx, radius) {
+        if (!this.accents) {
+            return
+        }
+        const angleStep = 2 * Math.PI / this.accents.length;
+
+        for (let i = 0; i < this.accents.length; i++) {
+            ctx.beginPath();
+            //ctx.moveTo(0,20)
+            ctx.arc(0, -this.getInnerRadius(this.accents[i], radius), 3, 0, 2 * Math.PI);
+
+            ctx.fillStyle = 'red';
+            ctx.fill();
+            ctx.rotate(angleStep);
+
+        }
+        // console.log('angleStep after', angleStep)
+        ctx.rotate(-2 * Math.PI);
+        // ctx.rotate()
+
+        // ctx.arc(0, 0, 2, 0, 2*Math.PI);
+        // ctx.fillStyle = 'red';
+        // ctx.fill();
 
     }
 
@@ -31,7 +66,7 @@ class Vis extends Component {
         ctx.beginPath();
         ctx.lineWidth = width;
         ctx.lineCap = "round";
-        ctx.moveTo(0,0);
+        ctx.moveTo(0, 0);
         ctx.rotate(pos);
         ctx.lineTo(0, -length);
         ctx.stroke();
@@ -41,22 +76,22 @@ class Vis extends Component {
     drawFace(ctx, radius) {
         var grad;
         this.ctx.beginPath();
-        ctx.arc(0, 0, radius, 0, 2*Math.PI);
+        ctx.arc(0, 0, radius, 0, 2 * Math.PI);
         ctx.fillStyle = 'white';
         ctx.fill();
-        grad = ctx.createRadialGradient(0,0,radius*0.95, 0,0,radius*1.05);
+        grad = ctx.createRadialGradient(0, 0, radius * 0.95, 0, 0, radius * 1.05);
         grad.addColorStop(0, '#333');
         grad.addColorStop(0.5, 'white');
         grad.addColorStop(1, '#333');
         ctx.strokeStyle = grad;
-        ctx.lineWidth = radius*0.1;
+        ctx.lineWidth = radius * 0.1;
         ctx.stroke();
         ctx.beginPath();
-        ctx.arc(0, 0, radius*0.1, 0, 2*Math.PI);
+        ctx.arc(0, 0, radius * 0.1, 0, 2 * Math.PI);
         ctx.fillStyle = '#333';
         ctx.fill();
-      }
-      
+    }
+
     // function drawNumbers(ctx, radius) {
     //     var ang;
     //     var num;
@@ -74,44 +109,52 @@ class Vis extends Component {
     //       ctx.rotate(-ang);
     //     }
     //   }
-      
- 
+
+
 
     componentDidMount() {
         // console.log('vis mount')
-        this.ctx = this.refs.canvas.getContext("2d");
         // this.ctx.translate( 50, 20 )
-        
+        this.ctx = this.refs.canvas.getContext("2d");
+        //this.container.offsetWidth
+        console.log('container offsetWidth', this.container.offsetWidth);
         window.addEventListener("resize", () => this.updateDimensions());
         this.updateDimensions()
-        
-    }
-
-    updateDimensions() {
-        let { clientWidth, clientHeight } = this.refs.container;
-        
-        this.refs.canvas.width = clientWidth;
-        // this.refs.canvas.height = clientHeight
-
-        this.width = clientWidth;
-        this.height = clientHeight;
-        // this.height = clientHeight;
-        this.ctx.translate( this.width / 2 , this.height / 2 )
- 
         this.redraw();
     }
 
-    setProgress(progress) {
+    updateDimensions() {
+        let { clientWidth, clientHeight, offsetWidth, offsetHeight } = this.container;
+        // const min = Math.min(clientHeight, clientWidth)
+        // console.log('cW', offsetWidth, offsetHeight)
+
+        this.width = offsetWidth / 2;
+        // this.height = offsetHeight;
+
+        // const min = Math.max(clientWidth, clientHeight)
+        this.refs.canvas.width = this.width
+        this.refs.canvas.height = this.width;
+
+
+        // this.height = clientHeight;
+        // this.height = clientHeight;
+        this.ctx.translate(this.width / 2, this.width / 2)
+
+        this.redraw();
+    }
+
+    setProgress(progress, accents) {
         this.progress = progress;
+        this.accents = accents;
         this.redraw();
     }
 
     render() {
         return (
-                <div ref="container">
-                    <canvas ref='canvas' height="200"/>
-                </div>
-            
+            <div ref={el => (this.container = el)} className="visClockContainer">
+                <canvas ref='canvas' />
+            </div>
+
         );
     }
 }

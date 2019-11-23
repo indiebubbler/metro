@@ -5,8 +5,6 @@ import SimplePanel from './SimplePanel'
 import { accentTypes } from "./AccentTypes";
 import InstrumentLib from "./InstrumentLib";
 import { InstrumentsArray } from "./Instruments"
-import { PlaybackModes } from "./PlaybackModes";
-import { PlayModes } from "./PlayModes";
 
 import { Button } from 'reactstrap'
 import { InitPreset } from './PresetsLib'
@@ -19,11 +17,7 @@ class SoundMachine extends Component {
 	accentNotes = ["C3", "C#3", "D3"]; // this stay in sync with AccentTypes
 
 	instrumentLib = undefined;
-
-	// currentBeat = 0;
-	// beatsPerStep = 4;
-
-	progressRefreshRate = 1000 / 20; // 20 fps
+	progressRefreshRate = 1/ 20; // 20 fps
 
 	score = ["C3", "C#3", "C#3", "C#3"];
 
@@ -33,21 +27,19 @@ class SoundMachine extends Component {
 		instrument: this.props.instrument
 	};
 
-	accents = [accentTypes.ACCENT_1]; // default with accent on first beat
+	// accents = [accentTypes.ACCENT_1]; // default with accent on first beat
 
 
 	transport = Tone.Transport;
 
-	quantizationFactor = '1m'
+	// quantizationFactor = '1m'
 	startStepCnt = 0;
 
 	tone = Tone;
 	constructor(props) {
 		super(props);
-
 		// init instruments library
 		this.instrumentLib = new InstrumentLib();
-
 	}
 
 	onBufferError() {
@@ -61,10 +53,10 @@ class SoundMachine extends Component {
 	}
 
 	onStart() {
-		this.stepProgressUpdateTimer = setInterval(
-			() => this.updateProgress(),
-			this.progressRefreshRate
-		);
+		// this.stepProgressUpdateTimer = setInterval(
+		// 	() => this.onProgress(),
+		// 	this.progressRefreshRate
+		// );
 	}
 
 	componentDidMount() {
@@ -79,7 +71,8 @@ class SoundMachine extends Component {
 		// Tone.Transport.on('pause', () => console.log('TRANSPORT.pause'));
 		// Tone.Transport.on('loop', (time) => this.props.onLoopEnd(time));
 
-		Tone.context.latencyHint = "playback";
+		//		Tone.context.latencyHint = "playback";
+		Tone.Transport.lookAhead = 2;
 
 		// console.log('init preset accents length', InitPreset.accents.length)
 		// Tone.Transport.timeSignature = InitPreset.accents.length;
@@ -94,112 +87,90 @@ class SoundMachine extends Component {
 
 		// this.loop = new Tone.Loop((time) => this.repeat(time), "4n");
 
-		this.setAccents2(InitPreset.accents);
+		// this.setAccents2(InitPreset.accents);
 
 		// shortcut to controls
 		// this.control = this.refs.planner.refs.control
 
-		this.refs.planner.setPlan(this.refs.control.getValue())
-		// debugger
+		// initialize machine
+		const config = this.refs.control.getValue();
+
+		this.setPlan(config);
 	}
 
-	setAccents2(accents) {
-		/*this.loop = new Tone.Part((time, note) => this.repeat(time, note), [[0, 'C3'], ["0:1", 'C#3'], ["0:2", 'C#'], ["0:3", 'C3']])
-				this.loop.loop = true;
-				this.loop.start(0);
-		*/
-		let idx = 0;
+	onProgressRepeat(time) {
+		Tone.Draw.schedule(() => this.onProgress(), time)
+	}
+
+	// drawProgress() {
+	// 	console.log('up prog')
+	// }
+
+	setPlan(config) {
+		this.transport.cancel();
+		this.transport.position = 0;
+
+		// slice will force to recreate loop as it was cancelled just moment ago
+		this.setAccents(config.accents.slice());
+
+		// progress
+		this.transport.scheduleRepeat((time) => this.onProgressRepeat(time), this.progressRefreshRate)
+
+		this.refs.planner.setPlan(config);
+	}
+
+	setAccents(accents) {
+		if (this.lastAccents === accents) {
+			// console.log('accents unchanged')
+			return;
+		}
+
+		this.lastAccents = accents
+
+		this.setTimeSignature(accents.length);
+
 		let pattern = accents.map((item, idx) => {
 			return [this.accentNotes[item]]
 			// return ['0:' + idx, this.accentNotes[item]]
 		})
 
 		if (this.loop === undefined) {
-			this.loop = new Tone.Sequence((time, note) => this.repeat(time, note), pattern)
+			console.log('<SM>New main loop defined')
+			this.loop = new Tone.Sequence((time, note) => this.repeat(time, note), [], '4n')
 			this.loop.loop = true;
-			// this.loop.start(0);
-			// console.log('clearing old loop')
-			// debugger
-			// this.loop.dispose();
-			// this.loop.dispose();
-			// this.loop = undefined;
+			this.loop.start(0)
+		}
+		// debugger
+		// update existing notes
+		for (let i = 0; i < Math.min(this.loop.length, pattern.length); i++) {
+			//console.log('updating loop,', i, pattern[i]);
+			this.loop.at(i, pattern[i])
 		}
 
-		// update existing part
-
-		// for (let i = 0; i < pattern.length; i++) {
-		// 	// const o = pattern[i];
-		// 	// this.loop.remove(o[0])
-		// 	this.loop.at(i, pattern[i])
-		// }
-
-		// check if we need to add new notes
+		// add new notes if requires
 		if (pattern.length > this.loop.length) {
-
 			for (let i = this.loop.length; i < pattern.length; i++) {
-				// const o = pattern[i];
-				console.log('adding beat at', i, pattern[i])
-				this.loop.add(i, pattern[i])
+				// console.log('adding beat at', i, pattern[i])
+				this.loop.add(i, pattern[i]);
 			}
-			this.loop.loopEnd = '1m'
-			this.loop.loopCount = 0;
-			// this.loop.loopEnd = this.pattern.length;
-			// this.loop.start()
 		}
-		else if (pattern.length === this.loop.length) {
-			// update new accents
-			for (let i = 0; i < pattern.length; i++) {
-				this.loop.at(i, pattern[i])
-			}
-			
-		}
+
 		else if (pattern.length < this.loop.length) {
-			while (this.loop.length > pattern.length) {
-			this.loop.remove(this.loop.length-1)
-		}
-			
-			// for (let i = pattern.length; i < this.loop.length; i++) {
-			// 	//const o = pattern[i];
-			// 	this.loop.remove(i)
-			// }
-			
-		this.loop.loopEnd = '1m';
-		this.loop.loopCount = 0;
-			// this.loop.loopEnd =  '1m'
-			// this.loop.loopEnd = this.pattern.length
-			// this.loop.start()
+			const cnt = this.loop.length - pattern.length
+			// console.log('elements to delete', cnt)
+
+			for (let i = 0; i < cnt; i++) {
+				let idx = pattern.length + i;
+				let el = this.loop.at(i);
+				// console.log('removing', el)
+				this.loop.remove(idx)
+			}
 		}
 
+		this.loop.loopEnd = '1m'
+		this.loop.start(0)
+		console.log('<SM>Accents changed')
 
-		console.log('loop updated, length: ', this.loop.length, this.loop.loopEnd)
-		// check if we need to remove
-
-
-		// pattern this.setBeatsPerStep(o .pattern)
-		//
-		// this.loop.at(o[0],o[1]) 
-
-
-		// add loopCount to determine where are we at Tone.Part so we can highlight currently played beat
-		
-		// let newLoop = new Tone.Part((time, note) => function(time,note) {
-		// 	console.log('newLoop event',time,note)
-		// 	this.instrumentLib.getInstrument().triggerAttack(note, time);
-		// 	// draw stuff
-		// 	Tone.Draw.schedule(() => this.onBeat(idx), time)
-
-		// 	// advance
-		// 	this.currentBeat++;	
-		// }, [[0, 'C3'], ["0:1", 'C#3'], ["0:2", 'C#'], ["0:3", 'C3']]);
-
-
-
-		// newLoop.start(0);
-		// newLoop.loop = true;
-		// this.loop = newLoop;
-
-		// this.loop = newLoop;
-		// this.loop.start()
 	}
 
 
@@ -242,8 +213,15 @@ class SoundMachine extends Component {
 
 	// }
 
-	updateProgress() {
+	onProgress(progress) {
+		// console.log('progress loop:', this.loop.progress, progress)
 
+		// debugger
+		this.refs.debug.innerHTML = this.transport.seconds.toFixed(1)
+
+		this.refs.planner.updateProgress()
+
+		this.refs.visClock.setProgress(this.loop.progress, this.lastAccents)
 		// if (this.stepEvent && this.stepEvent.progress) {
 
 		//this.props.onProgress(this.stepEvent.progress);
@@ -255,10 +233,6 @@ class SoundMachine extends Component {
 		// 	this.vis.drawFFT(this.instrumentLib.fft.getValue())
 		// }
 
-
-		// this.refs.planner.setProgress(this.stepEvent ? this.stepEvent.progress : 0)
-
-		// this.refs.visClock.setProgress(this.loop.progress);
 
 	}
 
@@ -282,21 +256,72 @@ class SoundMachine extends Component {
 	repeat = (time, note) => {
 		// console.log('repeat', time, theNote)
 		const idx = this.loop.loopCount++ % this.transport.timeSignature;
-
+		// console.log(this.loop.loopCount)
 		// const note = this.score[idx];
 
 		// make sound
 		// console.log('repeat', time, this.currentBeat);
 
 		this.instrumentLib.getInstrument().triggerAttack(note, time);
-
 		// draw stuff
 
-		Tone.Draw.schedule(() => this.onBeat(idx), time)
+		// Tone.Draw.schedule(() => this.onBeat(idx), time)
+		// Tone.Draw.schedule(() => this.onProgress(this.loop.progress), time)
 
 		// advance
 		// this.currentBeat++;
 	}
+
+	calcTimeForBpm(seconds, bpm) {
+		let m = new Tone.Time(seconds * bpm / this.baseBpm);
+		return m;
+	}
+
+	// 	setPlan(interval, bpmStep) {
+	// 		this.baseBpm = this.transport.bpm.value
+
+	//         this.transport.cancel();
+	// //        this.transport.scheduleRepeat((time) => this.playNote(time), '4n')
+	// 		this.transport.position = 0;
+
+	// 		// TODO: unsure if we need to pass currentstep
+	// 		this.setAccents(this.currentStep.accents);
+
+	//         let bpm = this.transport.bpm.value;
+	//         let t = 0;// Tone.now();
+	//         this.events = [];
+	//         // var b = bpm ;
+	// 		let isMeasure = false;
+
+	//         if (isNaN(interval) && interval.indexOf('m') > 0) {
+	//             // interval = this.time(interval).toSeconds();
+	//             interval = Number(interval.split('m')[0]);
+	//             isMeasure = true;
+	//         }
+	//         else if (isNaN(interval)) {
+	//             throw new Error("Invalid inteval: " + interval)
+	//         }
+
+	//         let plan = []
+	//         for (let i = 0; i < 6; i++) {
+	//             const tt = this.calcTimeForBpm(interval, bpm)
+	//             // var b = bpm + bpmStep * i;
+	//             plan.push(
+	//                 "at " + (isMeasure ? (interval * i + 'm') : (Number(tt).toFixed(1) + 's')) + " : " + bpm
+	//             )
+
+	//             let b = bpm;
+	//             let transportTime = isMeasure ? "+" + (interval * i) + 'm' : t;
+	//             // this.events.push(
+	//             let eventId = this.transport.schedule((time) => this.onPlanStep2(time, b, i, eventId), transportTime)
+	//             // )
+	//             this.events.push(eventId);
+	//             t += tt;
+	//             bpm += bpmStep
+	//         }
+	//         // this.setState({ plan: plan })
+	//     }
+
 
 	setInstrument(instrument) {
 		this.instrumentLib.setInstrument(instrument);
@@ -306,17 +331,26 @@ class SoundMachine extends Component {
 		return this.instrumentLib.getInstrument().label;
 	}
 
+	setTimeSignature(timeSignature) {
+		if (timeSignature !== this.transport.timeSignature) {
+			this.transport.timeSignature = timeSignature;
+			console.log("<SM>Setting new time signature", this.transport.timeSignature)
+		}
+	}
 	setBpm = bpm => {
-		console.log("<SM>setBpm", bpm)
 
 		if (isNaN(bpm) || bpm <= 0 || bpm > 1000) {
 			throw new Error("Invalid BPM value: " + bpm)
 		}
 
 		if (bpm !== this.transport.bpm.value) {
-			// Tone.Transport.bpm.value = bpm;
-			this.transport.bpm.rampTo(bpm, 0.5);
+			Tone.Transport.bpm.value = bpm;
+			// var synth = new Tone.Synth().toMaster();
+			// synth.triggerAttackRelease("A5",0.05);
+
+			// this.transport.bpm.rampTo(bpm, 0.5);
 			this.setState({ bpm: bpm })
+			console.log("<SM>bpm changed to", bpm)
 
 		}
 		// this.props.onBpmChange(bpm)
@@ -360,74 +394,127 @@ class SoundMachine extends Component {
 		// console.log('beat', this.fft.getValue())
 	}
 
-	// setAccents(accentTypesArr) {
-	// 	// this.accents = accentTypesArr;
 
-	// 	for (let i = 0; i < this.score.length; i++) {
-	// 		// by default 2 will be the tick note
-	// 		let note = this.accentNotes[accentTypes.ACCENT_2];
-
-	// 		// if accent for this step is specified set it here
-	// 		if (
-	// 			accentTypesArr[i] !== undefined &&
-	// 			accentTypesArr[i] === accentTypes.ACCENT_1
-	// 		) {
-	// 			note = this.accentNotes[accentTypes.ACCENT_1];
-	// 		} else if (
-	// 			accentTypesArr[i] !== undefined &&
-	// 			accentTypesArr[i] === accentTypes.ACCENT_3
-	// 		) {
-	// 			note = this.accentNotes[accentTypes.ACCENT_3];
-	// 		}
-	// 		this.score[i] = note;
-	// 	}
-	// }
-
-	toggle = () => {
-		//console.log("<SM>HandleStartStop, state:", Tone.Transport.state)
-
-		if (Tone.Transport.state === 'started') {
-			this.stop();
-
-		} else {
-			// this.setStep(this.currentStep);
-			this.start();
-			// // this.start(this.currentStep);
-		}
+	toggle() {
+		Tone.Transport.state === 'started' ? this.stop() : this.start();
 	};
 
-	onPlanStep(step) {
-		if (!step) {
-			// console.log('undefined step so stopping')
-			this.stop();
-			return;
-			// throw new Error("Invalid step: " + step);
-		}
-		console.log("<SM>Setting step: bpm:", step.bpm, "duration", step.duration)
-
-		this.currentStep = step;
-
-
-		this.setBpm(this.currentStep.bpm)
-		// this.setBeatsPerStep()
-
-		// if (this.transport.timeSignature != this.currentStep.accents.length) {
-		this.transport.timeSignature = step.accents.length;
-		// }
-
-		this.setAccents2(this.currentStep.accents)
-
-		if (Tone.Transport.state === 'started') {
-			this.refs.planner.startStepEvent(this.currentStep.duration);
-		}
-		// this.setState({ beatsPerStep: this.currentStep.accents.length })
-
-		//
-		//this.executeStep(step);
+	getTimelineEvent(eventId) {
+		return this.transport._timeline._timeline.filter(function (o) { return o.id === eventId })[0];
 	}
 
+
+	// onPlanStep2(time, bpm, idx, eventId) {
+	// 	console.log('onPlanStep', idx, time.toFixed(1))
+
+	// 	// figure out duration
+	// 	const nextEventId = this.events[idx + 1];
+
+	// 	// set next Event so we know how to calculate progress
+	// 	const nextEvent = this.getTimelineEvent(nextEventId);// this.transport._timeline._timeline.filter(function (o) { return o.id === nextEventId })[0]
+	// 	let duration = Infinity;
+	// 	if (nextEvent) {
+	// 		duration = nextEvent.time - this.transport.ticks;
+	// 	}
+
+	// 	this.currentEvent = this.getTimelineEvent(eventId);
+	// 	this.currentEvent.duration = duration;
+
+	// 	// reset progress counter
+	// 	this.progress = 0
+
+	// 	// set new bpm
+	// 	this.setBpm(bpm);
+	// 	this.setState({ step: idx })
+	// }
+
+	onPlanStep(bpm) {
+		// console.log('<SM>onPlanStep', bpm);
+		this.setBpm(bpm);
+	}
+
+	// onPlanStep_old(step) {
+	// 	if (step.time) {
+	// 		console.log('step exact time', step.time)
+	// 	}
+	// 	if (!step) {
+	// 		// console.log('undefined step so stopping')
+	// 		this.stop();
+	// 		return;
+	// 		// throw new Error("Invalid step: " + step);
+	// 	} else {
+	// 		// console.log("<SM>Setting step: bpm:", step.bpm, "duration", step.duration)
+	// 		// debugger
+	// 		this.executeStep(step)
+	// 	}
+	// 	// this.setState({ beatsPerStep: this.currentStep.accents.length })
+
+	// 	//
+	// 	//this.executeStep(step);
+	// }
+
+	// executeStep(step) {
+	// 	if (this.stepEndEvent) {
+	// 		this.stepEndEvent.cancel(0)
+	// 		this.stepEndEvent.dispose();
+	// 		this.stepEndEvent = undefined;
+	// 	}
+
+	// 	this.currentStep = step;
+
+	// 	// set new bpm
+	// 	this.setBpm(this.currentStep.bpm)
+
+	// 	// update accents/timeSignature
+	// 	this.setAccents(this.currentStep.accents)
+
+
+	// 	if (Tone.Transport.state === 'started') {
+	// 		//	this.refs.planner.startStepEvent(this.currentStep.duration);
+	// 	}
+
+	// 	if (this.eventCnt !== undefined) {
+	// 		this.eventCnt++
+	// 	}
+	// 	else {
+	// 		this.eventCnt = 0;
+	// 	}
+
+
+
+
+	// 	this.stepEndEvent = new Tone.Event((time, value) => this.onSequence(time, value), 'event_' + this.eventCnt);
+	// 	// execute after this time
+	// 	// console.log('end step after ', this.currentStep.duration, 'seconds')
+	// 	// this.transport.position = 0;
+	// 	// const p = this.transport.seconds + this.currentStep.duration
+	// 	// console.log('start event', p)
+	// 	if (this.currentStep.time) {
+	// 		debugger
+	// 	}
+	// 	this.stepEndEvent.start("+2");
+	// 	// this.transport.position = 0;
+	// 	// console.log('next step at ', this.stepEndEvent.loopStart)
+	// 	// debugger
+	// 	// this.stepSeq.loop = true;
+
+
+	// 	// console.log('timeline length', this.transport._timeline.length)
+
+	// }
+
+	// onSequence(time, eventName) {
+	// 	// this.stepEndEvent.cancel(0)
+	// 	// console.log('stepLoop event', time, eventName)
+	// 	// debugger
+	// 	const p = this.refs.planner;
+	// 	p.advance(time);
+	// }
+
 	onControlChange(value) {
-		this.refs.planner.setPlan(value);
+		this.setPlan(value);
+		// check instrument
+		
 	}
 
 
@@ -479,66 +566,69 @@ class SoundMachine extends Component {
 
 	render() {
 		return (
-
-			<SimplePanel title="Control">
+			<Container>
 				<Row>
 					<Col>
-						<Button
-							outline
-							color="light"
-							onClick={() => this.toggle()}
-							block
-							active={this.state.isPlaying}
-						>
-							Start / Stop
-						</Button>
-					</Col>
-				</Row>
-
-				<Row>
-					<Col>
-						<Container>
+						<SimplePanel title="Control">
 							<Row>
 								<Col>
-									<Col xs="3">Instrument</Col>
-								</Col>
-								<Col>
-									{this.renderInstrumentsDropDown()}
+									<div ref='debug'>debug</div>
 								</Col>
 							</Row>
-						</Container>
+							<Row>
+								<Col>
+									<Button
+										outline
+										color="light"
+										onClick={() => this.toggle()}
+										block
+										active={this.state.isPlaying}
+									>
+										Start / Stop
+						</Button>
+								</Col>
+							</Row>
+							<Row>
+								<Col>
+									<Container>
+										<Row>
+											<Col>
+												<Col xs="3">Instrument</Col>
+											</Col>
+											<Col>
+												{this.renderInstrumentsDropDown()}
+											</Col>
+										</Row>
+									</Container>
+								</Col>
+							</Row>
 
-					</Col>
-				</Row>
-				<Row>
-					<VisClock ref="visClock" />
-
-				</Row>
-
-				<Row><Col><h2><Badge color="dark">BPM: {this.state.bpm}</Badge></h2></Col></Row>
-				{/* <Row>POS: {this.transport.position}</Row>	 */}
-				<Row>
-					<Col>
-
-						<SimplePanel title={"Plan"}>
-							<Planner
-								transport={this.transport}
-								cookies={this.props.cookies}
-								// currentBpm={this.refs.sm.transport.bpm.value}
-								// onChange={() => this.onPlanChanged()}
-								onStep={step => this.onPlanStep(step)}
-								ref="planner"
-							/>
-							<Control ref='control' cookies={this.props.cookies} onChange={(value) => this.onControlChange(value)} />
+							<Row><Col><h2><Badge color="dark">BPM: {this.state.bpm}</Badge></h2></Col>
+							</Row>
+							<Row>
+								<Col>
+									<Control ref='control' cookies={this.props.cookies} onPresetSelect={(preset) => this.onInstrumentSelect(preset.instrument)} onChange={(value) => this.onControlChange(value)} /></Col>
+							</Row>
+							{/* <Row>POS: {this.transport.position}</Row>	 */}
 
 						</SimplePanel>
 					</Col>
+					<Col>
+						<VisClock ref="visClock" width="200" />
+						<Planner
+							transport={this.transport}
+							//					cookies={this.props.cookies}
+							// currentBpm={this.refs.sm.transport.bpm.value}
+							// onChange={() => this.onPlanChanged()}
+							onPlanStep={(bpm) => this.onPlanStep(bpm)}
+							ref="planner"
+						/>
+
+					</Col>
 				</Row>
-			</SimplePanel>
-			// <div style={{width: '100%'}}>
-			// 	{/* <div>Sound is {this.state.isPlaying === true ? "playing" : "stopped"}</div> */}
-			// 	{/* <SimpleVis ref="vis" beats={this.state.beatsPerStep}/> */}
-			// </div>
+				{/* <SimpleVis ref="vis" beats={this.state.beatsPerStep}/> */}
+
+			</Container>
 		);
 	}
 
@@ -548,10 +638,11 @@ class SoundMachine extends Component {
 
 	stop() {
 
-
 		this.transport.stop();
-		this.loop.stop();
+		this.transport.position = 0;
+		// this.loop.stop();
 		this.loop.loopCount = 0;
+
 
 		// this.part.start();
 		// if (this.stepEvent) {
@@ -566,26 +657,35 @@ class SoundMachine extends Component {
 	}
 
 	start() {
-		console.log('<SM>Start')
 
-		// this.currentBeat = 0;
+		this.transport.start("+.1");
+		this.loop.start()
 
-		if (!this.currentStep) {
-			throw new Error("<SM>currentStep is invalid")
-		}
-
-		this.setBpm(this.currentStep.bpm);
-		this.transport.timeSignature = this.currentStep.accents.length;
-		// this.setState({ isPlaying: true });
-		// this.transport.position = 0;
-		// this.loop.position = 0;
-		// this.transport.position = 0;
-		this.loop.start(0);
-		this.transport.start();
-		this.refs.planner.startStepEvent(this.currentStep.duration);
 		this.setState({ isPlaying: true });
-
 	}
+	// start_old() {
+	// 	console.log('<SM>Start')
+
+	// 	// this.currentBeat = 0;
+
+	// 	if (!this.currentStep) {
+	// 		throw new Error("<SM>currentStep is invalid")
+	// 	}
+
+	// 	// this.setBpm(this.currentStep.bpm);
+	// 	// this.setTimeSignature(this.currentStep.accents.length)
+	// 	// this.setState({ isPlaying: true });
+	// 	this.executeStep(this.currentStep)
+	// 	// this.transport.position = 0;
+	// 	// this.loop.position = 0;
+	// 	// this.transport.position = 0;
+	// 	// this.loop.start(0);
+	// 	this.transport.start();
+	// 	// this.loop.position = 0;
+	// 	// this.refs.planner.startStepEvent(this.currentStep.duration);
+	// 	this.setState({ isPlaying: true });
+
+	// }
 
 }
 

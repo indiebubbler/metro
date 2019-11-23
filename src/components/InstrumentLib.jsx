@@ -4,13 +4,6 @@ import Tone from 'tone'
 import { InitPreset } from "./PresetsLib";
 import {InstrumentsArray} from "./Instruments"
 
-
-// export const instruments = {
-//     TABLA: "tabla",
-//     ELECTRO_KIT: "electrokit",
-//     METRONOME: "metronome"	// ACOUSTIC_KIT: "acoustic_kit"
-// };
-
 class InstrumentLib extends Component {
     state = {};
     lib = {};
@@ -57,9 +50,5 @@ class InstrumentLib extends Component {
         }
         return this.lib[this.currentInstrument];
     }
-
-    // render() {
-    // 	return <div />;
-    // }
 }
 export default InstrumentLib;

@@ -2,33 +2,19 @@ import React, { Component } from 'react'
 import BarManager from './BarManager'
 import { Container, Row, Col } from "reactstrap";
 import { accentTypes } from './AccentTypes'
-import {
-    ButtonDropdown,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem
-} from "reactstrap";
 import AdvancedSlider from "./AdvancedSlider";
 import { InitPreset } from './PresetsLib';
-import { InstrumentsArray } from './Instruments'
 
 class PlaybackPanel extends Component {
     state = {
-        // beatsPerStep: this.props.beatsPerStep,
-        instrument: this.props.instrument.key,
         accents: this.props.accents//,
-        // instrumentDropdownLabel: this.props.instrument.label    // TODO: support old instrument without key/label
     }
 
     setValue(config) {
-        debugger;
 
         this.refs.beatsPerStep.setState({ value: config.beatsPerStep });
-            // this.refs.sm.setBeatsPerStep(preset.beatsPerStep);
-         this.onInstrumentSelect(config.instrument);
-        //     this.refs.sm.setInstrument(preset.instrument)
         this.refs.barManager.setAccents(config.accents, config.beatsPerStep);
-    
+
     }
 
     getAccents() {
@@ -39,8 +25,6 @@ class PlaybackPanel extends Component {
     onAccentsChange() {
         const accents = this.refs.barManager.state.bars
         this.setState({ accents: accents }, this.props.onChange);
-        // this.props.onChange()
-        // this.props.sm.setAccents(accents)
     }
 
 
@@ -57,16 +41,11 @@ class PlaybackPanel extends Component {
             accents.pop();
         }
         while (accents.length < newBps) {
-            accents.push(accentTypes.ACCENT_2);
+            accents.push(accentTypes.DOWN);
         }
 
-        // this.refs.sm.setBeatsPerStep(newBps);
         this.refs.barManager.setAccents(accents);
         this.setState({ beatsPerStep: newBps, accents: accents });
-        this.props.onChange();
-        //
-        // this.props.sm.setBeatsPerStep(newBps);
-
     }
 
     render() {
@@ -74,23 +53,20 @@ class PlaybackPanel extends Component {
             <Container className="pane" >
                 <Row className="pane-title">PLAYBACK</Row>
                 <Row className="pane-body">
-                    
-
                     <Row>
-                        <Col xs={3}>Beats per step</Col>
+                        <Col xs={4}>Beats per step</Col>
                         <Col>
                             <AdvancedSlider
                                 ref="beatsPerStep"
                                 min={2}
                                 max={16}
-                                defaultValue={this.props.beatsPerStep}
+                                defaultValue={this.props.accents.length}
                                 onAfterChange={this.onBeatsPerStepChange}
                             />
                         </Col>
                     </Row>
-
                     <Row>
-                        <Col xs={3}>Accents</Col>
+                        <Col xs={4}>Accents</Col>
                         <Col>
                             <BarManager
                                 onAfterChange={() => this.onAccentsChange()}
@@ -110,6 +86,6 @@ export default PlaybackPanel;
 PlaybackPanel.defaultProps = {
     // onAccentsChange: function(accents) {},
     beatsPerStep: InitPreset.accents.length,
-    instrument: InitPreset.instrument,
+    // instrument: InitPreset.instrument,
     accents: InitPreset.accents
 }
