@@ -1,137 +1,135 @@
 body {
-    background-color: #555 !important;
-    background-image: radial-gradient( #666, #455);
-    -webkit-box-shadow: 14px 10px 413px 3px rgba(0, 0, 0, 0.6);
-    -moz-box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.6);
-    box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.6);
+	/* background-color: #555 !important;
+	background-image: radial-gradient(#666, #455);  */
+	background-image: url('/bg.jpg');
+	background-size: cover;
+	-webkit-box-shadow: 14px 10px 413px 3px rgba(0, 0, 0, 0.6);
+	-moz-box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.6);
+	box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.6);
 }
 
 .App {
-    text-align: center;
-    color: #ccc;
+	text-align: center;
+	color: #ccc;
 }
 
 .App .rc-slider-handle {
-    border: solid 2px #ff5555;
-    background-color: #fff;
+	border: solid 2px #ff5555;
+	background-color: #fff;
 }
 
 .App .rc-slider-handle:hover {
-    border-color: #ffaaaa;
+	border-color: #ffaaaa;
 }
 
 .App .rc-slider-track {
-    background-color: #ff5555;
+	background-color: #ff5555;
 }
 
 .App .app-container {
-    margin: 0 0 !important;
+	margin: 0 0 !important;
 }
 
 .App .pane {
-    background-color: #555;
-    /* border: 1px solid #faa; */
-    background-image: linear-gradient( #777, #666666);
-    -webkit-box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.3);
-    -moz-box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.3);
-    box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.3);
+	/* background-color: #555; */
+	border: 1px solid #888;
+	/* background-image: linear-gradient(#777, #666666); */
+	-webkit-box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.3);
+	-moz-box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.3);
+	box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.3);
 }
 
 .App .container {
-    /* padding: 0px; */
-    margin: 10px 0;
-    padding-bottom: 10px;
-    border-radius: 5px;
-    /* padding-top: 10px; */
-    
-}
- 
-.App .pane .pane-title {
-    text-transform: uppercase;
-    padding: 0 1rem;
-    /* margin-bottom: 0.5rem; */
-    background-color: #404141;
-    text-align: left;
-    border-radius: 5px 5px 0 0;
+	/* padding: 0px; */
+	margin: 10px 0;
+	padding-bottom: 10px;
+	border-radius: 5px;
+	/* padding-top: 10px; */
 }
 
+.App .pane .pane-title {
+	text-transform: uppercase;
+	padding: 0 1rem;
+	/* margin-bottom: 0.5rem; */
+	/* background-color: #404141; */
+	text-align: left;
+	border-radius: 5px 5px 0 0;
+}
 
 .App .badge {
-    font-weight: 100;
+	font-weight: 100;
 }
 .App .rc-slider-dot-active {
-    border-color: #f55;
+	border-color: #f55;
 }
 .App .rc-slider-handle:hover {
-    border-color: #a55;
+	border-color: #a55;
 }
 
 .App .rc-slider-handle-click-focused:focus {
-    border-color: #f55;
+	border-color: #f55;
 }
 .App .pane-body {
-    /* padding: 0 1rem; */
-    display: block;
-    padding: 1rem;
+	/* padding: 0 1rem; */
+	display: block;
+	padding: 1rem;
 }
 
 .App .badge-light {
-    color: #ccc;
-    border: 0px solid #ccc;
-    background-color: transparent;
+	color: #ccc;
+	border: 0px solid #ccc;
+	background-color: transparent;
 }
 
-
 .Planner {
-    font-size: 80%;
-    /* background-color: #777; */
+	font-size: 80%;
+	/* background-color: #777; */
 }
 
 .Planner .locked {
-    background-color: #6c757d;
+	background-color: #6c757d;
 }
 
 .step {
-    cursor: pointer;
-    background-color: #90a1b128;
-    margin-bottom: 1px;
+	cursor: pointer;
+	background-color: #90a1b128;
+	margin-bottom: 1px;
 }
 
 .Planner .current-step {
-    background-color: #f55;
+	background-color: #f55;
 }
 
 .SimpleProgress .bar {
-    padding: 1px;
-    background-color: #f55;
+	padding: 1px;
+	background-color: #f55;
 }
 
-
 .SimpleVis {
-    position: relative;
+	position: relative;
 }
 
 .SimpleVis div {
-    /* width: 2rem; */
-    width: 2rem;
-    height: 2rem;
-    line-height: 2rem;
-    font-size: 1rem;
-    text-align: center;
-    /* border: 3px solid; */
-    border-radius: 50%;
-    /* background-color: #f55; */
+	/* width: 2rem; */
+	width: 2rem;
+	height: 2rem;
+	line-height: 2rem;
+	font-size: 1rem;
+	text-align: center;
+	/* border: 3px solid; */
+	border-radius: 50%;
+	/* background-color: #f55; */
 }
 
 .SimpleVis .active {
-    /* border: 3px solid #f55; */
-    background-color: #f55;
-    color: #555;
-    /* text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073; */
+	/* border: 3px solid #f55; */
+	background-color: #f55;
+	color: #555;
+	/* text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073; */
 }
 
 .PresetsManager {
-    font-size: 80%;
+	font-size: 80%;
 }
 /* .PresetsManager .preset {
     cursor: pointer;
@@ -139,90 +137,91 @@ body {
 } */
 
 .PresetsManager .preset .x {
-    position: absolute;
-    right: 0;
-    top: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    padding-right: 1px;
-    color: #555;
-    font-weight: 300;
-    
-    
-    /* visibility: hidden; */
-    background-color: #f55;
+	position: absolute;
+	right: 0;
+	top: 0;
+	font-family: Arial, Helvetica, sans-serif;
+	padding-right: 1px;
+	color: #555;
+	font-weight: 300;
+
+	/* visibility: hidden; */
+	background-color: #f55;
 }
 
 .Accent {
-    display: inline-block;
-    background-color:  transparent;
-    min-width: 1.5rem;
-    height: 2.2rem;
-    border: 1px solid #f55;
-    border-radius: 5px;
-    margin-right: 1px;
-    cursor: pointer;
-    
+	display: inline-block;
+	background-color: transparent;
+	min-width: 1.5rem;
+	height: 2.2rem;
+	border: 1px solid #f55;
+	border-radius: 5px;
+	margin-right: 1px;
+	cursor: pointer;
 }
 
 .Accent .type1 {
-    border-radius: 4px 4px 0 0;    
-    position: relative;
-    height: 0.7rem;
-    top: -0.10rem;
-    background-color: #f55;
-    
+	border-radius: 4px 4px 0 0;
+	position: relative;
+	height: 0.7rem;
+	top: -0.1rem;
+	background-color: #f55;
 }
 .Accent .type2 {
-    height: 0.7rem;
-    position: relative;
-    top: 0.69rem;
-    background-color: #f75;
-    
+	height: 0.7rem;
+	position: relative;
+	top: 0.69rem;
+	background-color: #f75;
 }
 .Accent .type0 {
-     height: 0.7rem;
-    position: relative;
-    top: 1.39rem;
-    background-color: #f95;
-    border-radius: 0 0 4px 4px;
-    
+	height: 0.7rem;
+	position: relative;
+	top: 1.39rem;
+	background-color: #f95;
+	border-radius: 0 0 4px 4px;
 }
 
 .Accent.active {
-    border-color: rgba(221, 221, 221, 0.733);;
-    box-shadow: 0px 0px 2px 3px rgba(221, 221, 221, 0.733);
-    -webkit-box-shadow: 0px 0px 2px 3px rgba(221, 221, 221, 0.733);
-    -moz-box-shadow: 0px 0px 2px 3px rgb(221, 141, 141);
-    
+	border-color: rgba(221, 221, 221, 0.733);
+	box-shadow: 0px 0px 2px 3px rgba(221, 221, 221, 0.733);
+	-webkit-box-shadow: 0px 0px 2px 3px rgba(221, 221, 221, 0.733);
+	-moz-box-shadow: 0px 0px 2px 3px rgb(221, 141, 141);
 }
 
 .modal-body .code {
-    font-family: 'Courier New', Courier, monospace;
-    word-break: break-all;
-    font-size: 60%;
-    background-color: #ccc;
-    padding: 1rem;
-    margin-top: 1rem;
+	font-family: "Courier New", Courier, monospace;
+	word-break: break-all;
+	font-size: 60%;
+	background-color: #ccc;
+	padding: 1rem;
+	margin-top: 1rem;
 }
 
-.about .pane-body{
-    font-size: 1em;
-    
+.about .pane-body {
+	font-size: 1em;
 }
 
 .about a {
-    color: #f55
+	color: #f55;
 }
 
 .footer {
-    font-size: 10px;
+	font-size: 10px;
 }
 
 .about code {
-    font-size: 15px;
-    color: #f55
+	font-size: 15px;
+	color: #f55;
 }
 
 .visClockContainer {
-     margin: 0 auto;
+	margin: 0 auto;
+}
+
+
+.line {
+	width: 112px;
+	height: 47px;
+	border-bottom: 1px solid black;
+	position: absolute;
 }

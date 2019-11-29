@@ -2,61 +2,36 @@ import React, { Component } from "react";
 import Tone from "tone";
 import { Badge, Collapse, ButtonGroup, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Container, Row, Col } from "reactstrap";
 import SimplePanel from './SimplePanel'
-import { accentTypes } from "./AccentTypes";
 import InstrumentLib from "./InstrumentLib";
 import { InstrumentsArray } from "./Instruments"
-
 import { Button } from 'reactstrap'
 import { InitPreset } from './PresetsLib'
 import Planner from './Planner'
 import Control from './Control'
 import VisClock from './VisClock'
-
+import Tr  from './Locale'
+import CssClock from "./CssClock";
 class SoundMachine extends Component {
 
 	accentNotes = ["C3", "C#3", "D3"]; // this stay in sync with AccentTypes
 
-	instrumentLib = undefined;
-	progressRefreshRate = 1/ 20; // 20 fps
+	progressFps = 15; // higher values might cause slower devices to stutter
 
-	score = ["C3", "C#3", "C#3", "C#3"];
-
+	instrumentLib = new InstrumentLib();
 	state = {
 		isPlaying: false,
 		instrumentDropdownLabel: this.props.instrument.label,    // TODO: support old instrument without key/label
 		instrument: this.props.instrument
 	};
 
-	// accents = [accentTypes.ACCENT_1]; // default with accent on first beat
-
-
 	transport = Tone.Transport;
 
-	// quantizationFactor = '1m'
 	startStepCnt = 0;
 
 	tone = Tone;
-	constructor(props) {
-		super(props);
-		// init instruments library
-		this.instrumentLib = new InstrumentLib();
-	}
 
 	onBufferError() {
 		throw new Error("Some buffers weren't found")
-	}
-
-	onStop() {
-		if (this.stepProgressUpdateTimer) {
-			clearInterval(this.stepProgressUpdateTimer);
-		}
-	}
-
-	onStart() {
-		// this.stepProgressUpdateTimer = setInterval(
-		// 	() => this.onProgress(),
-		// 	this.progressRefreshRate
-		// );
 	}
 
 	componentDidMount() {
@@ -66,13 +41,13 @@ class SoundMachine extends Component {
 
 		Tone.Buffer.on("error", () => this.onBufferError());
 
-		Tone.Transport.on('stop', () => this.onStop());
-		Tone.Transport.on('start', () => this.onStart());
+		// Tone.Transport.on('stop', () => this.onStop());
+		// Tone.Transport.on('start', () => this.onStart());
 		// Tone.Transport.on('pause', () => console.log('TRANSPORT.pause'));
 		// Tone.Transport.on('loop', (time) => this.props.onLoopEnd(time));
 
 		//		Tone.context.latencyHint = "playback";
-		Tone.Transport.lookAhead = 2;
+		Tone.Transport.lookAhead = 10;
 
 		// console.log('init preset accents length', InitPreset.accents.length)
 		// Tone.Transport.timeSignature = InitPreset.accents.length;
@@ -96,27 +71,30 @@ class SoundMachine extends Component {
 		const config = this.refs.control.getValue();
 
 		this.setPlan(config);
+	
 	}
 
-	onProgressRepeat(time) {
-		Tone.Draw.schedule(() => this.onProgress(), time)
+	initProgressUpdate(fps) {
+			
+		if (this.progressEventId) {
+			this.transport.clear(this.progressEventId)
+		}
+		console.log('init Progress with fps:', fps)
+		this.progressEventId = this.transport.scheduleRepeat((time) => this.onProgressEvent(time), 1 / fps)
+
 	}
-
-	// drawProgress() {
-	// 	console.log('up prog')
-	// }
-
+ 
 	setPlan(config) {
 		this.transport.cancel();
 		this.transport.position = 0;
-
+		this.initProgressUpdate(this.progressFps)
+	
 		// slice will force to recreate loop as it was cancelled just moment ago
 		this.setAccents(config.accents.slice());
 
 		// progress
-		this.transport.scheduleRepeat((time) => this.onProgressRepeat(time), this.progressRefreshRate)
-
-		this.refs.planner.setPlan(config);
+		
+		this.refs.planner.setPlan(config);	
 	}
 
 	setAccents(accents) {
@@ -130,8 +108,7 @@ class SoundMachine extends Component {
 		this.setTimeSignature(accents.length);
 
 		let pattern = accents.map((item, idx) => {
-			return [this.accentNotes[item]]
-			// return ['0:' + idx, this.accentNotes[item]]
+			return [this.accentNotes[item]]			
 		})
 
 		if (this.loop === undefined) {
@@ -169,71 +146,19 @@ class SoundMachine extends Component {
 
 		this.loop.loopEnd = '1m'
 		this.loop.start(0)
-		console.log('<SM>Accents changed')
+		// console.log('<SM>Accents changed')
 
 	}
 
-
-	// onStepEvent = (time) => {
-	// 	console.log('onStepEvent', time);
-	// 	// TODO: rename onLoopEnd to onStepEnd
-	// 	if (this.stepEvent.initialized && this.stepEvent.initialized === true) {
-	// 		// console.log('onLoopEnd')
-
-	// 		// console.log('onStepEvent','done, calling onLoopEnd')
-	// 		// // this.startStepCnt--;
-	// 		// // this.stepEvent.dispose();
-
-	// 		this.stepEvent.cancel();
-	// 		this.props.onStepEnd(time);
-	// 		return;
-	// 	}
-
-	// 	if (!this.stepEvent.initialized) {
-	// 		// console.log('onStepEvent','started')
-	// 		this.stepEvent.initialized = true;
-	// 	}
-	// }
-
-
-
-	// startStepEvent(interval) {
-	// 	if (this.stepEvent) {
-	// 		this.stepEvent.cancel();
-	// 		this.stepEvent.dispose();
-	// 		this.stepEvent = undefined
-	// 	}
-
-	// 	let stepEvent = new Tone.Loop(time => this.onStepEvent(time), interval);
-	// 	this.stepEvent = stepEvent;
-	// 	this.stepEvent.start();
-
-	// 	console.log('scheduled event to execute after ', interval, 'seconds')
-	// 	// Tone.Transport.schedule(time => this.props.onLoopEnd(time), interval)
-
-	// }
-
-	onProgress(progress) {
-		// console.log('progress loop:', this.loop.progress, progress)
-
-		// debugger
+ 	onProgress(time) {
 		this.refs.debug.innerHTML = this.transport.seconds.toFixed(1)
-
 		this.refs.planner.updateProgress()
 
-		this.refs.visClock.setProgress(this.loop.progress, this.lastAccents)
-		// if (this.stepEvent && this.stepEvent.progress) {
-
-		//this.props.onProgress(this.stepEvent.progress);
-		// }
-		// else {
-		// 	this.props.onProgress(0)
-		// }
+		// this.refs.cssClock.setProgress(this.loop.progress, this.lastAccents)
+		// this.setState({progress: this.loop.progress})
 		// if (this.vis) {
 		// 	this.vis.drawFFT(this.instrumentLib.fft.getValue())
 		// }
-
-
 	}
 
 	// setStep = (step) => {
@@ -337,6 +262,10 @@ class SoundMachine extends Component {
 			console.log("<SM>Setting new time signature", this.transport.timeSignature)
 		}
 	}
+
+	onProgressEvent(time)  {
+		Tone.Draw.schedule(() => this.onProgress(), time)
+	}
 	setBpm = bpm => {
 
 		if (isNaN(bpm) || bpm <= 0 || bpm > 1000) {
@@ -344,15 +273,14 @@ class SoundMachine extends Component {
 		}
 
 		if (bpm !== this.transport.bpm.value) {
+			
 			Tone.Transport.bpm.value = bpm;
-			// var synth = new Tone.Synth().toMaster();
-			// synth.triggerAttackRelease("A5",0.05);
-
-			// this.transport.bpm.rampTo(bpm, 0.5);
 			this.setState({ bpm: bpm })
-			console.log("<SM>bpm changed to", bpm)
-
+			// console.log("<SM>bpm changed to", bpm)
+			
 		}
+		
+		
 		// this.props.onBpmChange(bpm)
 	};
 
@@ -403,7 +331,6 @@ class SoundMachine extends Component {
 		return this.transport._timeline._timeline.filter(function (o) { return o.id === eventId })[0];
 	}
 
-
 	// onPlanStep2(time, bpm, idx, eventId) {
 	// 	console.log('onPlanStep', idx, time.toFixed(1))
 
@@ -431,6 +358,7 @@ class SoundMachine extends Component {
 	onPlanStep(bpm) {
 		// console.log('<SM>onPlanStep', bpm);
 		this.setBpm(bpm);
+		// const t = this.refs.planner.calcTimeForBpm(this.progressRefreshRate, bpm)
 	}
 
 	// onPlanStep_old(step) {
@@ -511,13 +439,10 @@ class SoundMachine extends Component {
 	// 	p.advance(time);
 	// }
 
-	onControlChange(value) {
-		this.setPlan(value);
-		// check instrument
-		
+	onControlChange() {
+		const v = this.refs.control.getValue()
+		this.setPlan(v);
 	}
-
-
 
 	onInstrumentChange() {
 		this.setState(prevState => ({
@@ -569,7 +494,7 @@ class SoundMachine extends Component {
 			<Container>
 				<Row>
 					<Col>
-						<SimplePanel title="Control">
+						<SimplePanel title={Tr('Control')}>
 							<Row>
 								<Col>
 									<div ref='debug'>debug</div>
@@ -578,13 +503,13 @@ class SoundMachine extends Component {
 							<Row>
 								<Col>
 									<Button
-										outline
 										color="light"
 										onClick={() => this.toggle()}
 										block
 										active={this.state.isPlaying}
 									>
-										Start / Stop
+										{Tr("Start / Stop")}
+										{/* Start / Stop */}
 						</Button>
 								</Col>
 							</Row>
@@ -593,7 +518,7 @@ class SoundMachine extends Component {
 									<Container>
 										<Row>
 											<Col>
-												<Col xs="3">Instrument</Col>
+												<Col xs="3">{Tr("Instrument")}</Col>
 											</Col>
 											<Col>
 												{this.renderInstrumentsDropDown()}
@@ -607,19 +532,21 @@ class SoundMachine extends Component {
 							</Row>
 							<Row>
 								<Col>
-									<Control ref='control' cookies={this.props.cookies} onPresetSelect={(preset) => this.onInstrumentSelect(preset.instrument)} onChange={(value) => this.onControlChange(value)} /></Col>
+									<Control ref='control' cookies={this.props.cookies} onPresetSelect={(preset) => this.onInstrumentSelect(preset.instrument)} onChange={() => this.onControlChange()} /></Col>
 							</Row>
 							{/* <Row>POS: {this.transport.position}</Row>	 */}
 
 						</SimplePanel>
 					</Col>
 					<Col>
-						<VisClock ref="visClock" width="200" />
+						{/* <VisClock ref="visClock" width="200" /> */}
+						<CssClock ref="cssClock" progress={this.state.progress * 360} width="200" />
 						<Planner
 							transport={this.transport}
 							//					cookies={this.props.cookies}
 							// currentBpm={this.refs.sm.transport.bpm.value}
-							// onChange={() => this.onPlanChanged()}
+							progress={this.state.progress}
+							onChange={() => this.onControlChange()}
 							onPlanStep={(bpm) => this.onPlanStep(bpm)}
 							ref="planner"
 						/>
@@ -660,7 +587,7 @@ class SoundMachine extends Component {
 
 		this.transport.start("+.1");
 		this.loop.start()
-
+		
 		this.setState({ isPlaying: true });
 	}
 	// start_old() {
@@ -698,6 +625,6 @@ SoundMachine.defaultProps = {
 	onStepEnd: function () { },
 	// onLoopEnd: function (time) { },
 	// onToggle: function (state) { },
-	onProgress: function (progress) { },
+	// onProgress: function (progress) { },
 	instrument: InitPreset.instrument
 };

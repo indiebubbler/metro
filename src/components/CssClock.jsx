@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { accentTypes, accentTypesArr } from './AccentTypes';
 
-class Vis extends Component {
+class CssClock extends Component {
     state = {}
     values = [];
     progress = 0;
@@ -10,26 +10,15 @@ class Vis extends Component {
 
     redraw() {
 
-        // this.ctx.clearRect(0,0, this.width, this.height);
-        // this.ctx.fillStyle = "rgba(0,0,0,1)";
-        // this.ctx.fill();
-
-        // console.log('redraw called')
-        // this.ctx.clearRect(0, 0,this.width,this.height);
-        // console.log('<Vis>redraw', this.width, this.height)
-        // this.ctx.clearRect(0,0,this.width, this.height)
-
-        // this.ctx.rect(0, 0, this.width, this.height);
-        // this.ctx.stroke();
-        // console.log('w',this.width)
-        this.radius = (this.width /2)  - 10;
+        this.radius = (this.width / 2) - 10;
         // console.log('this.radius',this.radius)
-        this.drawFace(this.ctx, this.radius)
-        this.drawBeats(this.ctx, this.radius * .8)
+        // this.drawFace(this.ctx, this.radius)
+        // this.drawBeats(this.ctx, this.radius * .8)
 
-        // HACK bit naughty way to make hand fall in mid of the beat circle
-        this.drawHand(this.ctx, this.progress === 0 ? this.progress : (this.progress - this.latencyFallback) * 2 * Math.PI, this.radius * .8, 4);
+        // // HACK bit naughty way to make hand fall in mid of the beat circle
+        // this.drawHand(this.ctx, this.progress === 0 ? this.progress : (this.progress - this.latencyFallback) * 2 * Math.PI, this.radius * .8, 4);
 
+        // this.container.innerHTML = this.progress
     }
 
     getInnerRadius(accent, maxRadius) {
@@ -119,11 +108,11 @@ class Vis extends Component {
     componentDidMount() {
         // console.log('vis mount')
         // this.ctx.translate( 50, 20 )
-        this.ctx = this.refs.canvas.getContext("2d");
-        //this.container.offsetWidth
-        console.log('container offsetWidth', this.container.offsetWidth);
-        window.addEventListener("resize", () => this.updateDimensions());
-        this.updateDimensions()
+        // this.ctx = this.refs.canvas.getContext("2d");
+        // //this.container.offsetWidth
+        // console.log('container offsetWidth', this.container.offsetWidth);
+        // window.addEventListener("resize", () => this.updateDimensions());
+        // this.updateDimensions()
         this.redraw();
     }
 
@@ -136,13 +125,13 @@ class Vis extends Component {
         // this.height = offsetHeight;
 
         // const min = Math.max(clientWidth, clientHeight)
-        this.refs.canvas.width = this.width
-        this.refs.canvas.height = this.width;
+        // this.refs.canvas.width = this.width
+        // this.refs.canvas.height = this.width;
 
 
         // this.height = clientHeight;
         // this.height = clientHeight;
-        this.ctx.translate(this.width / 2, this.width / 2)
+        // this.ctx.translate(this.width / 2, this.width / 2)
 
         this.redraw();
     }
@@ -154,13 +143,35 @@ class Vis extends Component {
     }
 
     render() {
+        return (<div width="200"/>);
+        // console.log('progress', this.props.progress)
+        const circleStyle = {
+            height: this.width + 'px',
+            width: this.width + 'px',
+            backgroundColor: '#bbb',
+            borderRadius: '50%',
+            display: 'inline-block'
+        }
+
+        const handStyle = {
+            width: '1px',
+            height: '50px',
+            transformOrigin: 'top center',
+            borderLeft: '1px solid black',
+            position: 'absolute',
+            transform: 'translate('+this.width/2+'px,'+this.width/2+'px) rotate('+this.props.progress+'deg)'
+        }
+
         return (
             <div ref={el => (this.container = el)} className="visClockContainer">
-                <canvas ref='canvas' />
+                {/* <canvas ref='canvas' /> */}
+                <div style={circleStyle}>
+                    <div style={handStyle} />
+                </div>
             </div>
 
         );
     }
 }
 
-export default Vis;
+export default CssClock;

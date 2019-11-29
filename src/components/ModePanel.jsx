@@ -16,7 +16,7 @@ import AdvancedRange from "./AdvancedRange"
 import AdvancedSlider from "./AdvancedSlider"
 import Utils from "./Utils";
 import { InitPreset } from "./PresetsLib";
-
+import Tr from "./Locale"
 class ModePanel extends Component {
 	state = {
 		bpmStep: this.props.bpmStep,
@@ -222,34 +222,34 @@ class ModePanel extends Component {
 	render() {
 		return (
 			<SimplePanel className="ModePanel" title="Mode" width="300px">
-				<h6>Increase speed</h6>
+				<h6>{Tr('Increase speed')}</h6>
 				<ButtonGroup size="sm">
 					<Button
 						size="sm"
 						outline
-						color="light"
+						color="dark"
 						onClick={() => this.onModeChange(PlayModes.BY_BAR)}
 						active={this.state.playMode === PlayModes.BY_BAR}
 					>
-						By bar
+						{Tr("By bar")}
 					</Button>
 					<Button
 						size="sm"
 						outline
-						color="light"
+						color="dark"
 						onClick={() => this.onModeChange(PlayModes.BY_TIME)}
 						active={this.state.playMode === PlayModes.BY_TIME}
 					>
-						By time
+						{Tr("By time")}
 					</Button>
 					<Button
 						size="sm"
 						outline
-						color="light"
+						color="dark"
 						onClick={() => this.onModeChange(PlayModes.CONSTANT)}
 						active={this.state.playMode === PlayModes.CONSTANT}
 					>
-						Stable
+						{Tr("Stable")}
 					</Button>
 				</ButtonGroup>
 
@@ -262,7 +262,7 @@ class ModePanel extends Component {
 				<Collapse isOpen={this.state.playMode === PlayModes.BY_BAR}>
 
 					<div>
-						Increase speed every
+						{Tr("Increase speed every")}
 						<GeometricSlider
 							ref="byBarSlider"
 							defaultValue={this.state.byBarInterval}

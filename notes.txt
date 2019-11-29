@@ -2,7 +2,13 @@ metro_
 
 
 TODO:
+- planner powinien mieć przyciski play/repeat a cycle back powinno być pokazane i uwzględnione w planie od początku
 
+- presets should render separately, maybe under planner
+- te kółka z jutuba zamiast clock 
+https://www.youtube.com/watch?v=kpSudIoepgY
+
+- ostatni krok nie zna progresu
 - progres wywala po dwoch stepach jesli sa tylko 3 (nextStep event is shit logic)
 
 
