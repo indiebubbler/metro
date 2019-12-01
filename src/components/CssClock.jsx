@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import { accentTypes, accentTypesArr } from './AccentTypes';
+import {accentColor, accentTypesArr } from './AccentTypes';
+import {InitPreset} from './PresetsLib'
 
 class CssClock extends Component {
-    state = {}
+    state = {
+        timeMeasure: 4
+    }
     values = [];
     progress = 0;
 
@@ -10,7 +13,10 @@ class CssClock extends Component {
 
     redraw() {
 
+
         this.radius = (this.width / 2) - 10;
+
+        return;
         // console.log('this.radius',this.radius)
         // this.drawFace(this.ctx, this.radius)
         // this.drawBeats(this.ctx, this.radius * .8)
@@ -111,9 +117,10 @@ class CssClock extends Component {
         // this.ctx = this.refs.canvas.getContext("2d");
         // //this.container.offsetWidth
         // console.log('container offsetWidth', this.container.offsetWidth);
-        // window.addEventListener("resize", () => this.updateDimensions());
-        // this.updateDimensions()
-        this.redraw();
+        window.addEventListener("resize", () => this.updateDimensions());
+        // this.updateDimensions();
+        // this.redraw();
+        // this.drawSvg()
     }
 
     updateDimensions() {
@@ -122,6 +129,10 @@ class CssClock extends Component {
         // console.log('cW', offsetWidth, offsetHeight)
 
         this.width = offsetWidth / 2;
+        this.radius = offsetWidth / 2;
+
+        //this.drawSvg()
+
         // this.height = offsetHeight;
 
         // const min = Math.max(clientWidth, clientHeight)
@@ -133,41 +144,117 @@ class CssClock extends Component {
         // this.height = clientHeight;
         // this.ctx.translate(this.width / 2, this.width / 2)
 
-        this.redraw();
+        // this.redraw();
     }
 
-    setProgress(progress, accents) {
-        this.progress = progress;
-        this.accents = accents;
-        this.redraw();
+    setProgress(progress) {
+
+        //'translate('+this.width/2+'px,'+this.width/2+'px)
+        // this.hand.style.transform = 'rotate(' + progress * 360 + 'deg)'
+        this.line.style.transform = 'rotate(' + progress * 360 + 'deg)'
+        // this.accents = accents;
+        // this.redraw();
     }
+
+    setAccents(accents) {
+        this.setState({ accents: accents })
+        this.drawSvg()
+    }
+
+
+    drawSvg() {
+
+        // idea of drawing pies by David Gilbertson, taken from https://medium.com/hackernoon/a-simple-pie-chart-in-svg-dbdd653b6936
+        
+        let pctStep = 1 / this.props.accents.length;
+// console.log('props accents', this.props.accents.length)
+        let slices= [];
+        let step = pctStep;
+        this.props.accents.forEach(accent => {
+
+            slices.push({percent: pctStep , color: accentColor[accent] });
+            // step += pctStep;
+        })
+        console.log(slices)
+        // const slices = [
+        //     { percent: 0.1, color: 'Coral' },
+        //     { percent: 0.65, color: 'CornflowerBlue' },
+        //     { percent: 0.2, color: '#00ab6b' },
+        // ];
+        let cumulativePercent = 0;
+
+        function getCoordinatesForPercent(percent) {
+            const x = Math.cos(2 * Math.PI * percent);
+            const y = Math.sin(2 * Math.PI * percent);
+            return [x, y];
+        }
+
+        let paths = [];
+
+        slices.forEach(slice => {
+            // destructuring assignment sets the two variables at once
+            const [startX, startY] = getCoordinatesForPercent(cumulativePercent);
+
+            // each slice starts where the last slice ended, so keep a cumulative percent
+            cumulativePercent += slice.percent;
+
+            const [endX, endY] = getCoordinatesForPercent(cumulativePercent);
+
+            // if the slice is more than 50%, take the large arc (the long way around)
+            const largeArcFlag = slice.percent > .5 ? 1 : 0;
+
+            // create an array and join it just for code readability
+            const pathData = [
+                `M ${startX} ${startY}`, // Move
+                `A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY}`, // Arc
+                `L 0 0`, // Line
+            ].join(' ');
+
+            // create a <path> and append it to the <svg> element
+            
+            paths.push(
+                <path stroke="#f55" stroke-width="1%" d={pathData} fill={slice.color} />
+            )
+        });
+
+        return paths
+
+    }
+
+
 
     render() {
-        return (<div width="200"/>);
-        // console.log('progress', this.props.progress)
-        const circleStyle = {
-            height: this.width + 'px',
-            width: this.width + 'px',
-            backgroundColor: '#bbb',
-            borderRadius: '50%',
-            display: 'inline-block'
-        }
 
-        const handStyle = {
-            width: '1px',
-            height: '50px',
-            transformOrigin: 'top center',
-            borderLeft: '1px solid black',
-            position: 'absolute',
-            transform: 'translate('+this.width/2+'px,'+this.width/2+'px) rotate('+this.props.progress+'deg)'
-        }
-
+        console.log('vis render')
+ 
         return (
             <div ref={el => (this.container = el)} className="visClockContainer">
-                {/* <canvas ref='canvas' /> */}
-                <div style={circleStyle}>
-                    <div style={handStyle} />
+                
+                <svg  viewBox="-1 -1 2 2" style={{transform: 'rotate(-90deg)'}} ref={el => (this.svg = el)}>
+                    
+                    {this.drawSvg()}
+                    <line ref={el=> (this.line = el)}  stroke-linecap="round"  x1 = "0" y1 = "0" x2 = ".8" y2 = "0" stroke = "rgba(0,0,0,0.5)" stroke-width = "0.1"/>
+                    {/* <line ref={el=> (this.line = el)} x1="0" y1="0" x2="-10" y2="0" style={{stroke:'rgb(255,0,0)',strokeWidth:'1px'}} /> */}
+                </svg>
+                {/* <div className="hand-container">
+                    <div ref={el => (this.hand = el)} className="hand"></div>
+                </div> */}
+
+{/*                 
+                <article className="clock">
+                    <div class="measure-container">
+                        {accentLines.map((item) => item)}
+                    </div>
+                    <div className="hand-container">
+                        <div ref={el => (this.hand = el)} className="hand"></div>
+                    </div>
+
+                </article> */}
+                {/* <div style={circleStyle}>
+
                 </div>
+                <div ref={el => (this.hand = el)} style={handStyle} />
+                    {accentLines.map((item) => item)} */}
             </div>
 
         );
@@ -175,3 +262,7 @@ class CssClock extends Component {
 }
 
 export default CssClock;
+
+CssClock.defaultPros = {
+    accents: InitPreset.accents
+}

@@ -225,3 +225,98 @@ body {
 	border-bottom: 1px solid black;
 	position: absolute;
 }
+
+
+
+.clock {
+	border-radius: 50%;
+	background: #333 /*url(/images/posts/clocks/ios_clock.svg) no-repeat center*/;
+	/* background-size: 88%; */
+	height: 20em;
+	padding-bottom: 31%;
+	position: relative;
+	width: 20em;
+  }
+  
+  .clock.simple:after {
+	background: #000;
+	border-radius: 50%;
+	content: "";
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 5%;
+	height: 5%;
+	z-index: 10;
+  }
+
+
+  .measure-container, .hand-container, .seconds-container {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+  }
+
+  .hand {
+	width: 4;
+	border-left: 10px solid gray;
+	border-radius: 4px 4px 0px 0px;
+	background-color: #aaa;
+	height: 40%;
+	left: 48.75%;
+	position: absolute;
+	top: 10%;
+	transform-origin: 50% 100%;
+	width: 2.5%;
+  }
+
+/* 
+  .measureLine {
+	width: 2;
+	border-left: 10px solid #f952;
+	border-radius: 4px 4px 0px 0px;
+	/* background-color: #aaa; 
+	height: 50%;
+	left: 48.75%;
+	position: absolute;
+	top: 0%;
+	transform-origin: 50% 100%;
+	width: 2.5%;
+  }
+ */
+  
+.accentPie {
+	transition: all 1s;
+	position: absolute;
+	width: calc(100%);
+	height: calc(100%);
+	border-radius: calc(50%);
+	/* clip: rect(0px, 150px, 150px, 0px); */
+  }
+
+  .hold {
+	position: absolute;
+	width: calc(100%);
+	height: calc(100%);
+	border-radius: calc(50%);
+	/* clip: rect(0px, 150px,150px, 76px); */
+  }
+  
+.accentType0 {
+	background-color: red;
+}
+.accentType1 {
+	background-color: blue;
+}
+.accentType2 {
+	background-color: green;
+}
+.stroke-2 {
+	stroke: yellow;
+	stroke-dasharray: 20px;
+	stroke-width: 8px;
+    fill: #f00;
+}

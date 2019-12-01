@@ -9,7 +9,7 @@ import { InitPreset } from './PresetsLib'
 import Planner from './Planner'
 import Control from './Control'
 import VisClock from './VisClock'
-import Tr  from './Locale'
+import Tr from './Locale'
 import CssClock from "./CssClock";
 class SoundMachine extends Component {
 
@@ -21,7 +21,9 @@ class SoundMachine extends Component {
 	state = {
 		isPlaying: false,
 		instrumentDropdownLabel: this.props.instrument.label,    // TODO: support old instrument without key/label
-		instrument: this.props.instrument
+		instrument: this.props.instrument,
+		accents: this.props.accents,
+		loopProgress: 0
 	};
 
 	transport = Tone.Transport;
@@ -71,11 +73,11 @@ class SoundMachine extends Component {
 		const config = this.refs.control.getValue();
 
 		this.setPlan(config);
-	
+
 	}
 
 	initProgressUpdate(fps) {
-			
+
 		if (this.progressEventId) {
 			this.transport.clear(this.progressEventId)
 		}
@@ -83,18 +85,18 @@ class SoundMachine extends Component {
 		this.progressEventId = this.transport.scheduleRepeat((time) => this.onProgressEvent(time), 1 / fps)
 
 	}
- 
+
 	setPlan(config) {
 		this.transport.cancel();
 		this.transport.position = 0;
 		this.initProgressUpdate(this.progressFps)
-	
+
 		// slice will force to recreate loop as it was cancelled just moment ago
 		this.setAccents(config.accents.slice());
 
 		// progress
-		
-		this.refs.planner.setPlan(config);	
+
+		this.refs.planner.setPlan(config);
 	}
 
 	setAccents(accents) {
@@ -108,7 +110,7 @@ class SoundMachine extends Component {
 		this.setTimeSignature(accents.length);
 
 		let pattern = accents.map((item, idx) => {
-			return [this.accentNotes[item]]			
+			return [this.accentNotes[item]]
 		})
 
 		if (this.loop === undefined) {
@@ -146,14 +148,21 @@ class SoundMachine extends Component {
 
 		this.loop.loopEnd = '1m'
 		this.loop.start(0)
+
+		this.setState({accents: accents})
 		// console.log('<SM>Accents changed')
 
+		// if (this.refs.cssClock) { 
+		// 	this.refs.cssClock.setAccents(accents)
+		// }
 	}
 
- 	onProgress(time) {
+	onProgress(time) {
 		this.refs.debug.innerHTML = this.transport.seconds.toFixed(1)
 		this.refs.planner.updateProgress()
 
+		this.refs.cssClock.setProgress(this.loop.progress)
+		// this.setState({loopProgress : this.loop.progress})
 		// this.refs.cssClock.setProgress(this.loop.progress, this.lastAccents)
 		// this.setState({progress: this.loop.progress})
 		// if (this.vis) {
@@ -263,7 +272,7 @@ class SoundMachine extends Component {
 		}
 	}
 
-	onProgressEvent(time)  {
+	onProgressEvent(time) {
 		Tone.Draw.schedule(() => this.onProgress(), time)
 	}
 	setBpm = bpm => {
@@ -273,14 +282,14 @@ class SoundMachine extends Component {
 		}
 
 		if (bpm !== this.transport.bpm.value) {
-			
+
 			Tone.Transport.bpm.value = bpm;
 			this.setState({ bpm: bpm })
 			// console.log("<SM>bpm changed to", bpm)
-			
+
 		}
-		
-		
+
+
 		// this.props.onBpmChange(bpm)
 	};
 
@@ -510,7 +519,7 @@ class SoundMachine extends Component {
 									>
 										{Tr("Start / Stop")}
 										{/* Start / Stop */}
-						</Button>
+									</Button>
 								</Col>
 							</Row>
 							<Row>
@@ -540,7 +549,7 @@ class SoundMachine extends Component {
 					</Col>
 					<Col>
 						{/* <VisClock ref="visClock" width="200" /> */}
-						<CssClock ref="cssClock" progress={this.state.progress * 360} width="200" />
+
 						<Planner
 							transport={this.transport}
 							//					cookies={this.props.cookies}
@@ -552,6 +561,11 @@ class SoundMachine extends Component {
 						/>
 
 					</Col>
+					<Col>
+					<SimplePanel title="Vis">
+							<CssClock ref="cssClock" accents={this.state.accents} progress={this.state.loopProgress * 360} />
+						</SimplePanel>
+						</Col>
 				</Row>
 				{/* <SimpleVis ref="vis" beats={this.state.beatsPerStep}/> */}
 
@@ -587,7 +601,7 @@ class SoundMachine extends Component {
 
 		this.transport.start("+.1");
 		this.loop.start()
-		
+
 		this.setState({ isPlaying: true });
 	}
 	// start_old() {
@@ -626,5 +640,6 @@ SoundMachine.defaultProps = {
 	// onLoopEnd: function (time) { },
 	// onToggle: function (state) { },
 	// onProgress: function (progress) { },
-	instrument: InitPreset.instrument
+	instrument: InitPreset.instrument,
+	accents: InitPreset.accents
 };
