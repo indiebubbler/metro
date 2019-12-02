@@ -10,12 +10,12 @@ import Planner from './Planner'
 import Control from './Control'
 import VisClock from './VisClock'
 import Tr from './Locale'
-import CssClock from "./CssClock";
+import SvgClock from "./SvgClock";
 class SoundMachine extends Component {
 
 	accentNotes = ["C3", "C#3", "D3"]; // this stay in sync with AccentTypes
 
-	progressFps = 15; // higher values might cause slower devices to stutter
+	progressFps = 60; // higher values might cause slower devices to stutter
 
 	instrumentLib = new InstrumentLib();
 	state = {
@@ -81,16 +81,15 @@ class SoundMachine extends Component {
 		if (this.progressEventId) {
 			this.transport.clear(this.progressEventId)
 		}
-		console.log('init Progress with fps:', fps)
-		this.progressEventId = this.transport.scheduleRepeat((time) => this.onProgressEvent(time), 1 / fps)
+		console.log('<SM>init Progress with fps:', fps)
+		this.progressEventId = this.transport.scheduleRepeat((time) => this.onProgressEvent(time), 1 / fps, 0)
 
 	}
 
 	setPlan(config) {
 		this.transport.cancel();
 		this.transport.position = 0;
-		this.initProgressUpdate(this.progressFps)
-
+		
 		// slice will force to recreate loop as it was cancelled just moment ago
 		this.setAccents(config.accents.slice());
 
@@ -161,10 +160,7 @@ class SoundMachine extends Component {
 		this.refs.debug.innerHTML = this.transport.seconds.toFixed(1)
 		this.refs.planner.updateProgress()
 
-		this.refs.cssClock.setProgress(this.loop.progress)
-		// this.setState({loopProgress : this.loop.progress})
-		// this.refs.cssClock.setProgress(this.loop.progress, this.lastAccents)
-		// this.setState({progress: this.loop.progress})
+		this.refs.svgClock.setProgress(this.loop.progress)
 		// if (this.vis) {
 		// 	this.vis.drawFFT(this.instrumentLib.fft.getValue())
 		// }
@@ -275,6 +271,7 @@ class SoundMachine extends Component {
 	onProgressEvent(time) {
 		Tone.Draw.schedule(() => this.onProgress(), time)
 	}
+
 	setBpm = bpm => {
 
 		if (isNaN(bpm) || bpm <= 0 || bpm > 1000) {
@@ -286,6 +283,7 @@ class SoundMachine extends Component {
 			Tone.Transport.bpm.value = bpm;
 			this.setState({ bpm: bpm })
 			// console.log("<SM>bpm changed to", bpm)
+			this.initProgressUpdate(this.progressFps)
 
 		}
 
@@ -563,7 +561,7 @@ class SoundMachine extends Component {
 					</Col>
 					<Col>
 					<SimplePanel title="Vis">
-							<CssClock ref="cssClock" accents={this.state.accents} progress={this.state.loopProgress * 360} />
+							<SvgClock ref="svgClock" accents={this.state.accents} />
 						</SimplePanel>
 						</Col>
 				</Row>

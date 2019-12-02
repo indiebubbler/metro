@@ -3,6 +3,7 @@ body {
 	background-image: radial-gradient(#666, #455);  */
 	background-image: url('/bg.jpg');
 	background-size: cover;
+	background-color: #19212e;
 	-webkit-box-shadow: 14px 10px 413px 3px rgba(0, 0, 0, 0.6);
 	-moz-box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.6);
 	box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.6);
@@ -140,7 +141,7 @@ body {
 	position: absolute;
 	right: 0;
 	top: 0;
-	font-family: Arial, Helvetica, sans-serif;
+	/* font-family: Arial, Helvetica, sans-serif; */
 	padding-right: 1px;
 	color: #555;
 	font-weight: 300;
@@ -319,4 +320,9 @@ body {
 	stroke-dasharray: 20px;
 	stroke-width: 8px;
     fill: #f00;
+}
+
+.svgText {
+	font-size: 1%  ;
+	fill: #ccc;
 }

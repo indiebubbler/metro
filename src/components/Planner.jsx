@@ -69,7 +69,7 @@ class Planner extends Component {
 // this.props.transport.stop()
 		console.log("<Planner>onPlanStep", idx);
 		// const idx = this.state.currentStepIdx;
-		this.nextStepIdx = this.getNextStepIdx(idx);
+		// this.nextStepIdx = this.getNextStepIdx(idx);
 		// this.startStep(idx)
 
 		// debugger
@@ -86,7 +86,7 @@ class Planner extends Component {
 		// debugger
 		// console.log('t', t.toTicks(), 'sT', sT.toTicks(), 'p', p)
 		
-		p = (this.props.transport.ticks - step.startTimeTicks) / (new Tone.Time(step.duration).toTicks());
+		p = (this.props.transport.ticks - step.startTimeTicks) / (Tone.Time(step.duration).toTicks());
 		// clamp p
 		p = Math.min(Math.max(p, 0), 1);
 		this.setState({ stepProgress: p })
@@ -94,6 +94,17 @@ class Planner extends Component {
 
 	getTimelineEvent(eventId) {
 		return this.props.transport._timeline._timeline.filter(function (o) { return o.id === eventId })[0];
+	}
+
+	initProgressUpdate() {
+
+		const fps = 10;
+		if (this.progressEventId) {
+			this.props.transport.clear(this.progressEventId)
+		}
+		console.log('<SM>init Progress with fps:', fps)
+		this.progressEventId = this.props.transport.scheduleRepeat((time) => this.onProgressEvent(time), 1 / fps, 0)
+
 	}
 
 	setPlan(config) {
@@ -134,6 +145,7 @@ class Planner extends Component {
 					startTimeTicks: new Tone.Time(t).toTicks()
 					// eventId: eventId
 				};
+		
 				t += this.calcTimeForBpm(s.duration, s.bpm);
 
 				totalPlanTime += duration
@@ -247,74 +259,74 @@ class Planner extends Component {
 		this.props.onPlanStep(bpm)
 	}
 
-	getNextStepIdx(idx) {
-		switch (this.state.playbackMode) {
-			case PlaybackModes.CYCLE:
-				if (this.isLastStep(idx)) {
-					this.playbackDirection = -1;
-				}
-				else if (this.isFirstStep(idx)) {
-					this.playbackDirection = 1;
-				}
-				return this.playbackDirection  > 0 ? idx + 1 : idx - 1;
-				break;
-			case PlaybackModes.STOP && this.isLastStep(idx):
-				return NaN
-				break;
+	// getNextStepIdx(idx) {
+	// 	switch (this.state.playbackMode) {
+	// 		case PlaybackModes.CYCLE:
+	// 			if (this.isLastStep(idx)) {
+	// 				this.playbackDirection = -1;
+	// 			}
+	// 			else if (this.isFirstStep(idx)) {
+	// 				this.playbackDirection = 1;
+	// 			}
+	// 			return this.playbackDirection  > 0 ? idx + 1 : idx - 1;
+	// 			break;
+	// 		case PlaybackModes.STOP && this.isLastStep(idx):
+	// 			return NaN
+	// 			break;
 
-			default:
-				// debugger
-				return idx + 1;
-		}
+	// 		default:
+	// 			// debugger
+	// 			return idx + 1;
+	// 	}
 
-	}
-	getNextStep() {
-		let step;
+	// }
+	// getNextStep() {
+	// 	let step;
 
-		switch (this.state.playbackMode) {
-			case PlaybackModes.CYCLE:
-				if (this.isLastStep()) {
-					this.playbackDirection = -1;
-				}
-				if (this.isFirstStep()) {
-					this.playbackDirection = 1;
-				}
-				step = this.playbackDirection == true ? this.getStep(this.state.currentStepIdx + 1) : this.getStep(this.state.currentStepIdx - 1);
+	// 	switch (this.state.playbackMode) {
+	// 		case PlaybackModes.CYCLE:
+	// 			if (this.isLastStep()) {
+	// 				this.playbackDirection = -1;
+	// 			}
+	// 			if (this.isFirstStep()) {
+	// 				this.playbackDirection = 1;
+	// 			}
+	// 			step = this.playbackDirection == true ? this.getStep(this.state.currentStepIdx + 1) : this.getStep(this.state.currentStepIdx - 1);
 
-				break;
-			case PlaybackModes.REPEAT:
-				if (this.isLastStep()) {
-					step = this.getStep(0);
-				} else {
-					step = this.getStep(this.state.currentStepIdx + 1);
-				}
-				break;
-			case PlaybackModes.CONTINUE:
-				if (this.isLastStep()) {
-					// TODO
-					let currentMode = this.getCurrentStep().playMode;
-					currentMode.playMode = PlayModes.CONSTANT;
-					currentMode.stableBpmSlider = this.state.currentBpm;
-					this.refs.modePanel.setValue(currentMode);
-				}
-				else {
-					step = this.getStep(this.state.currentStepIdx + 1);
-				}
-				break;
-			case PlaybackModes.STOP:
-				if (this.isLastStep()) {
-					// passing undefined as step will cause machine to stop
-					return undefined
-				}
-				else {
-					step = this.getStep(this.state.currentStepIdx + 1);
-				}
-				break;
-			default:
-				step = this.getStep(this.state.currentStepIdx + 1);
-		}
-		return step;
-	}
+	// 			break;
+	// 		case PlaybackModes.REPEAT:
+	// 			if (this.isLastStep()) {
+	// 				step = this.getStep(0);
+	// 			} else {
+	// 				step = this.getStep(this.state.currentStepIdx + 1);
+	// 			}
+	// 			break;
+	// 		case PlaybackModes.CONTINUE:
+	// 			if (this.isLastStep()) {
+	// 				// TODO
+	// 				let currentMode = this.getCurrentStep().playMode;
+	// 				currentMode.playMode = PlayModes.CONSTANT;
+	// 				currentMode.stableBpmSlider = this.state.currentBpm;
+	// 				this.refs.modePanel.setValue(currentMode);
+	// 			}
+	// 			else {
+	// 				step = this.getStep(this.state.currentStepIdx + 1);
+	// 			}
+	// 			break;
+	// 		case PlaybackModes.STOP:
+	// 			if (this.isLastStep()) {
+	// 				// passing undefined as step will cause machine to stop
+	// 				return undefined
+	// 			}
+	// 			else {
+	// 				step = this.getStep(this.state.currentStepIdx + 1);
+	// 			}
+	// 			break;
+	// 		default:
+	// 			step = this.getStep(this.state.currentStepIdx + 1);
+	// 	}
+	// 	return step;
+	// }
 
 	resetStep() {
 		this.startStep(0)

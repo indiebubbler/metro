@@ -2,18 +2,16 @@ metro_
 
 
 TODO:
-- planner powinien mieć przyciski play/repeat a cycle back powinno być pokazane i uwzględnione w planie od początku
-
-- presets should render separately, maybe under planner
+- circle on vis should be smaller than div
 - te kółka z jutuba zamiast clock 
 https://www.youtube.com/watch?v=kpSudIoepgY
 
-- ostatni krok nie zna progresu
-- progres wywala po dwoch stepach jesli sa tylko 3 (nextStep event is shit logic)
+
+- planner powinien mieć przyciski play/repeat a cycle back powinno być pokazane i uwzględnione w planie od początku
+
+- presets should render separately, maybe under planner
 
 
-
-- new vis to display concentric circles with marks on beats and a clock hand
 
 
 
@@ -22,12 +20,14 @@ https://www.youtube.com/watch?v=kpSudIoepgY
 * sprawdzić google search on metro website
 
 
-* planner to display ie. 10 bars (seconds) in 253 bpm and so on
 * make Delete confirm popup
 
 DONE:
 * preset doesn't save 'after plan' setting
 * calc total plan time
+- ostatni krok nie zna progresu\
+- progres wywala po dwoch stepach jesli sa tylko 3 (nextStep event is shit logic)
+* planner to display ie. 10 bars (seconds) in 253 bpm and so on
 
 
 ---

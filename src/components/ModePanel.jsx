@@ -26,7 +26,7 @@ class ModePanel extends Component {
 		playbackMode: this.props.playbackMode,
 		playMode: this.props.playMode,
 		// interval: this.props.interval ,
-	
+
 		// bpmStep: 10,
 		bpmStepDropdownOpen: false,
 		byTimeInterval: this.props.byTimeInterval,
@@ -35,7 +35,7 @@ class ModePanel extends Component {
 	}
 	// constructor(props) {
 	// 	super(props);
-		
+
 	// 	if (props.playMode === PlayModes.BY_BAR) {
 	// 		this.state.byBarInterval = props.interval;
 	// 	} else {
@@ -53,7 +53,7 @@ class ModePanel extends Component {
 		// this.setState({ playMode: newMode, interval: newMode === PlayModes.BY_BAR ? this.state.byBarInterval : this.state.byTimeInterval }, this.onAfterChange);
 	}
 
-	
+
 
 	onBpmRangeChange(bpmRange) {
 		console.log('<ModePanel>onBpmRangeChange(' + bpmRange[0] + ')')
@@ -95,7 +95,7 @@ class ModePanel extends Component {
 	}
 
 	setValue(o) {
-		console.log('ModePanel.setValue',o)
+		console.log('ModePanel.setValue', o)
 		const slider =
 			o.playMode === PlayModes.BY_BAR
 				? this.refs.byBarSlider
@@ -129,7 +129,7 @@ class ModePanel extends Component {
 	}
 
 	onBarIntervalChange(v) {
-		this.setState({ byBarInterval: v, interval: v}, this.onAfterChange);
+		this.setState({ byBarInterval: v, interval: v }, this.onAfterChange);
 	}
 
 	byBarFormatter(barsNum) {
@@ -158,6 +158,13 @@ class ModePanel extends Component {
 						{this.state.bpmStep}
 					</DropdownToggle>
 					<DropdownMenu>
+						<DropdownItem
+							onClick={() => {
+								this.onBpmStepSelect(1);
+							}}
+						>
+							1
+						</DropdownItem>
 						<DropdownItem
 							onClick={() => {
 								this.onBpmStepSelect(5);
@@ -290,7 +297,7 @@ class ModePanel extends Component {
 						/>
 					</div>
 				</Collapse>
-				
+
 				{this.state.playMode !== PlayModes.CONSTANT ? this.renderIncreaseBpmDropdown() : ''}
 				<Collapse isOpen={this.state.playMode === PlayModes.CONSTANT}>
 					<div>
