@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import ModePanel from './ModePanel'
 import PlaybackPanel from './PlaybackPanel'
 import { Row, Col } from "reactstrap";
-import PresetsManager from './PresetsManager'
 class Control extends Component {
     state = {}
 
@@ -14,6 +13,7 @@ class Control extends Component {
         // console.log('Control get value:', state)
         return state;
     }
+    
     onChange() {
         const value = this.getValue();
         console.log('Control.onChange', value)
@@ -26,40 +26,27 @@ class Control extends Component {
         this.refs.playbackPanel.setActiveBeat(idx)
     }
 
-    onPresetSelect(preset) {
-        this.refs.modePanel.setValue(preset)
-        this.refs.playbackPanel.setValue(preset);
-        this.props.onPresetSelect(preset)
+    setValue(value) {
+        this.refs.modePanel.setValue(value)
+        this.refs.playbackPanel.setValue(value);
+        this.onChange()
     }
 
     render() {
         return (
-            <><Row>
+            <>
                 <Col>
                     <ModePanel
                         ref="modePanel"
                         onChange={() => this.onChange()}
                     />
                 </Col>
-            </Row>
-                <Row>
-                    <Col>
-                        <PlaybackPanel ref='playbackPanel' onChange={() => this.onChange()} />
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <PresetsManager
-                            ref="presetsManager"
-                            cookies={this.props.cookies}
-                            // presets={PresetsLib}
-                            getPreset={() => this.getUiState()}
-                            onSelect={preset => this.onPresetSelect(preset)}
-                        />
+                <Col>
+                    <PlaybackPanel ref='playbackPanel' onChange={() => this.onChange()} />
+                </Col>
 
-                    </Col>
-                </Row>
-            </>);
+            </>
+        );
     }
 }
 

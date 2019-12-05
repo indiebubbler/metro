@@ -2,6 +2,14 @@ metro_
 
 
 TODO:
+- playback stop/repeat etc
+- stable
+
+- try to keep current step when plan changed
+- transport pause
+
+
+
 - circle on vis should be smaller than div
 - te kółka z jutuba zamiast clock 
 https://www.youtube.com/watch?v=kpSudIoepgY

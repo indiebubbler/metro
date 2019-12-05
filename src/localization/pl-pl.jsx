@@ -5,5 +5,7 @@ export const locale = {
     "By bar" : "Co kilka taktów",
     "By time" : "Co jakiś czas",
     "Stable" : "Nie zmieniaj",
-    "Increase speed every" : "Zwiększ prędkość co"
+    "Increase speed every" : "Zwiększ prędkość co",
+    "Up/Down" : "Góra/Dół",
+    "Shuffle" : "Losowo"
 }

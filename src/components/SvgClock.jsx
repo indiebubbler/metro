@@ -86,7 +86,7 @@ class SvgClock extends Component {
     }
 
     render() {
-        console.log('vis render')
+        // console.log('vis render')
         return (
             <div ref={el => (this.container = el)} className="visClockContainer">
                 <svg viewBox="-1 -1 2 2" ref={el => (this.svg = el)}>

@@ -103,7 +103,7 @@ class PresetsManager extends Component {
 	render() {
 		// const userPresets = this.props.cookies.cookies.userPresets ? JSON.parse(this.props.cookies.cookies.userPresets) : [];
 		const userPresets = []
-
+ 
 		// // console.log('<PresetsManager>userPresets', userPresets)
 		return (
 			<Container className="PresetsManager">

@@ -30,13 +30,16 @@ class App extends Component {
 
 	handleKeyDown(e) {
 		switch (e.keyCode) {
+			case 83: // s
+				this.refs.sm.start();
+				break;
 			case 32: // space
 				// if you prevent you won't be able to use space in preset name...
 				// e.preventDefault();
 				// advance plan or toggle
-				this.refs.sm.state.isPlaying ? this.refs.sm.refs.planner.stepForward() : this.refs.sm.toggle();
+				// this.refs.sm.state.isPlaying ? this.refs.sm.refs.planner.stepForward() : this.refs.sm.toggle();
 				break;
-			case 27: // 
+			case 27: // ESC
 				this.refs.sm.stop();
 				// this.refs.sm.refs.planner.resetStep()
 

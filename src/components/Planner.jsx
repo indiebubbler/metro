@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Tone from 'tone'
-
-import { Collapse, ButtonGroup, Badge, Button } from "reactstrap";
+import Tr from './Locale'
+import { Collapse, ButtonGroup, Button } from "reactstrap";
 import SimplePanel from "./SimplePanel"
 import { PlayModes } from "./PlayModes";
 import { PlaybackModes } from "./PlaybackModes";
@@ -16,15 +16,15 @@ class Planner extends Component {
 		steps: [],
 		currentStepIdx: this.props.currentStepIdx,
 		stepProgress: 0,
+		isUpDown: false,
 		isPaused: false
 	};
 
 	makePlan(s) {
 		let segments = [];
 		if (s.playMode === PlayModes.BY_BAR) {
-			const min = s.bpmRange[0];
 			const max = s.bpmRange[1];
-			let bpm = min;
+			let bpm = s.bpmRange[0];;
 			while (bpm <= max) {
 				let segment = {
 					bpm: bpm,
@@ -35,12 +35,10 @@ class Planner extends Component {
 			}
 		}
 		else if (s.playMode === PlayModes.BY_TIME) {
-			const min = s.bpmRange[0];
 			const max = s.bpmRange[1];
-			let bpm = min;
-
+			let bpm = s.bpmRange[0];;
 			while (bpm <= max) {
-				let segment = {
+				const segment = {
 					duration: s.byTimeInterval,
 					bpm: bpm
 				};
@@ -48,25 +46,45 @@ class Planner extends Component {
 				bpm += s.bpmStep;
 			}
 		} else if (s.playMode === PlayModes.CONSTANT) {
-			let segment = {
+			const segment = {
 				duration: Infinity,
-				bpm: s.stableBpmSlider
+				bpm: s.constantBpmSlider
 			};
 			segments.push(segment);
 		}
 
-		if (this.state.playbackMode === PlaybackModes.CYCLE) {
-
+		if (this.state.isUpDown) {
 			const rev = segments.slice().reverse();
 			rev.shift()
 			segments = segments.concat(rev);
-
+		}
+		if (this.state.isRandom) {
+			segments = this.shuffle(segments.slice())
 		}
 		return segments;
 	}
 
+	shuffle(array) {
+		var currentIndex = array.length, temporaryValue, randomIndex;
+
+		// While there remain elements to shuffle...
+		while (0 !== currentIndex) {
+
+			// Pick a remaining element...
+			randomIndex = Math.floor(Math.random() * currentIndex);
+			currentIndex -= 1;
+
+			// And swap it with the current element.
+			temporaryValue = array[currentIndex];
+			array[currentIndex] = array[randomIndex];
+			array[randomIndex] = temporaryValue;
+		}
+
+		return array;
+	}
+
 	onPlanStep(idx) {
-// this.props.transport.stop()
+		// this.props.transport.stop()
 		console.log("<Planner>onPlanStep", idx);
 		// const idx = this.state.currentStepIdx;
 		// this.nextStepIdx = this.getNextStepIdx(idx);
@@ -85,31 +103,31 @@ class Planner extends Component {
 		// const sT = new Tone.Time(step.startTime)
 		// debugger
 		// console.log('t', t.toTicks(), 'sT', sT.toTicks(), 'p', p)
-		
+
 		p = (this.props.transport.ticks - step.startTimeTicks) / (Tone.Time(step.duration).toTicks());
 		// clamp p
 		p = Math.min(Math.max(p, 0), 1);
 		this.setState({ stepProgress: p })
 	}
 
-	getTimelineEvent(eventId) {
-		return this.props.transport._timeline._timeline.filter(function (o) { return o.id === eventId })[0];
-	}
+	// getTimelineEvent(eventId) {
+	// 	return this.props.transport._timeline._timeline.filter(function (o) { return o.id === eventId })[0];
+	// }
 
-	initProgressUpdate() {
+	// initProgressUpdate() {
 
-		const fps = 10;
-		if (this.progressEventId) {
-			this.props.transport.clear(this.progressEventId)
-		}
-		console.log('<SM>init Progress with fps:', fps)
-		this.progressEventId = this.props.transport.scheduleRepeat((time) => this.onProgressEvent(time), 1 / fps, 0)
+	// 	const fps = 10;
+	// 	if (this.progressEventId) {
+	// 		this.props.transport.clear(this.progressEventId)
+	// 	}
+	// 	console.log('<SM>init Progress with fps:', fps)
+	// 	this.progressEventId = this.props.transport.scheduleRepeat((time) => this.onProgressEvent(time), 1 / fps, 0)
 
-	}
+	// }
 
-	setPlan(config) {
+	setPlan(config, stepIdx = 0) {
 		// store original config so we can recreate it when playback mode changes
-		console.log("<Planner>SetPlan")
+		console.log("<Planner>SetPlan", stepIdx)
 		const plan = this.makePlan(config);
 		this.baseBpm = this.props.transport.bpm.value
 
@@ -125,57 +143,97 @@ class Planner extends Component {
 			// copy bpm so we can pass it to onPlanStep, not sure how to achieve it otherwise
 			let b = s.bpm;
 
-			if (config.playMode === PlayModes.BY_TIME) {
+			// create  step end event
+			this.props.transport.schedule((time) => this.onPlanStep(i), t)
 
-				// let eventId = this.props.transport.schedule((time) => this.onPlanStep(time), t)
-				let eventId = this.props.transport.schedule((time) => this.onPlanStep(i), t)
-				this.events.push(eventId);
+			const duration = config.playMode === PlayModes.BY_BAR ? beatDuration * timeSignature * s.duration : s.duration;
 
-				const duration = s.duration
-				const durationInBars = s.duration / (beatDuration * timeSignature);
-				const bar = {
-					bpm: s.bpm,
-					duration: duration,
-					durationBars: durationInBars.toFixed(1),
-					durationFormatted: Utils.formatTime(duration),
-					stepIdx: i,
-					accents: config.accents,
-					playMode: PlayModes.BY_TIME,
-					startTime: t,
-					startTimeTicks: new Tone.Time(t).toTicks()
-					// eventId: eventId
-				};
-		
-				t += this.calcTimeForBpm(s.duration, s.bpm);
+			const durationInBars = config.playMode === PlayModes.BY_BAR ? s.duration : s.duration / (beatDuration * timeSignature);
 
-				totalPlanTime += duration
-				steps.push(bar);
+			const bar = {
+				bpm: s.bpm,
+				duration: duration,
+				durationBars: durationInBars,
+				durationFormatted: Utils.formatTime(duration),
+				durationBars: durationInBars.toFixed(1),
+				durationFormatted: Utils.formatTime(duration),
+				stepIdx: i,
+				accents: config.accents,
+				playMode: s.playMode,
+				startTimeTicks: Tone.Time(t).toTicks()
+			};
+
+
+			switch (config.playMode) {
+				case PlayModes.BY_TIME:
+					t += this.calcTimeForBpm(s.duration, s.bpm);
+					break;
+				case PlayModes.BY_BAR:
+					t = s.duration * (i + 1) + "m";
+					break;
+				case PlayModes.CONSTANT:
+					t = Infinity
+					break;
+				default:
+					throw new Error('Invalid playMode: ' + config.playMode)
 			}
-			else if (config.playMode === PlayModes.BY_BAR) {
 
-				const startTime =   s.duration * i + "m";
-				let eventId = this.props.transport.schedule((time) => this.onPlanStep(i), startTime);
-				this.events.push(eventId);
+			console.log('t ', t, 'i ', i, bar)
 
-				const duration = beatDuration * timeSignature * s.duration;
-				const bar = {
-					bpm: s.bpm,
-					duration: duration,
-					durationBars: s.duration,
-					durationFormatted: Utils.formatTime(duration),
-					stepIdx: i,
-					playMode: PlayModes.BY_BAR,
-					accents: config.accents,
-					startTime: startTime,
-					startTimeTicks: new Tone.Time(startTime).toTicks()
-					// eventId: eventId
-				};
+			totalPlanTime += duration
+			steps.push(bar);
 
-				totalPlanTime += duration
-				steps.push(bar);
-			}
+			// if (config.playMode === PlayModes.BY_TIME) {
+
+			// 	// let eventId = this.props.transport.schedule((time) => this.onPlanStep(time), t)
+			// 	let eventId = this.props.transport.schedule((time) => this.onPlanStep(i), t)
+			// 	// this.events.push(eventId);
+
+			// 	const duration = s.duration
+			// 	const durationInBars = s.duration / (beatDuration * timeSignature);
+			// 	const bar = {
+			// 		bpm: s.bpm,
+			// 		duration: duration,
+			// 		durationBars: durationInBars.toFixed(1),
+			// 		durationFormatted: Utils.formatTime(duration),
+			// 		stepIdx: i,
+			// 		accents: config.accents,
+			// 		playMode: PlayModes.BY_TIME,
+			// 		startTimeTicks: Tone.Time(t).toTicks()
+			// 	};
+
+			// 	t += this.calcTimeForBpm(s.duration, s.bpm);
+
+			// 	totalPlanTime += duration
+			// 	steps.push(bar);
+			// }
+			// else if (config.playMode === PlayModes.BY_BAR) {
+			// 	t = s.duration * i + "m";
+			// 	let eventId = this.props.transport.schedule((time) => this.onPlanStep(i), t);
+			// 	this.events.push(eventId);
+
+			// 	const duration = beatDuration * timeSignature * s.duration;
+			// 	const bar = {
+			// 		bpm: s.bpm,
+			// 		duration: duration,
+			// 		durationBars: s.duration,
+			// 		durationFormatted: Utils.formatTime(duration),
+			// 		stepIdx: i,
+			// 		playMode: PlayModes.BY_BAR,
+			// 		accents: config.accents,
+			// 		startTimeTicks: Tone.Time(t).toTicks()
+			// 	};
+
+			// 	totalPlanTime += duration
+			// 	steps.push(bar);
+			// }
 		}
 
+		console.log('steps', steps)
+
+		this.props.transport.schedule((time) => this.onPlanEnd(time), t);
+
+		
 		// add an end plan event
 		// if (config.playMode === PlayModes.BY_BAR) {
 		// 	// console.log('end event at', "+" + plan[0].duration * plan.length + "m")
@@ -189,6 +247,7 @@ class Planner extends Component {
 		this.setState(
 			prevState => ({
 				totalPlanTime: totalPlanTime,
+				// hmm this is shit as change in currentStepIdx doesn't move transport, this needs some thinking 
 				currentStepIdx: 0,
 				steps: steps
 			}),
@@ -197,8 +256,8 @@ class Planner extends Component {
 	}
 
 	calcTimeForBpm(seconds, bpm) {
-		let m = new Tone.Time(seconds * bpm / this.baseBpm);
-		return m;
+		return Tone.Time(seconds * bpm / this.baseBpm);
+
 	}
 
 	// stop() {
@@ -207,11 +266,11 @@ class Planner extends Component {
 	// }
 
 	startStep(stepIdx) {
-
 		if (this.state.currentStepIdx !== stepIdx) {
 			console.log("setStep", stepIdx)
-			const event = this.getTimelineEvent(this.events[stepIdx])
-			this.props.transport.ticks = event.time;
+			const s = this.getStep(stepIdx);
+			// const event = this.getTimelineEvent(this.events[stepIdx])
+			this.props.transport.ticks = s.startTimeTicks;
 			this.setState({ currentStepIdx: stepIdx }, this.stepChanged)
 		}
 	}
@@ -248,14 +307,23 @@ class Planner extends Component {
 		}
 	}
 
-	// onPlanEnd(time) {
-	// 	const nextStep = this.getNextStep();
+	onPlanEnd(time) {
+		if (this.state.playbackMode === PlaybackModes.STOP) {
+			this.props.onPlanEnd();
+		}
+		else if (this.state.playbackMode === PlaybackModes.REPEAT) {
+			this.startStep(0)
+		}
 
-	// 	this.props.transport.position = this.getTimelineEvent(nextStep.eventId).time
-	// }
+		// if (this.state.playbackMode === PlaybackModes.STOP) {
+		// 	this.props.transport.stop();
+		// }
+	}
 	stepChanged() {
 		// console.log("<Planner>stepChanged", this.getCurrentStep().stepIdx)
 		const bpm = this.getCurrentStep().bpm
+
+
 		this.props.onPlanStep(bpm)
 	}
 
@@ -398,6 +466,13 @@ class Planner extends Component {
 	formatTime(date) {
 		return date.getMinutes() + ":" + date.getSeconds();
 	}
+	onUpDownBtn() {
+		this.setState({ isUpDown: !this.state.isUpDown, isRandom: false }, this.props.onChange)
+	}
+
+	onRandomBtn() {
+		this.setState({ isRandom: !this.state.isRandom, isUpDown: false }, this.props.onChange)
+	}
 	render() {
 		return (
 
@@ -428,16 +503,7 @@ class Planner extends Component {
 							onClick={() => this.onPlaybackChange(PlaybackModes.STOP)}
 							active={this.state.playbackMode === PlaybackModes.STOP}
 						>
-							Stop
-						</Button>
-						<Button
-							size="sm"
-							outline
-							color="light"
-							onClick={() => this.onPlaybackChange(PlaybackModes.CYCLE)}
-							active={this.state.playbackMode === PlaybackModes.CYCLE}
-						>
-							Cycle back
+							⏹️
 						</Button>
 						<Button
 							size="sm"
@@ -446,7 +512,8 @@ class Planner extends Component {
 							onClick={() => this.onPlaybackChange(PlaybackModes.CONTINUE)}
 							active={this.state.playbackMode === PlaybackModes.CONTINUE}
 						>
-							Last speed
+							▶️
+							{/* Cycle back */}
 						</Button>
 						<Button
 							size="sm"
@@ -455,7 +522,29 @@ class Planner extends Component {
 							onClick={() => this.onPlaybackChange(PlaybackModes.REPEAT)}
 							active={this.state.playbackMode === PlaybackModes.REPEAT}
 						>
-							Start over
+							🔁
+						</Button>
+					</ButtonGroup>
+					<ButtonGroup>
+						<Button
+							size="sm"
+							outline
+							color="light"
+							onClick={(e) => this.onUpDownBtn(e)}
+							active={this.state.isUpDown}
+						>
+							{Tr("Up/Down")}
+
+						</Button>
+						<Button
+							size="sm"
+							outline
+							toggle
+							color="light"
+							onClick={() => this.onRandomBtn()}
+							active={this.state.isRandom}
+						>
+							{Tr("Shuffle")}
 						</Button>
 					</ButtonGroup>
 				</Collapse>
@@ -472,7 +561,8 @@ export default Planner;
 
 Planner.defaultProps = {
 	playbackMode: InitPreset.playbackMode,
-	onChange: () => {},
-	onPlanStep: () => {},
+	onChange: () => { },
+	onPlanStep: () => { },
+	onPlanEnd: () => { },
 	currentStepIdx: NaN
 };
