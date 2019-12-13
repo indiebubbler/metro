@@ -208,8 +208,7 @@ class SoundMachine extends Component {
 	}
 
 	calcTimeForBpm(seconds, bpm) {
-		let m = new Tone.Time(seconds * bpm / this.baseBpm);
-		return m;
+		return Tone.Time(seconds * bpm / this.baseBpm);
 	}
 
 	setInstrument(instrument) {

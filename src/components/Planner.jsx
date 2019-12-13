@@ -22,11 +22,13 @@ class Planner extends Component {
 
 	makePlan(s) {
 		let segments = [];
+		// some helpful variables
+		const max = s.bpmRange[1];
+		let bpm = s.bpmRange[0];
+
 		if (s.playMode === PlayModes.BY_BAR) {
-			const max = s.bpmRange[1];
-			let bpm = s.bpmRange[0];;
 			while (bpm <= max) {
-				let segment = {
+				const segment = {
 					bpm: bpm,
 					duration: s.byBarInterval
 				};
@@ -35,8 +37,6 @@ class Planner extends Component {
 			}
 		}
 		else if (s.playMode === PlayModes.BY_TIME) {
-			const max = s.bpmRange[1];
-			let bpm = s.bpmRange[0];;
 			while (bpm <= max) {
 				const segment = {
 					duration: s.byTimeInterval,
@@ -51,6 +51,21 @@ class Planner extends Component {
 				bpm: s.constantBpmSlider
 			};
 			segments.push(segment);
+		}
+		else if (s.playMode === PlayModes.STEPS) {
+			const duration = s.exerciseTime  / s.stepsNum;
+			console.log('exerciseTime', s.exerciseTime)
+			
+			let bpm = s.bpmRange[0];
+			const bpmStep = (s.bpmRange[1] - s.bpmRange[0]) / (s.stepsNum-1);
+			while (bpm <= max) {
+				const segment = {
+					duration: duration,
+					bpm: bpm
+				};
+				segments.push(segment);
+				bpm += bpmStep;
+			}
 		}
 
 		if (this.state.isUpDown) {
@@ -166,6 +181,7 @@ class Planner extends Component {
 
 			switch (config.playMode) {
 				case PlayModes.BY_TIME:
+				case PlayModes.STEPS:
 					t += this.calcTimeForBpm(s.duration, s.bpm);
 					break;
 				case PlayModes.BY_BAR:
@@ -178,55 +194,9 @@ class Planner extends Component {
 					throw new Error('Invalid playMode: ' + config.playMode)
 			}
 
-			console.log('t ', t, 'i ', i, bar)
-
 			totalPlanTime += duration
 			steps.push(bar);
 
-			// if (config.playMode === PlayModes.BY_TIME) {
-
-			// 	// let eventId = this.props.transport.schedule((time) => this.onPlanStep(time), t)
-			// 	let eventId = this.props.transport.schedule((time) => this.onPlanStep(i), t)
-			// 	// this.events.push(eventId);
-
-			// 	const duration = s.duration
-			// 	const durationInBars = s.duration / (beatDuration * timeSignature);
-			// 	const bar = {
-			// 		bpm: s.bpm,
-			// 		duration: duration,
-			// 		durationBars: durationInBars.toFixed(1),
-			// 		durationFormatted: Utils.formatTime(duration),
-			// 		stepIdx: i,
-			// 		accents: config.accents,
-			// 		playMode: PlayModes.BY_TIME,
-			// 		startTimeTicks: Tone.Time(t).toTicks()
-			// 	};
-
-			// 	t += this.calcTimeForBpm(s.duration, s.bpm);
-
-			// 	totalPlanTime += duration
-			// 	steps.push(bar);
-			// }
-			// else if (config.playMode === PlayModes.BY_BAR) {
-			// 	t = s.duration * i + "m";
-			// 	let eventId = this.props.transport.schedule((time) => this.onPlanStep(i), t);
-			// 	this.events.push(eventId);
-
-			// 	const duration = beatDuration * timeSignature * s.duration;
-			// 	const bar = {
-			// 		bpm: s.bpm,
-			// 		duration: duration,
-			// 		durationBars: s.duration,
-			// 		durationFormatted: Utils.formatTime(duration),
-			// 		stepIdx: i,
-			// 		playMode: PlayModes.BY_BAR,
-			// 		accents: config.accents,
-			// 		startTimeTicks: Tone.Time(t).toTicks()
-			// 	};
-
-			// 	totalPlanTime += duration
-			// 	steps.push(bar);
-			// }
 		}
 
 		console.log('steps', steps)
