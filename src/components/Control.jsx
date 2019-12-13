@@ -2,6 +2,13 @@ import React, { Component } from 'react'
 import ModePanel from './ModePanel'
 import PlaybackPanel from './PlaybackPanel'
 import { Row, Col } from "reactstrap";
+
+/* 
+TODO 
+THIS FILE IS DEPRECATED 
+
+*/
+
 class Control extends Component {
     state = {}
 

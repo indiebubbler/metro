@@ -7,5 +7,6 @@ export const locale = {
     "Stable" : "Nie zmieniaj",
     "Increase speed every" : "Zwiększ prędkość co",
     "Up/Down" : "Góra/Dół",
-    "Shuffle" : "Losowo"
+    "Shuffle" : "Losowo",
+    "Exercise Time" : "Czas ćwiczenia"
 }

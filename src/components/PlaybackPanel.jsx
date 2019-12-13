@@ -4,27 +4,34 @@ import { Container, Row, Col } from "reactstrap";
 import { accentTypes } from './AccentTypes'
 import AdvancedSlider from "./AdvancedSlider";
 import { InitPreset } from './PresetsLib';
+import TrackView from './TrackView/TrackView'
 
 class PlaybackPanel extends Component {
     state = {
-        accents: this.props.accents//,
+        // accents: this.props.accents,    // TODO: this is obsolete
+        track: this.props.track
     }
 
     setValue(config) {
 
-        this.refs.beatsPerStep.setState({ value: config.beatsPerStep });
-        this.refs.barManager.setAccents(config.accents, config.beatsPerStep);
+        // this.refs.beatsPerStep.setState({ value: config.beatsPerStep });
+        this.refs.trackView.setValue(config.track)
+        // this.refs.barManager.setAccents(config.tracks, config.beatsPerStep);
+        
 
     }
 
-    getAccents() {
-        return this.refs.barManager.getAccents()
-    }
+    // getAccents() {
+    //     // return this.refs.barManager.getAccents()
+    // }
 
 
     onAccentsChange() {
-        const accents = this.refs.barManager.state.bars
-        this.setState({ accents: accents }, this.props.onChange);
+
+        // const accents = this.refs.barManager.state.bars
+        const track = this.refs.trackView.state.track;
+        
+        this.setState({ track: track }, this.props.onChange);
     }
 
 
@@ -66,6 +73,12 @@ class PlaybackPanel extends Component {
                         </Col>
                     </Row>
                     <Row>
+                        <Col>
+                            TrackView
+						    <TrackView ref='trackView' value={this.props.track} onChange={() => this.onAccentsChange()} />
+                        </Col>
+                    </Row>
+                    <Row>
                         <Col xs={4}>Accents</Col>
                         <Col>
                             <BarManager
@@ -85,7 +98,8 @@ export default PlaybackPanel;
 
 PlaybackPanel.defaultProps = {
     // onAccentsChange: function(accents) {},
-    beatsPerStep: InitPreset.accents.length,
+    // beatsPerStep: InitPreset.accents.length,
     // instrument: InitPreset.instrument,
-    accents: InitPreset.accents
+    // accents: InitPreset.accents,
+    track: InitPreset.track
 }

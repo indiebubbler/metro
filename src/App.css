@@ -326,3 +326,27 @@ body {
 	font-size: 1%  ;
 	fill: #ccc;
 }
+
+
+.trackview .column .row {
+    flex: 1;
+    margin: 1px;
+    background-color: var(--color-light-gray);
+	transition: background-color 0s;
+	border: 1px solid #a55;
+}
+
+.trackview .row .active {
+	background-color: #ccc;
+}
+
+.trackview .column {
+	flex: 1;
+    margin: 1px;
+    background-color: var(--color-light-gray);
+    transition: background-color 0s;
+}
+
+.trackview .activeCol{
+	border: 1px solid red;
+}

@@ -131,7 +131,7 @@ class Planner extends Component {
 		const plan = this.makePlan(config);
 		this.baseBpm = this.props.transport.bpm.value
 
-		const timeSignature = config.accents.length;
+		const timeSignature = config.track.length;
 		let t = 0;
 		this.events = [];
 		let steps = []
@@ -158,7 +158,7 @@ class Planner extends Component {
 				durationBars: durationInBars.toFixed(1),
 				durationFormatted: Utils.formatTime(duration),
 				stepIdx: i,
-				accents: config.accents,
+				track: config.track,
 				playMode: s.playMode,
 				startTimeTicks: Tone.Time(t).toTicks()
 			};
@@ -232,7 +232,7 @@ class Planner extends Component {
 		console.log('steps', steps)
 
 		this.props.transport.schedule((time) => this.onPlanEnd(time), t);
-
+		this.endTime = Tone.Time(t).toTicks();
 		
 		// add an end plan event
 		// if (config.playMode === PlayModes.BY_BAR) {
@@ -476,17 +476,19 @@ class Planner extends Component {
 	render() {
 		return (
 
+			
 			<SimplePanel title={"Plan"}>
 				<div className="Planner">
 					{/* <div>Next step in {this.state.stepProgress.toFixed(1)} seconds</div> */}
-					<SimpleProgress value={this.state.stepProgress * 100} />
+					<div>Step: <SimpleProgress value={this.state.stepProgress * 100} /></div>
+					<div>Plan: <SimpleProgress value={ 100 * (this.props.transport.ticks  / this.endTime) } /></div>
 
 					{/* <Button onClick={() => this.togglePause()}>
 					isPaused:
 					{this.state.isPaused === true ? "paused" : "normal"}
 				</Button> */}
-
-					<div style={this.props.lockBpm ? { opacity: 0.5 } : {}}>
+					
+					<div style={{height: '200px', overflow: 'auto'}}>
 						{this.state.steps.map(bar => this.barRender(bar))}
 					</div>
 					<div>

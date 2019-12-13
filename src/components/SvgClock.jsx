@@ -5,7 +5,7 @@ import Accent from './Accent';
 
 class SvgClock extends Component {
     state = {
-        accents: this.props.accents
+        track: this.props.track
     }
     colorEmpty = "#333"
 
@@ -13,8 +13,8 @@ class SvgClock extends Component {
         this.line.style.transform = 'rotate(' + progress * 360 + 'deg)'
     }
 
-    setAccents(accents) {
-        this.setState({ accents: accents })
+    setAccents(track) {
+        this.setState({ track: track})
         // this.drawSvg()
     }
 
@@ -26,11 +26,12 @@ class SvgClock extends Component {
 
     drawSvg(radius, filter) {
         // Drawing pie charts by David Gilbertson, taken from https://medium.com/hackernoon/a-simple-pie-chart-in-svg-dbdd653b6936
-        let pctStep = 1 / this.props.accents.length;
+        let pctStep = 1 / this.props.track.length;
         let slices = [];
         // let step = pctStep;
-        this.props.accents.forEach(accent => {
-            slices.push({ percent: pctStep, color: filter === accent ? accentColor[accent] : this.colorEmpty });
+        this.props.track.forEach(trackColumn => {
+            const idx = trackColumn.indexOf(filter);
+            slices.push({ percent: pctStep, color: idx >=0 ? accentColor[filter] : this.colorEmpty });
             // step += pctStep;
         })
         let cumulativePercent = 0;
@@ -65,12 +66,12 @@ class SvgClock extends Component {
 
     drawText() {
         let labels = [];
-        const pctStep = 1 / this.props.accents.length;
+        const pctStep = 1 / this.props.track.length;
         let cumulativePercent = 0;
 
         // our xy is rotated 90', I had issues rotation seperate text
         let cnt
-        this.props.accents.forEach((accent, idx) => {
+        this.props.track.forEach((accent, idx) => {
             let  [x,y] = this.getCoordinatesForPercent(cumulativePercent, 0.9);
             // tweak position of labels
             x -= 0.06
@@ -107,6 +108,6 @@ class SvgClock extends Component {
 
 export default SvgClock;
 
-SvgClock.defaultPros = {
-    accents: InitPreset.accents
+SvgClock.defaultProps = {
+    track: InitPreset.track
 }

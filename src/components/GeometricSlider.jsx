@@ -44,7 +44,6 @@ class GeometricSlider extends Component {
     }
 
     onChange(v) {
-        console.log('onChange', v)
         const value =  Math.floor(this.state.regression.predict(v)[1]);
         this.setState({value: value})
         this.props.onChange(value)

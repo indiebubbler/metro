@@ -33,10 +33,11 @@ export const PresetsLib = [
 
 export const InitPreset = {
     title: "INIT",
-    instrument: Instruments.METRONOME,
+    instrument: Instruments.ELECTRO_KIT,
     // beatsPerStep: 5,
-    bpmRange: [100, 400],
-    accents: [1, 0, 0, 0],
+    bpmRange: [300, 400],
+    // accents: [1, 0, 0, 0],
+    track: [[0,1],[0],[1],[],[1,2],[],[1],[0],[1],[],[0,1],[0],[1,2],[],[1],[]],    // Levee Break
     // accents: [1, 0, 0, 0,0 ,0,0,0,0],
     playMode: PlayModes.BY_BAR,
     playbackMode: PlaybackModes.STOP,

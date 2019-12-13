@@ -207,6 +207,29 @@ class ModePanel extends Component {
 		);
 	}
 
+	onTimeSliderChange(value) {
+		
+		console.log('time changed', value);
+
+	}
+
+	renderTimeSlider() {
+		return (<div>
+			{Tr("Exercise Time")}
+			<GeometricSlider
+				ref="timeSlider"
+				min={1}
+				max={3600}
+				marksAt={[1,  3600]}
+				// marks={{ 60: '1m', 300: '5m',  1300: '30m', 3600: '1 hr' }}
+				defaultValue={60}
+				pushable={true}
+				onChange={(value) => this.onTimeSliderChange(value)}
+			/>
+
+
+		</div>);
+	}
 	renderSpeedRange() {
 
 		// console.log('renderSpeedRange', this.state.bpmRange[0])
@@ -263,6 +286,7 @@ class ModePanel extends Component {
 				<Collapse isOpen={this.state.playMode !== PlayModes.CONSTANT}>
 					{/* {this.state.playMode !== playModes.STABLE ? this.renderSpeedRange() : ''} */}
 					{this.renderSpeedRange()}
+					{this.renderTimeSlider()}
 				</Collapse>
 
 
