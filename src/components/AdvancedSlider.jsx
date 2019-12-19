@@ -14,6 +14,7 @@ class AdvancedSlider extends Slider {
 						className="d-i"
 					>
 						{this.state.value}
+						{/* {this.props.badgeFormatter(this.state.value)} */}
 					</Badge>
 				</div>
 				<div style={{ height: "30px" }}>
@@ -30,3 +31,8 @@ class AdvancedSlider extends Slider {
 
 export default AdvancedSlider;
 
+
+// AdvancedSlider.defaultProps = {
+// 	badgeFormatter: function(v) {return v;}
+// 	// markFormatter: function(v) {return v;}
+// }

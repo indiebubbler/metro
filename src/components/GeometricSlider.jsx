@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import Slider from 'rc-slider'
 import regression from 'regression';
 import {Badge} from 'reactstrap'
+import { InitPreset } from './PresetsLib';
 
 
 class GeometricSlider extends Component {
 	state = {
-        value: undefined,
+        value: this.props.defaultValue,
         regression: undefined
 	};
 
@@ -34,14 +35,14 @@ class GeometricSlider extends Component {
         }
     }
 
-    makeMark(value) {
-        return {
-            label: this.props.markFormatter(
-                Math.floor(value)
-            ),
-            style: this.props.marksStyle
-        };
-    }
+    // makeMark(value) {
+    //     return {
+    //         label: this.props.markFormatter(
+    //             Math.floor(value)
+    //         ),
+    //         style: this.props.marksStyle
+    //     };
+    // }
 
     onChange(v) {
         const value =  Math.floor(this.state.regression.predict(v)[1]);
@@ -84,6 +85,6 @@ GeometricSlider.defaultProps = {
     desc: '',
     badgeFormatter: function(v) {return v;},
     markFormatter: function(v) {return v;},
-    defaultValue: 50,
+    // defaultValue: 50,
     marksAt: []
 }

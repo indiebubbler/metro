@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Tone from 'tone'
-import Tr from './Locale'
+import Tr, {TrRange} from './Locale'
 import { Collapse, ButtonGroup, Button } from "reactstrap";
 import SimplePanel from "./SimplePanel"
 import { PlayModes } from "./PlayModes";
@@ -53,11 +53,12 @@ class Planner extends Component {
 			segments.push(segment);
 		}
 		else if (s.playMode === PlayModes.STEPS) {
-			const duration = s.exerciseTime  / s.stepsNum;
+			const duration = s.exerciseTime  / (s.stepsNum );
 			console.log('exerciseTime', s.exerciseTime)
 			
 			let bpm = s.bpmRange[0];
-			const bpmStep = (s.bpmRange[1] - s.bpmRange[0]) / (s.stepsNum-1);
+			const bpmStep = (s.bpmRange[1] - s.bpmRange[0]) / (s.stepsNum -1 );
+			console.log('steps bpmStep', bpmStep)
 			while (bpm <= max) {
 				const segment = {
 					duration: duration,
@@ -421,12 +422,12 @@ class Planner extends Component {
 		return (
 			<div
 				onClick={() => this.startStep(b.stepIdx)}
-				className={"step " + cls}
+				className={"step clickable " + cls}
 				key={"key_" + b.stepIdx}
 			>
 				{
 					b.duration !== Infinity
-						? <>{b.durationFormatted} ({b.durationBars} bars) </>
+						? <>{b.durationFormatted} ({b.durationBars} {TrRange(Math.floor(b.durationBars),"bars")}) </>
 						: ''}
 				@ {b.bpm.toFixed(0)} bpm
 			</div>
@@ -450,8 +451,8 @@ class Planner extends Component {
 			<SimplePanel title={"Plan"}>
 				<div className="Planner">
 					{/* <div>Next step in {this.state.stepProgress.toFixed(1)} seconds</div> */}
-					<div>Step: <SimpleProgress value={this.state.stepProgress * 100} /></div>
-					<div>Plan: <SimpleProgress value={ 100 * (this.props.transport.ticks  / this.endTime) } /></div>
+					<div>{Tr("Step progress")} <SimpleProgress value={this.state.stepProgress * 100} /></div>
+					<div>{Tr("Plan progress")} <SimpleProgress value={ 100 * (this.props.transport.ticks  / this.endTime) } /></div>
 
 					{/* <Button onClick={() => this.togglePause()}>
 					isPaused:
@@ -462,11 +463,11 @@ class Planner extends Component {
 						{this.state.steps.map(bar => this.barRender(bar))}
 					</div>
 					<div>
-						Total time: {Utils.formatTime(this.state.totalPlanTime)}
+						{Tr("Total time:")} {Utils.formatTime(this.state.totalPlanTime)}
 					</div>
 				</div>
 				<Collapse isOpen={this.state.playMode !== PlayModes.CONSTANT}>
-					<div>After plan</div>
+					<div>{Tr("After plan")}</div>
 					<ButtonGroup size="sm">
 						<Button
 							size="sm"
@@ -497,6 +498,7 @@ class Planner extends Component {
 							🔁
 						</Button>
 					</ButtonGroup>
+					<div>{Tr("Step order")}</div>
 					<ButtonGroup>
 						<Button
 							size="sm"
@@ -505,13 +507,13 @@ class Planner extends Component {
 							onClick={(e) => this.onUpDownBtn(e)}
 							active={this.state.isUpDown}
 						>
-							{Tr("Up/Down")}
+							{Tr("Up and Down")}
 
 						</Button>
 						<Button
 							size="sm"
 							outline
-							toggle
+							// toggle
 							color="light"
 							onClick={() => this.onRandomBtn()}
 							active={this.state.isRandom}

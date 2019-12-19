@@ -9,6 +9,10 @@ body {
 	box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.6);
 }
 
+.clickable {
+	cursor: pointer
+}
+
 .App {
 	text-align: center;
 	color: #ccc;
@@ -24,7 +28,7 @@ body {
 }
 
 .App .rc-slider-track {
-	background-color: #ff5555;
+	background-color: rgb(255, 85, 85);
 }
 
 .App .app-container {
@@ -32,12 +36,12 @@ body {
 }
 
 .App .pane {
-	/* background-color: #555; */
-	border: 1px solid #888;
+	/* background-color: #222; */
+	border: thin solid #8885;
 	/* background-image: linear-gradient(#777, #666666); */
-	-webkit-box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.3);
-	-moz-box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.3);
-	box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.3);
+	-webkit-box-shadow:  10px 10px 30px 3px rgba(0,0,0, 0.15);
+	-moz-box-shadow:  10px 10px 30px 3px rgba(0,0,0, 0.15);
+	box-shadow: 10px 10px 30px 3px rgba(0,0,0, 0.15);
 }
 
 .App .container {
@@ -92,7 +96,6 @@ body {
 }
 
 .step {
-	cursor: pointer;
 	background-color: #90a1b128;
 	margin-bottom: 1px;
 }
@@ -132,22 +135,26 @@ body {
 .PresetsManager {
 	font-size: 80%;
 }
+
+.PresetsManager .presetItem {
+	background-color: #90a1b128;
+	margin-bottom: 1px;
+}
+
+.PresetsManager .presetItem .userPresetSavedDtm {
+	color: #fff4;
+	padding: 0 1em;
+}
 /* .PresetsManager .preset {
     cursor: pointer;
     box-shadow: 1px 0 0 0 #888, 0 1px 0 0 #888, 1px 1px 0 0 #888, 1px 0 0 0 #888 inset, 0 1px 0 0 #888 inset;
 } */
 
-.PresetsManager .preset .x {
-	position: absolute;
-	right: 0;
-	top: 0;
-	/* font-family: Arial, Helvetica, sans-serif; */
-	padding-right: 1px;
-	color: #555;
-	font-weight: 300;
-
-	/* visibility: hidden; */
-	background-color: #f55;
+.PresetsManager .editBtn {
+	color: #f5f5f5;
+    background-color: #f55;
+    padding: 0 1em;
+	margin-left: 1em;
 }
 
 .Accent {
@@ -238,7 +245,7 @@ body {
 	position: relative;
 	width: 20em;
   }
-  
+
   .clock.simple:after {
 	background: #000;
 	border-radius: 50%;
@@ -274,12 +281,12 @@ body {
 	width: 2.5%;
   }
 
-/* 
+/*
   .measureLine {
 	width: 2;
 	border-left: 10px solid #f952;
 	border-radius: 4px 4px 0px 0px;
-	/* background-color: #aaa; 
+	/* background-color: #aaa;
 	height: 50%;
 	left: 48.75%;
 	position: absolute;
@@ -288,7 +295,7 @@ body {
 	width: 2.5%;
   }
  */
-  
+
 .accentPie {
 	transition: all 1s;
 	position: absolute;
@@ -305,7 +312,7 @@ body {
 	border-radius: calc(50%);
 	/* clip: rect(0px, 150px,150px, 76px); */
   }
-  
+
 .accentType0 {
 	background-color: red;
 }
@@ -327,26 +334,61 @@ body {
 	fill: #ccc;
 }
 
+.trackview {
+	margin: 0 15px;
+	/* border: 3px solid gray;
+	border-radius: 1em;
+	margin: 0 15px */
+}
 
 .trackview .column .row {
     flex: 1;
-    margin: 1px;
-    background-color: var(--color-light-gray);
-	transition: background-color 0s;
-	border: 1px solid #a55;
+	margin: 1px;
+	padding: 1px;
+	/* padding:10px; */
+    /* background-color:  */
+	/* transition: background-color 0s; */
+	border: 2px solid #a55;
+	min-height: 2.5em;
+	display: block;
+	border-radius: 3px;
 }
 
-.trackview .row .active {
+/* .trackview .row .active {
 	background-color: #ccc;
-}
+} */
 
 .trackview .column {
 	flex: 1;
-    margin: 1px;
-    background-color: var(--color-light-gray);
-    transition: background-color 0s;
+	transition: background-color 0s;
+	border: 2px solid transparent;
+	vertical-align: center;
+	margin: auto;
+}
+
+.trackview .row .leftT {
+	border: 2px solid gray;
+	border-radius: 1em 0 0 0;
+	vertical-align: center;
+	margin: auto;
+}
+
+.trackview .row .leftM {
+	border: 2px solid gray;
+	border-radius: 0;
+}
+
+.trackview .row .leftD {
+	border: 2px solid gray;
+	border-radius: 0 0 0 1em;
 }
 
 .trackview .activeCol{
-	border: 1px solid red;
+	border: 2px solid gray;
+}
+
+
+.trackview .labelCol {
+	margin: auto;
+	text-align: center;
 }

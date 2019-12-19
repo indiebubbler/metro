@@ -14,7 +14,7 @@ class SvgClock extends Component {
     }
 
     setAccents(track) {
-        this.setState({ track: track})
+        this.setState({ track: track })
         // this.drawSvg()
     }
 
@@ -31,13 +31,13 @@ class SvgClock extends Component {
         // let step = pctStep;
         this.props.track.forEach(trackColumn => {
             const idx = trackColumn.indexOf(filter);
-            slices.push({ percent: pctStep, color: idx >=0 ? accentColor[filter] : this.colorEmpty });
+            slices.push({ percent: pctStep, color: idx >= 0 ? accentColor[filter] : this.colorEmpty });
             // step += pctStep;
         })
         let cumulativePercent = 0;
 
         let paths = [];
-        slices.forEach(slice => {
+        slices.forEach((slice, idx) => {
             // destructuring assignment sets the two variables at once
             const [startX, startY] = this.getCoordinatesForPercent(cumulativePercent, radius);
 
@@ -58,7 +58,7 @@ class SvgClock extends Component {
 
             // create a <path> and append it to the <svg> element
             paths.push(
-                <path stroke="#444" strokeWidth="0.5%" d={pathData} fill={slice.color} />
+                <path key={"pie_" + idx} stroke="#444" strokeWidth="0.5%" d={pathData} fill={slice.color} />
             )
         });
         return paths
@@ -72,11 +72,11 @@ class SvgClock extends Component {
         // our xy is rotated 90', I had issues rotation seperate text
         let cnt
         this.props.track.forEach((accent, idx) => {
-            let  [x,y] = this.getCoordinatesForPercent(cumulativePercent, 0.9);
+            let [x, y] = this.getCoordinatesForPercent(cumulativePercent, 0.9);
             // tweak position of labels
             x -= 0.06
             labels.push(
-                    <text x={x} y={y}   textAnchor="middle" transform={"rotate(90, "+x+", "+y+")"} className="svgText">{idx +1}</text>
+                <text x={x} y={y} key={"label_" + idx} textAnchor="middle" transform={"rotate(90, " + x + ", " + y + ")"} className="svgText">{idx + 1}</text>
             )
             cumulativePercent += pctStep
         });
@@ -88,15 +88,35 @@ class SvgClock extends Component {
 
     render() {
         // console.log('vis render')
+        if (!this.props.instrument) {
+            return <div>Instrument not loaded</div>
+        }
+
+        let radiusIncrement = 0.5 / this.props.instrument.samples.length;
+
+        let circles = [];
+        for (let i = 0; i < this.props.instrument.samples.length; i++) {
+            circles.push(this.drawSvg(0.8 -radiusIncrement * i, i));
+        }
+
         return (
             <div ref={el => (this.container = el)} className="visClockContainer">
                 <svg viewBox="-1 -1 2 2" ref={el => (this.svg = el)}>
-                    <g  style={{ transform: 'rotate(-90deg)' }}>
-                    {this.drawSvg(0.8, accentTypes.UP)}
-                    {this.drawSvg(0.6, accentTypes.MIDDLE)}
-                    {this.drawSvg(0.4, accentTypes.DOWN)}
-                    {this.drawText()}
-                    <line ref={el => (this.line = el)} strokeLinecap="round" x1="0" y1="0" x2=".7" y2="0" stroke="rgba(255,255,255,0.5)" strokeWidth="0.1" />
+                    <g style={{ transform: 'rotate(-90deg)' }}>
+
+                        {
+                            circles
+                            // .map(function (item) {
+                            //     debugger
+                            // })
+                        }
+                            {/* // this.props.instrument.samples.map(() => function (sample) { */}
+
+
+                        {/* {this.drawSvg(0.6, accentTypes.MIDDLE)
+                        {this.drawSvg(0.4, accentTypes.DOWN)} */}
+                        {this.drawText()}
+                        <line ref={el => (this.line = el)} strokeLinecap="round" x1="0" y1="0" x2=".7" y2="0" stroke="rgba(255,255,255,0.5)" strokeWidth="0.1" />
                     </g>
 
 

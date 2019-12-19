@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import BarManager from './BarManager'
+// import BarManager from './BarManager'
 import { Container, Row, Col } from "reactstrap";
 import { accentTypes } from './AccentTypes'
 import AdvancedSlider from "./AdvancedSlider";
@@ -78,7 +78,7 @@ class PlaybackPanel extends Component {
 						    <TrackView ref='trackView' value={this.props.track} onChange={() => this.onAccentsChange()} />
                         </Col>
                     </Row>
-                    <Row>
+                    {/* <Row>
                         <Col xs={4}>Accents</Col>
                         <Col>
                             <BarManager
@@ -87,7 +87,7 @@ class PlaybackPanel extends Component {
                                 defaultValue={this.props.accents}
                             />
                         </Col>
-                    </Row>
+                    </Row> */}
                 </Row>
             </Container>
         );

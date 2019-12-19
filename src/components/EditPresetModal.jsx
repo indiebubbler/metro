@@ -7,6 +7,7 @@ import {
 	ModalBody,
 	ModalFooter
 } from "reactstrap";
+import Tr from "./Locale"
 
 class EditPresetModal extends Component {
 	state = {
@@ -84,7 +85,7 @@ class EditPresetModal extends Component {
 					color="light"
 					onClick={this.props.onSaveBtn}
 				>
-					Save current settings
+					{Tr("Save current settings")}
 				</Button>
 				<Modal
 					isOpen={this.state.modal}

@@ -8,6 +8,7 @@ import { Container, Row, Col } from "reactstrap";
 import { withCookies } from "react-cookie";
 import SimplePanel from "./components/SimplePanel";
 import ReactGA from 'react-ga';
+import Tr from './components/Locale'
 
 class App extends Component {
 	componentDidMount() {
@@ -85,7 +86,7 @@ class App extends Component {
 					</Row>
 					<Row>
 						<Col>
-							<SimplePanel title={"Keyboard controls"} className="about">
+							<SimplePanel title={Tr("Keyboard controls")} className="about">
 								<div><code>up/down</code> - adjust tempo</div>
 								<div><code>left/right</code> - previous/next step according to plan</div>
 								<div><code>space</code> - start/next step</div>

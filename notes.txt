@@ -1,14 +1,35 @@
 metro_
 
-
 TODO:
+* wywalić cookies bo używamy localStorage
+* user preset -> Basic Rock -> undefined taktów
+* dynamiczne ładowanie instrumentów
+* więcej niż 3 sample
+
+* wybrana cyfra powinna być jaśniejsza niż reszta na sliderach itp
+* Stable BPM shows NaN in planner
+* opisy zamiast emoji w plannerze
+* fullscreen jakiś
+* Save preset modal i18n
+* modal musi wyłączać główne mapowanie klawiatury bo inaczej 's' będzie startował aplikację itp
+* favico
+
+* Save preset
+* Loading screen when samples loading
+* dynamic sample loading
+* volume controler
+* i18n
+
+TrackView
+---------
+* Accents should have name of beats (Kick, Snare etc)
+
+* make Delete confirm popup
 - playback stop/repeat etc
 - stable
 
 - try to keep current step when plan changed
 - transport pause
-
-
 
 - circle on vis should be smaller than div
 - te kółka z jutuba zamiast clock 
@@ -18,10 +39,6 @@ https://www.youtube.com/watch?v=kpSudIoepgY
 - planner powinien mieć przyciski play/repeat a cycle back powinno być pokazane i uwzględnione w planie od początku
 
 - presets should render separately, maybe under planner
-
-
-
-
 
 
 * smooth bpm transition!

@@ -14,9 +14,10 @@ import { PlaybackModes } from "./PlaybackModes";
 import GeometricSlider from "./GeometricSlider";
 import AdvancedRange from "./AdvancedRange"
 import AdvancedSlider from "./AdvancedSlider"
+import DiscreteSlider from "./DiscreteSlider"
 import Utils from "./Utils";
 import { InitPreset } from "./PresetsLib";
-import Tr from "./Locale"
+import Tr, {TrRange} from "./Locale"
 class ModePanel extends Component {
 	state = {
 		bpmStep: this.props.bpmStep,
@@ -97,28 +98,26 @@ class ModePanel extends Component {
 
 	setValue(o) {
 		console.log('ModePanel.setValue', o)
-		const slider =
-			o.playMode === PlayModes.BY_BAR
-				? this.refs.byBarSlider
-				: this.refs.byTimeSlider;
-		slider.setValue(o.interval);
+
+		// const slider =
+		// 	o.playMode === PlayModes.BY_BAR
+		// 		? this.refs.byBarSlider
+		// 		: this.refs.byTimeSlider;
+
+		this.refs.byBarSlider.setValue(o.byBarInterval || InitPreset.byBarInterval)
+		this.refs.byTimeSlider.setValue(o.byTimeInterval || InitPreset.byTimeInterval)
+		// slider.setValue(o.interval);
 
 		this.refs.bpmRange.setState({ bounds: o.bpmRange })
 		this.setState(
 			{
 				playMode: o.playMode,
-				playbackMode: o.playbackMode || this.props.playbackMode,
+				playbackMode: o.playbackMode, // || this.props.playbackMode,
 				bpmStep: o.bpmStep,
-				byBarInterval:
-					o.playMode === PlayModes.BY_BAR
-						? o.interval
-						: this.state.byBarInterval,
-				byTimeInterval:
-					o.playMode === PlayModes.BY_TIME
-						? o.interval
-						: this.state.byTimeInterval,
+				byBarInterval: o.byBarInterval, // || this.state.byBarInterval,
+				byTimeInterval: o.byTimeInterval, //|| this.state.byTimeInterval,
 				bpmRange: o.bpmRange,
-				constantBpmSlider: o.constantBpmSlider || this.state.constantBpmSlider
+				constantBpmSlider: o.constantBpmSlider //|| this.state.constantBpmSlider
 			},
 			this.onAfterChange
 		);
@@ -135,11 +134,11 @@ class ModePanel extends Component {
 
 	byBarFormatter(barsNum) {
 		let s = barsNum + " ";
-		if (barsNum === 1) {
-			s += "bar";
-		} else {
-			s += "bars";
-		}
+		// if (barsNum === 1) {
+			s += TrRange(barsNum, "bars");
+		// } else {
+			// s += Tr("bars");
+		// }
 		return s;
 	}
 
@@ -213,20 +212,27 @@ class ModePanel extends Component {
 	}
 
 	onExerciseTimeSliderChange(value) {
-		this.setState({ exerciseTime: value}, this.onAfterChange);
+		console.log('exerciseTimeSliderChanged', value)
+		this.setState({ exerciseTime: value }, this.onAfterChange);
 	}
+
+
 
 	renderTimeSlider() {
 		return (<div>
 			{Tr("Exercise Time")}
-			<GeometricSlider
+			<DiscreteSlider
 				ref="timeSlider"
-				min={1}
-				max={3600}
-				marksAt={[1, 3600]}
-				// marks={{ 60: '1m', 300: '5m',  1300: '30m', 3600: '1 hr' }}
-				defaultValue={60}
-				pushable={true}
+				badgeFormatter={Utils.formatTimeLong}
+				markFormatter={Utils.formatTime}
+				// min={300}
+				// max={6400}
+				// marksAt={[1,60,120, 300, 600, 900,1200, 1800, 3600]}
+				// marks={{ 300: '5m', 600: '10m', 900: '15m',  1200: '20m', 1800: '30m', 3600: '1 hr', 6400: '2 hrs', 10800: '3 hrs' }}
+				marks={{ 300: '5m', 600: '10m', 900: '15m', 1200: '20m', 1800: '30m', 3600: '1 hr', 3823: '23 h', 7200: '2 hrs', 10800: '3 hrs' }}
+
+				// included={false}
+				defaultValue={"30m"}
 				onChange={(value) => this.onExerciseTimeSliderChange(value)}
 			/>
 
@@ -240,8 +246,9 @@ class ModePanel extends Component {
 			<AdvancedSlider
 				ref="stepsSlider"
 				min={2}
-				max={20}
-				marks={{ 2: '2', 10: '10', 20: '20' }}
+				included={false}
+				max={100}
+				marks={{ 2: '2', 10: '10', 20: '20', 30: '30', 40: '40', 50: '50', 60: '60', 70: '70', 80: '80', 90:'90', 100: '100' }}
 				defaultValue={10}
 				onChange={(value) => this.onStepsSliderChange(value)}
 			/>
@@ -251,7 +258,7 @@ class ModePanel extends Component {
 
 		// console.log('renderSpeedRange', this.state.bpmRange[0])
 		return (<div>
-			Speed range
+			{Tr("BPM range")}
 			<AdvancedRange
 				ref="bpmRange"
 				min={30}
@@ -296,7 +303,7 @@ class ModePanel extends Component {
 						onClick={() => this.onModeChange(PlayModes.STEPS)}
 						active={this.state.playMode === PlayModes.STEPS}
 					>
-						{Tr("Steps")}
+						{Tr("Set time")}
 					</Button>
 					<Button
 						size="sm"
@@ -309,7 +316,7 @@ class ModePanel extends Component {
 					</Button>
 				</ButtonGroup>
 
-				
+
 
 				<Collapse isOpen={this.state.playMode !== PlayModes.CONSTANT}>
 					{this.renderSpeedRange()}
@@ -336,9 +343,9 @@ class ModePanel extends Component {
 					</div>
 				</Collapse>
 				<Collapse isOpen={this.state.playMode === PlayModes.BY_TIME}>
-
 					<div>
-						Increase speed every
+
+						{Tr("Increase speed every")} {this.state.byTimeInterval}
 						<GeometricSlider
 							ref="byTimeSlider"
 							defaultValue={this.state.byTimeInterval}
@@ -346,8 +353,8 @@ class ModePanel extends Component {
 							markFormatter={Utils.formatTime}
 							onChange={v => this.onTimeIntervalChange(v)}
 							min={1}
-							max={600}
-							marksAt={[1, 2, 5, 10, 30, 60, 120, 240, 600]}
+							max={1200}
+							marksAt={[1, 2, 5, 10, 30, 60, 120, 240, 600, 1200]}
 						/>
 					</div>
 				</Collapse>
@@ -359,7 +366,7 @@ class ModePanel extends Component {
 				<Collapse isOpen={this.state.playMode === PlayModes.CONSTANT}>
 					<div>
 						Choose bpm
-
+	
 						<AdvancedSlider
 							ref="constantBpmSlider"
 							included={false}
