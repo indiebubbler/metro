@@ -3,6 +3,6 @@
 export const PlayModes = {
 	BY_BAR: "by_bar",
 	BY_TIME: "by_time",
-	STEPS: "steps",
-	CONSTANT: "stable"
+	SET_TIME: "set_time",
+	CONSTANT: "constant"
 };

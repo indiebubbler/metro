@@ -16,12 +16,6 @@ class SoundMachineInstrument extends Sampler {
             samplerMapping[ AccentNotes[idx] ] = item.file;
         })
 
-        // var o = {
-        //     "C3": props.samples[0].file,
-        //     "C#3": props.samples[1].file,
-        //     "D3": props.samples[2].file,
-        // };
-        
         super(samplerMapping, {
             baseUrl: props.baseUrl || './audio/' + props.key + '/',
             onload: () => onReadyCb(this)

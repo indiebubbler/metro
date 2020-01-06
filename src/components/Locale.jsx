@@ -1,9 +1,24 @@
-import { locale } from '../localization/pl-pl'
+import pl from '../localization/pl-pl'
+import it from '../localization/it-it'
 
 // A bit rough attempt to i18n
-
 export function GetNavigatorLanguage() {
     return (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en';
+}
+
+// set language for the app
+let locale;
+switch ( GetNavigatorLanguage() )
+{
+    case 'pl': 
+        locale = pl;
+        break;
+    case 'it':
+        locale = it;
+        break;
+    default: 
+        locale = {};    // this will default to en
+        break;
 }
 
 function Tr(text) {

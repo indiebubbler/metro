@@ -13,9 +13,11 @@ import { InitPreset } from "./PresetsLib";
 class Planner extends Component {
 	state = {
 		playbackMode: this.props.playbackMode,
+		playMode: this.props.playMode,
 		steps: [],
 		currentStepIdx: this.props.currentStepIdx,
 		stepProgress: 0,
+		planProgress: 0,
 		isUpDown: false,
 		isPaused: false
 	};
@@ -52,13 +54,14 @@ class Planner extends Component {
 			};
 			segments.push(segment);
 		}
-		else if (s.playMode === PlayModes.STEPS) {
+		else if (s.playMode === PlayModes.SET_TIME) {
+			// debugger
 			const duration = s.exerciseTime  / (s.stepsNum );
-			console.log('exerciseTime', s.exerciseTime)
+			// console.log('exerciseTime', s.exerciseTime)
 			
 			let bpm = s.bpmRange[0];
 			const bpmStep = (s.bpmRange[1] - s.bpmRange[0]) / (s.stepsNum -1 );
-			console.log('steps bpmStep', bpmStep)
+			// console.log('steps bpmStep', bpmStep)
 			while (bpm <= max) {
 				const segment = {
 					duration: duration,
@@ -111,43 +114,31 @@ class Planner extends Component {
 	}
 
 	updateProgress() {
-		// debugger
-		let p = 0;
+ 
+		// let stepProgress = 0;
 		const step = this.getStep(this.state.currentStepIdx);
+		
+		const stepProgress = (this.props.transport.ticks - step.startTimeTicks) / (Tone.Time(step.duration).toTicks());
 
-		// const t = new Tone.Time(step.duration).toTicks()
-		// const sT = new Tone.Time(step.startTime)
-		// debugger
-		// console.log('t', t.toTicks(), 'sT', sT.toTicks(), 'p', p)
+		const planProgress =  this.props.transport.ticks  / this.endTime;
 
-		p = (this.props.transport.ticks - step.startTimeTicks) / (Tone.Time(step.duration).toTicks());
-		// clamp p
-		p = Math.min(Math.max(p, 0), 1);
-		this.setState({ stepProgress: p })
+		//  this.clamp(this.props.transport.ticks  / this.endTime) 
+		this.setState({ stepProgress: this.clamp(stepProgress), planProgress: this.clamp(planProgress) })
 	}
 
-	// getTimelineEvent(eventId) {
-	// 	return this.props.transport._timeline._timeline.filter(function (o) { return o.id === eventId })[0];
-	// }
-
-	// initProgressUpdate() {
-
-	// 	const fps = 10;
-	// 	if (this.progressEventId) {
-	// 		this.props.transport.clear(this.progressEventId)
-	// 	}
-	// 	console.log('<SM>init Progress with fps:', fps)
-	// 	this.progressEventId = this.props.transport.scheduleRepeat((time) => this.onProgressEvent(time), 1 / fps, 0)
-
-	// }
+	clamp(value, min = 0 , max = 1) {
+		return Math.min(Math.max(value, min), max);
+	}
 
 	setPlan(config, stepIdx = 0) {
-		// store original config so we can recreate it when playback mode changes
-		console.log("<Planner>SetPlan", stepIdx)
+		// debugger
+		console.log("<Planner>SetPlan", config)
+		// console.log('exerciseTime', config.exerciseTime)
 		const plan = this.makePlan(config);
 		this.baseBpm = this.props.transport.bpm.value
 
 		const timeSignature = config.track.length;
+		console.log('planner received timeSignature: ', timeSignature)
 		let t = 0;
 		this.events = [];
 		let steps = []
@@ -182,7 +173,7 @@ class Planner extends Component {
 
 			switch (config.playMode) {
 				case PlayModes.BY_TIME:
-				case PlayModes.STEPS:
+				case PlayModes.SET_TIME:
 					t += this.calcTimeForBpm(s.duration, s.bpm);
 					break;
 				case PlayModes.BY_BAR:
@@ -200,7 +191,7 @@ class Planner extends Component {
 
 		}
 
-		console.log('steps', steps)
+		// console.log('steps', steps)
 
 		this.props.transport.schedule((time) => this.onPlanEnd(time), t);
 		this.endTime = Tone.Time(t).toTicks();
@@ -220,7 +211,8 @@ class Planner extends Component {
 				totalPlanTime: totalPlanTime,
 				// hmm this is shit as change in currentStepIdx doesn't move transport, this needs some thinking 
 				currentStepIdx: 0,
-				steps: steps
+				steps: steps,
+				playMode: config.playMode
 			}),
 			this.stepChanged
 		);
@@ -250,13 +242,13 @@ class Planner extends Component {
 		return this.state.steps[idx];
 	}
 
-	isLastStep(idx) {
-		return idx === this.state.steps.length - 1;
-	}
+	// isLastStep(idx) {
+	// 	return idx === this.state.steps.length - 1;
+	// }
 
-	isFirstStep(idx) {
-		return idx === 0;
-	}
+	// isFirstStep(idx) {
+	// 	return idx === 0;
+	// }
 
 	stepForward() {
 		// console.log("<Planner>stepForward()")
@@ -271,8 +263,6 @@ class Planner extends Component {
 
 	stepBackward() {
 		// console.log("<Planner>stepBackward()")
-
-
 		if (this.state.currentStepIdx - 1 >= 0) {
 			this.startStep(this.state.currentStepIdx - 1)
 		}
@@ -285,91 +275,17 @@ class Planner extends Component {
 		else if (this.state.playbackMode === PlaybackModes.REPEAT) {
 			this.startStep(0)
 		}
-
-		// if (this.state.playbackMode === PlaybackModes.STOP) {
-		// 	this.props.transport.stop();
-		// }
 	}
 	stepChanged() {
+		
 		// console.log("<Planner>stepChanged", this.getCurrentStep().stepIdx)
 		const bpm = this.getCurrentStep().bpm
-
-
 		this.props.onPlanStep(bpm)
 	}
 
-	// getNextStepIdx(idx) {
-	// 	switch (this.state.playbackMode) {
-	// 		case PlaybackModes.CYCLE:
-	// 			if (this.isLastStep(idx)) {
-	// 				this.playbackDirection = -1;
-	// 			}
-	// 			else if (this.isFirstStep(idx)) {
-	// 				this.playbackDirection = 1;
-	// 			}
-	// 			return this.playbackDirection  > 0 ? idx + 1 : idx - 1;
-	// 			break;
-	// 		case PlaybackModes.STOP && this.isLastStep(idx):
-	// 			return NaN
-	// 			break;
-
-	// 		default:
-	// 			// debugger
-	// 			return idx + 1;
-	// 	}
-
+	// resetStep() {
+	// 	this.startStep(0)
 	// }
-	// getNextStep() {
-	// 	let step;
-
-	// 	switch (this.state.playbackMode) {
-	// 		case PlaybackModes.CYCLE:
-	// 			if (this.isLastStep()) {
-	// 				this.playbackDirection = -1;
-	// 			}
-	// 			if (this.isFirstStep()) {
-	// 				this.playbackDirection = 1;
-	// 			}
-	// 			step = this.playbackDirection == true ? this.getStep(this.state.currentStepIdx + 1) : this.getStep(this.state.currentStepIdx - 1);
-
-	// 			break;
-	// 		case PlaybackModes.REPEAT:
-	// 			if (this.isLastStep()) {
-	// 				step = this.getStep(0);
-	// 			} else {
-	// 				step = this.getStep(this.state.currentStepIdx + 1);
-	// 			}
-	// 			break;
-	// 		case PlaybackModes.CONTINUE:
-	// 			if (this.isLastStep()) {
-	// 				// TODO
-	// 				let currentMode = this.getCurrentStep().playMode;
-	// 				currentMode.playMode = PlayModes.CONSTANT;
-	// 				currentMode.stableBpmSlider = this.state.currentBpm;
-	// 				this.refs.modePanel.setValue(currentMode);
-	// 			}
-	// 			else {
-	// 				step = this.getStep(this.state.currentStepIdx + 1);
-	// 			}
-	// 			break;
-	// 		case PlaybackModes.STOP:
-	// 			if (this.isLastStep()) {
-	// 				// passing undefined as step will cause machine to stop
-	// 				return undefined
-	// 			}
-	// 			else {
-	// 				step = this.getStep(this.state.currentStepIdx + 1);
-	// 			}
-	// 			break;
-	// 		default:
-	// 			step = this.getStep(this.state.currentStepIdx + 1);
-	// 	}
-	// 	return step;
-	// }
-
-	resetStep() {
-		this.startStep(0)
-	}
 
 	getCurrentStep() {
 		if (this.state.currentStepIdx >= this.state.steps.length) {
@@ -382,41 +298,6 @@ class Planner extends Component {
 		this.setState({ playbackMode: newPlaybackMode }, this.props.onChange);
 	}
 
-	// makeCyclePlan(steps) {
-
-	// 	// store steps
-	// 	// this.initialSteps = this.state.steps.slice()
-
-	// 	// deep copy
-	// 	debugger
-	// 	if (this.state.playbackMode === PlaybackModes.CYCLE) {
-	// 		this.initialSteps = JSON.parse(JSON.stringify(this.state.steps));
-
-	// 		let extraSteps = this.state.steps.slice();
-	// 		extraSteps.reverse()
-	// 		extraSteps.shift();
-
-	// 		extraSteps.map((el, idx) => {el.stepIdx = this.initialSteps.length + idx })
-	// 		let newSteps = [...this.initialSteps, ...extraSteps];
-	// 		this.setState({steps: newSteps});
-	// 	}
-	// 	else {
-	// 		if (this.initialSteps) {
-	// 			this.setState({steps: this.initialSteps})
-	// 		}
-	// 	}
-	// 	// let extraSteps = [...this.state.steps ]
-	// 	// extraSteps.reverse();
-	// 	// extraSteps.shift();
-	// 	// debugger
-	// 	// for (let i = 0 ; i < extraSteps.length ; i++) {
-	// 	// 	extraSteps[i].stepIdx = this.state.steps.length + i
-	// 	// }
-	// 	// let n =  [...this.state.steps, ...extraSteps];
-	// 	// debugger
-	// 	// this.setState({steps: n})
-	// 	// debugger
-	// }
 	barRender = b => {
 		const cls = this.state.currentStepIdx === b.stepIdx ? "current-step" : "";
 		return (
@@ -434,9 +315,6 @@ class Planner extends Component {
 		);
 	};
 
-	formatTime(date) {
-		return date.getMinutes() + ":" + date.getSeconds();
-	}
 	onUpDownBtn() {
 		this.setState({ isUpDown: !this.state.isUpDown, isRandom: false }, this.props.onChange)
 	}
@@ -445,14 +323,16 @@ class Planner extends Component {
 		this.setState({ isRandom: !this.state.isRandom, isUpDown: false }, this.props.onChange)
 	}
 	render() {
+		if (this.state.playMode === PlayModes.CONSTANT) {
+			return <div/>
+		}
 		return (
 
-			
 			<SimplePanel title={"Plan"}>
 				<div className="Planner">
 					{/* <div>Next step in {this.state.stepProgress.toFixed(1)} seconds</div> */}
 					<div>{Tr("Step progress")} <SimpleProgress value={this.state.stepProgress * 100} /></div>
-					<div>{Tr("Plan progress")} <SimpleProgress value={ 100 * (this.props.transport.ticks  / this.endTime) } /></div>
+					<div>{Tr("Plan progress")} <SimpleProgress value={this.state.planProgress * 100} /></div>
 
 					{/* <Button onClick={() => this.togglePause()}>
 					isPaused:
@@ -472,30 +352,26 @@ class Planner extends Component {
 						<Button
 							size="sm"
 							outline
-							color="light"
 							onClick={() => this.onPlaybackChange(PlaybackModes.STOP)}
 							active={this.state.playbackMode === PlaybackModes.STOP}
 						>
-							⏹️
+							{Tr("Stop")}
 						</Button>
 						<Button
 							size="sm"
 							outline
-							color="light"
 							onClick={() => this.onPlaybackChange(PlaybackModes.CONTINUE)}
 							active={this.state.playbackMode === PlaybackModes.CONTINUE}
 						>
-							▶️
-							{/* Cycle back */}
+							{Tr("Continue")}
 						</Button>
 						<Button
 							size="sm"
 							outline
-							color="light"
 							onClick={() => this.onPlaybackChange(PlaybackModes.REPEAT)}
 							active={this.state.playbackMode === PlaybackModes.REPEAT}
 						>
-							🔁
+							{Tr("Repeat")}
 						</Button>
 					</ButtonGroup>
 					<div>{Tr("Step order")}</div>
@@ -503,7 +379,6 @@ class Planner extends Component {
 						<Button
 							size="sm"
 							outline
-							color="light"
 							onClick={(e) => this.onUpDownBtn(e)}
 							active={this.state.isUpDown}
 						>
@@ -514,7 +389,6 @@ class Planner extends Component {
 							size="sm"
 							outline
 							// toggle
-							color="light"
 							onClick={() => this.onRandomBtn()}
 							active={this.state.isRandom}
 						>
@@ -535,6 +409,7 @@ export default Planner;
 
 Planner.defaultProps = {
 	playbackMode: InitPreset.playbackMode,
+	playMode: InitPreset.playMode,
 	onChange: () => { },
 	onPlanStep: () => { },
 	onPlanEnd: () => { },

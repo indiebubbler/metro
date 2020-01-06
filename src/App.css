@@ -1,9 +1,10 @@
 body {
 	/* background-color: #555 !important;
 	background-image: radial-gradient(#666, #455);  */
-	background-image: url('/bg.jpg');
+
 	background-size: cover;
-	background-color: #19212e;
+	/* background-color: #19212e; */
+	background-image: url('/bg.jpg');
 	-webkit-box-shadow: 14px 10px 413px 3px rgba(0, 0, 0, 0.6);
 	-moz-box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.6);
 	box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.6);
@@ -13,9 +14,38 @@ body {
 	cursor: pointer
 }
 
+.loadmask
+{
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 9999;
+	background: url('/spinner.gif') center no-repeat #000;
+	-webkit-animation-duration: 1s;animation-duration: 1s;
+	-webkit-animation-fill-mode: both;animation-fill-mode: both;
+}
+
+@-webkit-keyframes fadeOut {
+	0% {opacity: 1;}
+	100% {opacity: 0;visibility: hidden;}
+ }
+
+ @keyframes fadeOut {
+	0% {opacity: 1;}
+	100% {opacity: 0;visibility: hidden;}
+ }
+
+ .fadeOut {
+	-webkit-animation-name: fadeOut;
+	animation-name: fadeOut;
+ }
+
 .App {
 	text-align: center;
 	color: #ccc;
+	/* visibility: hidde; */
 }
 
 .App .rc-slider-handle {
@@ -37,8 +67,8 @@ body {
 
 .App .pane {
 	/* background-color: #222; */
-	border: thin solid #8885;
-	/* background-image: linear-gradient(#777, #666666); */
+	/* border: thin solid #fff; */
+	background-image: linear-gradient(#333, #222);
 	-webkit-box-shadow:  10px 10px 30px 3px rgba(0,0,0, 0.15);
 	-moz-box-shadow:  10px 10px 30px 3px rgba(0,0,0, 0.15);
 	box-shadow: 10px 10px 30px 3px rgba(0,0,0, 0.15);
@@ -56,16 +86,24 @@ body {
 	text-transform: uppercase;
 	padding: 0 1rem;
 	/* margin-bottom: 0.5rem; */
-	/* background-color: #404141; */
+	background-color: #404141;
 	text-align: left;
 	border-radius: 5px 5px 0 0;
 }
 
-.App .badge {
-	font-weight: 100;
+.App .pane-body {
+	/* padding: 0 1rem; */
+	display: block;
+	padding: 1rem;
 }
+
+
 .App .rc-slider-dot-active {
 	border-color: #f55;
+}
+
+.App .rc-slider-mark-text-active {
+	color: #fee;
 }
 .App .rc-slider-handle:hover {
 	border-color: #a55;
@@ -74,14 +112,10 @@ body {
 .App .rc-slider-handle-click-focused:focus {
 	border-color: #f55;
 }
-.App .pane-body {
-	/* padding: 0 1rem; */
-	display: block;
-	padding: 1rem;
-}
 
-.App .badge-light {
+.App .ModePanel .badge-light {
 	color: #ccc;
+	font-weight: lighter;
 	border: 0px solid #ccc;
 	background-color: transparent;
 }
@@ -214,120 +248,21 @@ body {
 }
 
 .footer {
-	font-size: 10px;
+	font-size: 0.7em;
+	color: #777
+	
+}
+.footer .badge {
+	background-color: transparent;
+	font-weight:normal;
 }
 
 .about code {
 	font-size: 15px;
 	color: #f55;
 }
+ 
 
-.visClockContainer {
-	margin: 0 auto;
-}
-
-
-.line {
-	width: 112px;
-	height: 47px;
-	border-bottom: 1px solid black;
-	position: absolute;
-}
-
-
-
-.clock {
-	border-radius: 50%;
-	background: #333 /*url(/images/posts/clocks/ios_clock.svg) no-repeat center*/;
-	/* background-size: 88%; */
-	height: 20em;
-	padding-bottom: 31%;
-	position: relative;
-	width: 20em;
-  }
-
-  .clock.simple:after {
-	background: #000;
-	border-radius: 50%;
-	content: "";
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-	width: 5%;
-	height: 5%;
-	z-index: 10;
-  }
-
-
-  .measure-container, .hand-container, .seconds-container {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-  }
-
-  .hand {
-	width: 4;
-	border-left: 10px solid gray;
-	border-radius: 4px 4px 0px 0px;
-	background-color: #aaa;
-	height: 40%;
-	left: 48.75%;
-	position: absolute;
-	top: 10%;
-	transform-origin: 50% 100%;
-	width: 2.5%;
-  }
-
-/*
-  .measureLine {
-	width: 2;
-	border-left: 10px solid #f952;
-	border-radius: 4px 4px 0px 0px;
-	/* background-color: #aaa;
-	height: 50%;
-	left: 48.75%;
-	position: absolute;
-	top: 0%;
-	transform-origin: 50% 100%;
-	width: 2.5%;
-  }
- */
-
-.accentPie {
-	transition: all 1s;
-	position: absolute;
-	width: calc(100%);
-	height: calc(100%);
-	border-radius: calc(50%);
-	/* clip: rect(0px, 150px, 150px, 0px); */
-  }
-
-  .hold {
-	position: absolute;
-	width: calc(100%);
-	height: calc(100%);
-	border-radius: calc(50%);
-	/* clip: rect(0px, 150px,150px, 76px); */
-  }
-
-.accentType0 {
-	background-color: red;
-}
-.accentType1 {
-	background-color: blue;
-}
-.accentType2 {
-	background-color: green;
-}
-.stroke-2 {
-	stroke: yellow;
-	stroke-dasharray: 20px;
-	stroke-width: 8px;
-    fill: #f00;
-}
 
 .svgText {
 	font-size: 1%  ;
@@ -335,60 +270,92 @@ body {
 }
 
 .trackview {
-	margin: 0 15px;
+	display: flex;
+	flex-wrap: nowrap;
+	/* margin: 0 15px; */
 	/* border: 3px solid gray;
 	border-radius: 1em;
 	margin: 0 15px */
 }
+/*
+.trackview .labelCol {
+	display: table;
+}
 
-.trackview .column .row {
+.trackview .label {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: left;
+	white-space: nowrap;
+} */
+/*
+.trackview .column .cell {
     flex: 1;
-	margin: 1px;
-	padding: 1px;
+	/* margin: 1px; */
+
+	/* padding: 1px; */
 	/* padding:10px; */
     /* background-color:  */
 	/* transition: background-color 0s; */
-	border: 2px solid #a55;
-	min-height: 2.5em;
-	display: block;
-	border-radius: 3px;
-}
+	/* border: 1px solid #a55;
+	min-height: 2em;
+	display: table-cell;
+	border-radius: 3px; */
+/* } */
 
-/* .trackview .row .active {
-	background-color: #ccc;
-} */
 
-.trackview .column {
-	flex: 1;
-	transition: background-color 0s;
-	border: 2px solid transparent;
-	vertical-align: center;
+
+
+/* 
+.trackview > div{
 	margin: auto;
-}
+	flex-basis: 50
+	
+}*/
 
-.trackview .row .leftT {
-	border: 2px solid gray;
-	border-radius: 1em 0 0 0;
-	vertical-align: center;
+
+.trackview .trackContainer {
 	margin: auto;
+	padding: 0 0.5em;
+	/* align-self: center; */
+	width: 100%;
 }
 
-.trackview .row .leftM {
-	border: 2px solid gray;
-	border-radius: 0;
+.trackview .btnContainer {
+	/* display: table-cell; */
+	/* width: 2em; */
+	/* flex: 0 0 1em; */
+	/* vertical-align: middle;
+	margin: auto 0; */
+	align-self: center;
 }
 
-.trackview .row .leftD {
-	border: 2px solid gray;
-	border-radius: 0 0 0 1em;
+.trackview .trackRow {
+	display: flex;
+	/* flex: 0 0 1em; */
+	/* flex: 1; */
+	min-height: 2em;
 }
 
-.trackview .activeCol{
-	border: 2px solid gray;
+.trackview .label {
+	flex: 0 0 4em;
+	/* flex-grow: 2; */
+	font-size: 0.8em;
+	margin: 0 0.2em;
+	/* border: solid 1px red; */
+	/* width: 5em; */
+	text-align: right;
+	align-self: center;
 }
 
+.trackview .cell {
+	/* width: 100%; */
 
-.trackview .labelCol {
+	min-width: 0.5em;
+	min-height: 2em;
 	margin: auto;
-	text-align: center;
+	flex-grow: 1;
+	border: 0.1em solid #a55;
+	margin: 0.1em;
+	border-radius: 0.2em;
 }

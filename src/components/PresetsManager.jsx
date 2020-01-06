@@ -19,7 +19,7 @@ class PresetsManager extends Component {
 		// const isStorageAvailable = Utils.storageAvailable('localStorage')
 		// this.userPresets = '{}'
 		const storedPresets = localStorage.getItem('userPresets');
-		this.state.userPresets =  storedPresets ? JSON.parse(storedPresets) : [];// this.props.cookies.get('userPresets');
+		this.state.userPresets =  storedPresets ? JSON.parse(storedPresets) : [];
 
 		this.state.showDelete = this.state.userPresets ? Array(this.state.userPresets.length).fill(false) : []
 		this.state.showEdit = this.state.userPresets ? Array(this.state.userPresets.length).fill(false) : []

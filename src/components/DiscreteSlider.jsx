@@ -8,7 +8,8 @@ class DiscreteSlider extends Component {
 	state = {
 		itemsCount: 0,
 		marks: {},
-		values: []
+		values: [],
+		value: undefined
 	}
 
 	constructor(props) {
@@ -34,20 +35,23 @@ class DiscreteSlider extends Component {
 		this.state.marks = marks
 		this.state.values = values;
 
-		
+		// set initial value
+		const val = this.state.values[this.state.marks[this.props.defaultValue]]
+		const output = isNaN(val) ? val : Number(val);
+		this.state.value = output;
 	}
 
-	componentDidMount() {
-		// set initial value
-		// const val = this.state.values[this.props.defaultValue];
-		// debugger
-		console.log('did mount')
-		this.onChange(this.getKeyByValue(this.state.marks, this.props.defaultValue))
-		// this.state.value = isNaN(val) ? val : Number(val)
-	}
+	// componentDidMount() {
+	// 	// set initial value
+	// 	// const val = this.state.values[this.props.defaultValue];
+	// 	// debugger
+	// 	console.log('did mount')
+	// 	// this.onChange(this.getKeyByValue(this.state.marks, this.props.defaultValue))
+	// 	// this.state.value = isNaN(val) ? val : Number(val)
+	// }
 
 	onChange(internalVal) {
-		
+
 		const val = this.state.values[this.state.marks[internalVal]]
 		const output = isNaN(val) ? val : Number(val)
 		this.setState({ value: output }, this.props.onChange(output))
@@ -58,6 +62,16 @@ class DiscreteSlider extends Component {
 		// debugger
 
 		return el
+	}
+
+	setValue(seconds) {
+
+
+
+	}
+
+	findValueByKey(key) {
+		return Number(this.getKeyByValue(this.state.marks, key));
 	}
 
 	render() {
@@ -73,7 +87,13 @@ class DiscreteSlider extends Component {
 					</Badge>
 				</div>
 				<div style={{ height: "30px" }}>
-					<Slider ref="slider" included={false} defaultValue={Number(this.getKeyByValue(this.state.marks, this.props.defaultValue))} style={{ height: '45px' }} onAfterChange={(v) => this.onChange(v)} min={0} max={100} step={null} marks={this.state.marks} />
+					<Slider ref="slider" included={false}
+						defaultValue={this.findValueByKey(this.props.marks[this.props.defaultValue])}
+						style={{ height: '45px' }}
+						onAfterChange={(v) => this.onChange(v)}
+						min={0}
+						max={100}
+						step={null} marks={this.state.marks} />
 				</div>
 			</>
 		);
@@ -89,5 +109,6 @@ export default DiscreteSlider;
 
 DiscreteSlider.defaultProps = {
 	badgeFormatter: function (v) { return v; },
-	markFormatter: function (v) { return v; }
+	markFormatter: function (v) { return v; },
+	defaultValue: 0
 }

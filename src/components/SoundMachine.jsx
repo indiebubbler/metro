@@ -4,21 +4,22 @@ import { Badge, Collapse, ButtonGroup, ButtonDropdown, DropdownToggle, DropdownM
 import SimplePanel from './SimplePanel'
 import InstrumentLib from "./InstrumentLib";
 import { InstrumentsArray, Instruments } from "./Instruments"
-import { Button } from 'reactstrap'
+import { Button, Spinner } from 'reactstrap'
 import { InitPreset } from './PresetsLib'
 import Planner from './Planner'
 // import Control from './Control'
 import Tr from './Locale'
 import PresetsManager from './PresetsManager'
 import SvgClock from "./SvgClock";
-import {AccentNotes} from './AccentTypes'
+import { AccentNotes } from './AccentTypes'
 import ModePanel from './ModePanel'
 import PlaybackPanel from './PlaybackPanel'
 import TrackView from './TrackView/TrackView'
 import SoundMachineInstrument from './SoundMachineInstrument'
-
+import KeyboardEventHandler from 'react-keyboard-event-handler'
 
 class SoundMachine extends Component {
+
 
 	// accentNotes = ["C3", "C#3", "D3"]; // this stay in sync with AccentTypes
 
@@ -29,7 +30,10 @@ class SoundMachine extends Component {
 	});
 
 	state = {
-		isPlaying: false,
+		initialized: false,
+		// isPlaying: false,
+		// initialized: false,
+		config: InitPreset,
 		// instrumentDropdownLabel: this.instrumentLib.getInstrument().label,    // TODO: support old instrument without key/label
 		// instrument: this.instrumentLib.getInstrument(),
 		track: this.props.track
@@ -44,7 +48,13 @@ class SoundMachine extends Component {
 	}
 
 	onInstrumentReady(smi) {
+
 		this.onInstrumentSelect(smi.key)
+
+		if (this.state.initialized === false) {
+			this.setState({ initialized: true })
+			this.props.onReady();
+		}
 	}
 
 	componentDidMount() {
@@ -63,82 +73,90 @@ class SoundMachine extends Component {
 		Tone.Transport.lookAhead = 10;
 
 		// initialize machine
+		// console.log('<SM>New main loop defined')
+
+		this.loop = new Tone.Part((time, note) => this.repeat(time, note), [])
+		this.loop.loop = true;
+		this.loop.start(0)
+
+
 
 		const config = this.getConfig();
 
 		this.setPlan(config);
 
-		this.initProgressUpdate()
-
-
+		this.initProgressUpdate();
+		this.documentTitle = document.title;
 	}
 
 	getConfig() {
+		// if (this.state.initialized === false) {
+		// 	debugger
+		// }
 		// collect UI information form panels and return all settings
-		// instrument might be not loaded yet so have a check here. Bit dodgy but should do 
-		return { ...this.refs.modePanel.state, ...this.refs.trackView.state, ...{ instrumentKey: this.state.instrument ? this.state.instrument.key : InitPreset.instrumentKey} };
+		// instrument might be not loaded yet so have a check here. Bit dodgy but should do
+		return { ...this.refs.modePanel.state, ...{ track: this.state.track }, ...{ instrumentKey: this.state.instrument ? this.state.instrument.key : InitPreset.instrumentKey } };
 	}
 
-	// setConfig(value) {
-	// 	this.refs.modePanel.setValue(value)
-	// 	this.refs.trackView.setValue(value.track);
-	// 	this.onControlChange()
-	// }
 
 	initProgressUpdate() {
-		// console.log('<SM>	initProgressUpdate')
+		console.log('<SM>	initProgressUpdate')
 		setInterval(() => this.onProgress(), 1000 / this.progressFps)
 	}
 
 	setPlan(config) {
+		console.log('setPlan', config)
 		// cancel all events
 		this.transport.cancel();
 		this.transport.position = 0;
-
+		// debugger
 		this.setTrack(config.track.slice());	// TODO: Unsure why we need to pass copy
 		this.refs.planner.setPlan(config);
 
 	}
 
-	setTrack(track) {
-		if (this.lastTrack === track) {
-			// console.log('accents unchanged')
+	setTrack(track, force = false) {
+		// debugger
+		if ((force === false && this.state.track === track)) {
+			console.log('track unchanged')
 			return;
 		}
+		console.log('recreating track', track)
 
-		this.lastTrack = track
+		// this.setState({ accents: accents })
 
+		// this.lastTrack = track
+		// if (isLengthChanged) {
+		// 	// if we changed length we need to update plan
+		// 	this.setPlan(config)
+
+		// }
 		this.setTimeSignature(track.length);
 
-		// translate from enum into notes
-		let pattern = track.map((item, idx) => {
+		// map track encoded as digits into notes
+		let pattern = track.map((item) => {
 			let o;
 
 			if (!Array.isArray(item)) {
 				throw new Error("Invalid track item");
 			}
 
-			o = item.map(subItem => {
+			o = item.map((subItem) => {
 				return [AccentNotes[subItem]]
 			});
-			
+
 			return o
 		})
-
-		if (this.loop === undefined) {
-			console.log('<SM>New main loop defined')
-			// this.loop = new Tone.Sequence((time, note) => this.repeat(time, note), [], '4n')
-			this.loop = new Tone.Part((time, note) => this.repeat(time, note), [])
-			this.loop.loop = true;
-			this.loop.start(0)
-		}
+		// console.log('pattern', pattern)
 
 		this.loop.removeAll();
 
 		// update existing notes
 		// for (let i = 0; i < Math.min(this.loop.length, pattern.length); i++) {
-		// 	//console.log('updating loop,', i, pattern[i]);
-		// 	this.loop.at(i, pattern[i])
+		// 	debugger
+		// 	console.log('updating loop b,', "0:", pattern[i]);
+		// 	this.loop.at("0:" + i, pattern[i])
+		// 	console.log('loop a', "0:", pattern[i]);
 		// }
 
 		// add new notes if requires
@@ -147,6 +165,7 @@ class SoundMachine extends Component {
 			for (let i = this.loop.length; i < pattern.length; i++) {
 				// console.log('adding beat at', "0:" + i, pattern[i])
 				this.loop.add("0:" + i, pattern[i]);
+
 			}
 		}
 
@@ -156,8 +175,7 @@ class SoundMachine extends Component {
 
 			for (let i = 0; i < cnt; i++) {
 				let idx = pattern.length + i;
-				// let el = this.loop.at(i);
-				console.log('removing', idx)
+				// console.log('removing', idx)
 				this.loop.remove("0:" + idx)
 			}
 		}
@@ -165,15 +183,16 @@ class SoundMachine extends Component {
 		this.loop.loopEnd = '1m'
 		this.loop.start(0);
 
-
-		// this.setState({ accents: accents })
 		this.setState({ track: track })
-		// console.log('<SM>Accents changed')
 
-		// if (this.refs.cssClock) { 
-		// 	this.refs.cssClock.setAccents(accents)
-		// }
 	}
+
+	recalculatePlan() {
+		const config = this.getConfig()
+		console.log('recalculatePlan', config)
+		this.setPlan(this.getConfig())
+	}
+
 
 	onProgress() {
 		if (this.transport.state === 'stopped') {
@@ -183,18 +202,21 @@ class SoundMachine extends Component {
 			this.refs.debug.innerHTML = this.transport.seconds.toFixed(1)
 		}
 
-		this.refs.planner.updateProgress()
-		this.refs.svgClock.setProgress(this.loop.progress)
+		if (this.refs.planner) { this.refs.planner.updateProgress() }
+
+
+		if (this.refs.svgClock) { this.refs.svgClock.setProgress(this.loop.progress) }
 	}
 
 	repeat = (time, notes) => {
 		// make sound
 		// console.log('playing notes', notes)
-		console.log('repeat', this.state.instrument.key)
+		// console.log('repeat', this.state.instrument.key)
 		for (let i = 0; i < notes.length; i++) {
+			// console.log('playing', i, notes[i])
 			this.state.instrument.triggerAttack(notes[i], time);
 		}
-		// draw stuff
+		// display current beat on TrackView
 		this.refs.trackView.setActiveColumn(Math.floor(this.loop.progress * this.transport.timeSignature));
 	}
 
@@ -213,20 +235,16 @@ class SoundMachine extends Component {
 		}
 	}
 
-	// onProgressEvent(time) {
-	// 	Tone.Draw.schedule(() => this.onProgress(), time)
-	// }
-
 	setBpm = bpm => {
 
-		if (isNaN(bpm) || bpm <= 0 || bpm > 1000) {
+		if (isNaN(bpm) || bpm <= 0 || bpm > 1200) {
 			throw new Error("Invalid BPM value: " + bpm)
 		}
 
 		if (bpm !== this.transport.bpm.value) {
-
 			Tone.Transport.bpm.value = bpm;
 			this.setState({ bpm: bpm })
+			document.title = bpm + ' | ' + this.documentTitle
 		}
 	};
 
@@ -234,9 +252,9 @@ class SoundMachine extends Component {
 		Tone.Transport.state === 'started' ? this.stop() : this.start();
 	};
 
-	getTimelineEvent(eventId) {
-		return this.transport._timeline._timeline.filter(function (o) { return o.id === eventId })[0];
-	}
+	// getTimelineEvent(eventId) {
+	// 	return this.transport._timeline._timeline.filter(function (o) { return o.id === eventId })[0];
+	// }
 
 	onPlanStep(bpm) {
 		// console.log('<SM>onPlanStep', bpm);
@@ -245,7 +263,11 @@ class SoundMachine extends Component {
 
 	onControlChange() {
 		// const currentStepIdx = this.refs.planner.getCurrentStep().stepIdx;
+
 		const v = this.getConfig();
+		console.log('onControlChange', v.track, this.state.track)
+		// this.setTrack(v.track)
+		// console.log('onControlChange', v.track)
 		this.setPlan(v);
 
 	}
@@ -257,72 +279,84 @@ class SoundMachine extends Component {
 
 	}
 
-	loadInstrument(resolve, reject) {
-		debugger;
-		var smiNew = new SoundMachineInstrument({
-			key: 'technokit',
-			label: 'Techno Kit',
-			samples: [{
-				file: "Kick.wav",
-				label: "Kick"
-			}, {
-				file: "Hat.wav",
-				label: "Hat"
-			}, {
-				file: "Snare.wav",
-				label: "Snare"
-			}]
-		});
-		resolve(smiNew)
-	}
 
 	onInstrumentSelect(instrumentKey) {
 		// if (this.instrumentLib.hasInstrument(instrumentKey)) {
 
 		if (this.instrumentLib.hasInstrument(instrumentKey)) {
+			// instrument is already in library so use  it
+			console.log('instrument is in library already')
+			const samplesUsedCnt = this.state.instrument ? this.state.instrument.samples.length : 0;
 			const instrument = this.instrumentLib.getInstrument(instrumentKey);
 			// const instrument = this.instrumentLib.setInstrument(instrumentKey);
-			console.log('setting instrument', instrument.label)
+			// console.log('setting instrument', instrument.label)
+
+			let newTrack = [];
+			// Update track as new instrument might have less samples than previous
+			if (samplesUsedCnt > instrument.samples.length) {
+				console.log('here we go, less samples => recreate')
+				this.state.track.forEach(element => {
+					let col = []
+					element.forEach((subEl, idx) => {
+						if (subEl < instrument.samples.length) {
+							col.push(subEl)
+						}
+					});
+					newTrack.push(col)
+				});
+			}
+			else {
+				console.log('more samples, so no problemo')
+				newTrack = this.state.track
+			}
+
+			// console.log('')
+
 			this.setState({
 				instrument: instrument,
 				instrumentDropdownLabel: instrument.label
 			});
+			// }, () => this.setTrack(newTrack));
 		}
 		else {
 			this.instrumentLib.loadInstrument(instrumentKey)
 		}
-		// 		}
-		// 		else {
-		// 			console.log('starting promise')
-		// 			let newInstrument = new Promise((resolve, reject) => this.loadInstrument(resolve, reject))
-
-		// 			newInstrument.then((fullfilled) => function(fullfilled) {
-		// 				console.log('promise fullfilled')
-		// 				debugger
-		// /*
-		// 				const instrument = this.instrumentLib.setInstrument(instrumentKey);
-		// 			this.setState({
-		// 				instrument: instrument,
-		// 				instrumentDropdownLabel: instrument.label
-		// 			});*/
-		// 				// this.currentInstrumentKey = instrumentKey;
-		// 				// return this.getInstrument();
-		// 			}).catch(function (error) {
-		// 				// ops, mom don't buy it
-		// 				console.log(error.message);
-		// 			});
-		// 		}
 	}
 
 	onPresetSelect(preset) {
-		this.onInstrumentSelect(preset.instrumentKey)
+		console.log("<SM>onPresetSelect")
+
+
+		// setConfig(value) {
+
+		// this.setPlan(preset);
+
+		this.onInstrumentSelect(preset.instrumentKey);
+		// this.setTrack(preset.track)
+		// this.setState({track: preset.track})
+		// this.setTrack(preset.track)
+		// this.state.track = preset.track
+
+		this.setState({ track: preset.track });///this.state.track = preset.track;
+
 		this.refs.modePanel.setValue(preset)
-		this.refs.trackView.setValue(preset.track)
 
 
-		// this.refs.playbackPanel.setValue(preset);
+		// this.setState({ track: preset.track })
+		// this.refs.modePanel.setValue(preset);
+
+
+
+		// this.refs.trackView.setValue(value.track);
+		// this.onControlChange()
+		// }
+
+		// debugger
+		// this.setTrack(preset.track)
+		// this.refs.trackView.setValue(preset.track)
 		// this.props.onPresetSelect(preset)
 	}
+
 
 
 	renderInstrumentsDropDown() {
@@ -349,82 +383,117 @@ class SoundMachine extends Component {
 
 	}
 
-	// loadInstrument() {
-	// 	this.onInstrumentSelect('technokit')
-	// }
+	onTrackChange(newTrack, isLengthChanged = false) {
+		console.log('onTrackChange')
+		// const config = this.getConfig()
 
+		if (this.state.track.length != newTrack.length) {
+			// length changed so after setting track, recreate Plan
+			const config = this.getConfig();
+			config.track = newTrack
+			this.setPlan(config);
+		}
+		else {
+			this.setTrack(newTrack)
+		}
+
+	}
+
+	handleKey(key, e) {
+		switch (key) {
+			case 's':
+				this.toggle();
+				break;
+			case 'esc':
+				this.stop();
+				break;
+			case 'left':
+				this.refs.planner.stepBackward()
+				break;
+			case 'right':
+				this.refs.planner.stepForward()
+				break;
+			case 'up':
+				if (this.state.bpm < 600) {
+					this.setBpm(this.state.bpm + 10);
+				}
+				break;
+			case 'down':
+				if (this.state.bpm > 10) {
+					this.setBpm(this.state.bpm - 10);
+				}
+				break;
+			default:
+				break;
+		}
+	}
 	render() {
 		return (
-			<Container>
-				<Row>
-					<Col>
-						<SimplePanel title={Tr('Control')}>
-							<Row>
-								<Col>
-									<div ref='debug'>debug</div>
-									<Button onClick={() => this.loadInstrument()}>Load Instrument</Button>
-								</Col>
-							</Row>
-							<Row>
-								<Col>
-									<Button
-										color="light"
-										onClick={() => this.toggle()}
-										block
-										active={this.state.isPlaying}
-									>
-										{Tr("Start / Stop")}
-									</Button>
-								</Col>
-							</Row>
-							<Row>
-								<Col>
-									<Container>
-										<Row>
-											<Col>
-												<Col xs="3">{Tr("Instrument")}</Col>
-											</Col>
-											<Col>
-												{this.renderInstrumentsDropDown()}
-											</Col>
-										</Row>
-									</Container>
-								</Col>
-							</Row>
 
-							<Row><Col><h2><Badge color="dark">BPM: {Tone.Transport.bpm.value.toFixed(0)}</Badge></h2></Col>
-							</Row>
-							<Row>
+			<>
+				<KeyboardEventHandler handleKeys={['s', 'esc', 'left', 'right', 'up', 'down']} onKeyEvent={(key, e) => this.handleKey(key, e)} />
+				<Container>
 
-							</Row>
-						</SimplePanel>
-					</Col>
-					{/* <Control ref='control' cookies={this.props.cookies} onPresetSelect={(preset) => this.onInstrumentSelect(preset.instrument)} onChange={() => this.onControlChange()} /> */}
-					<Col>
-						<ModePanel
-							ref="modePanel"
-							onChange={() => this.onControlChange()}
-						/>
-					</Col>
-				</Row>
-
-				<Row>
-
-					<Col>
-						<TrackView ref='trackView'  instrument={this.state.instrument}  onChange={() => this.onControlChange()} />
-						{/* <TrackView ref='trackView' onChange={() => this.onControlChange()} /> */}
-						{/* <PlaybackPanel ref='playbackPanel' onChange={() => this.onControlChange()} /> */}
-					</Col>
-				</Row>
-
-				<Col>
 					<Row>
 						<Col>
+							<SimplePanel title={Tr('Control')}>
+								<Row>
+									<Col>
+										<Button
+											// color="primary"
+											onClick={() => this.toggle()}
+											color={this.state.isPlaying ? 'secondary' : 'light'}
+											outline
+										>
+											{Tr("Start / Stop")}
+										</Button>
+									</Col>
+								</Row>
+								<Row>
+									<Col>
+										<Container>
+											<Row>
+												<Col>
+													<Col xs="3">{Tr("Instrument")}</Col>
+												</Col>
+												<Col>
+													{this.renderInstrumentsDropDown()}
+												</Col>
+											</Row>
+										</Container>
+									</Col>
+								</Row>
 
+								<Row><Col><h2><Badge color="dark">BPM: {Tone.Transport.bpm.value.toFixed(0)}</Badge></h2></Col>
+								</Row>
+								<Row>
+
+								</Row>
+							</SimplePanel>
+						</Col>
+						<Col>
+							<ModePanel
+								ref="modePanel"
+								//bpmRange={this.state.bpmRange}
+								//config={this.state.config}
+								onChange={() => this.onControlChange()}
+							/>
+						</Col>
+					</Row>
+					<Row>
+						<Col>
+							<TrackView
+								ref='trackView'
+								track={this.state.track}
+								instrument={this.state.instrument}
+								onChange={(track, isLengthChanged) => this.onTrackChange(track, isLengthChanged)}
+							/>
+						</Col>
+					</Row>
+					<Row>
+						<Col>
 							<Planner
 								transport={this.transport}
-								//					cookies={this.props.cookies}
-								// currentBpm={this.refs.sm.transport.bpm.value}
 								progress={this.state.progress}
 								onChange={() => this.onControlChange()}
 								onPlanStep={(bpm) => this.onPlanStep(bpm)}
@@ -433,20 +502,22 @@ class SoundMachine extends Component {
 							/>
 						</Col>
 						<Col>
+							<PresetsManager
+								ref="presetsManager"
+								getPreset={() => this.getConfig()}
+								onSelect={preset => this.onPresetSelect(preset)}
+							/>
+						</Col>
+					</Row>
+					<Row>
+						<Col>
 							<SvgClock ref="svgClock" instrument={this.state.instrument} track={this.state.track} />
 						</Col>
 					</Row>
-				</Col>
-				<Col>
-					<PresetsManager
-						ref="presetsManager"
-						cookies={this.props.cookies}
-						// presets={PresetsLib}
-						getPreset={() => this.getConfig()}
-						onSelect={preset => this.onPresetSelect(preset)}
-					/>
-				</Col>
-			</Container >
+
+				</Container >
+			</>
+			// </KeyboardEventHandler>
 		);
 	}
 
@@ -454,65 +525,21 @@ class SoundMachine extends Component {
 
 		this.transport.stop();
 		this.transport.position = 0;
-		// this.loop.stop();
-
-
-		// this.part.start();
-		// if (this.stepEvent) {
-		// 	this.stepEvent.stop();
-		// }
-		// this.transport.position = 0;
-		// console.log('stopped')
-		// console.log('<SM>stop')
 		this.setState({ isPlaying: false });
-		// this.stepEvent.stop();
-
 	}
 
 	start() {
-
 		this.transport.start("+.1");
 		this.loop.start();
 		this.setState({ isPlaying: true });
 	}
-	// start_old() {
-	// 	console.log('<SM>Start')
-
-	// 	// this.currentBeat = 0;
-
-	// 	if (!this.currentStep) {
-	// 		throw new Error("<SM>currentStep is invalid")
-	// 	}
-
-	// 	// this.setBpm(this.currentStep.bpm);
-	// 	// this.setTimeSignature(this.currentStep.accents.length)
-	// 	// this.setState({ isPlaying: true });
-	// 	this.executeStep(this.currentStep)
-	// 	// this.transport.position = 0;
-	// 	// this.loop.position = 0;
-	// 	// this.transport.position = 0;
-	// 	// this.loop.start(0);
-	// 	this.transport.start();
-	// 	// this.loop.position = 0;
-	// 	// this.refs.planner.startStepEvent(this.currentStep.duration);
-	// 	this.setState({ isPlaying: true });
-
-	// }
-
 }
 
 export default SoundMachine;
 
 
 SoundMachine.defaultProps = {
-	// beatsPerStep: 4,
-	// onBpmChange: function (bpm) { },
-	// onStepEnd: function () { },
-
-	// onLoopEnd: function (time) { },
-	// onToggle: function (state) { },
-	// onProgress: function (progress) { },
-	instrument: InitPreset.instrument
-
-	// accents: InitPreset.accents
+	instrument: InitPreset.instrument,
+	track: InitPreset.track,
+	onReady: function () { }
 };

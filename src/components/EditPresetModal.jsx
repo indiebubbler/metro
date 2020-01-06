@@ -7,6 +7,7 @@ import {
 	ModalBody,
 	ModalFooter
 } from "reactstrap";
+import KeyboardEventHandler from 'react-keyboard-event-handler'
 import Tr from "./Locale"
 
 class EditPresetModal extends Component {
@@ -77,6 +78,7 @@ class EditPresetModal extends Component {
 
 	render() {
 		return (
+			// <KeyboardEventHandler isExclusive={true}>
 			<>
 				<Button
 					style={{marginTop: '0.5em'}}
@@ -119,6 +121,7 @@ class EditPresetModal extends Component {
 						{this.renderDelete()}
 					</ModalFooter>
 				</Modal>
+			{/* </KeyboardEventHandler> */}
 			</>
 		);
 	}

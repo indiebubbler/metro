@@ -1,11 +1,3 @@
-// let colors = [
-//     '#f95',
-//     '#f55',
-//     '#f75',
-//     '#fa5'
-// ]
-
-
 export const Instruments = {
     TABLA: {
         key: 'tabla',
@@ -82,6 +74,36 @@ export const Instruments = {
             // color:  colors[1],
             idx: 3
         }]
+    },
+    YAMAHA_RX5: {
+        key: 'yamaha_rx5',
+        label: 'Yamaha RX 5',
+        samples: [{
+            file: "Kick.wav",
+            label: "Kick",
+            // color:  colors[0],
+            idx: 0
+        }, {
+            file: "Rim.wav",
+            label: "Rim",
+            // color:  colors[3],
+            idx: 1
+        }, {
+            file: "Ride.wav",
+            label: "Ride",
+            // color:  colors[2],
+            idx: 2
+        }, {
+            file: "Cowbell.wav",
+            label: "Cowbell",
+            // color:  colors[1],
+            idx: 3
+        }, {
+            file: "Shaker.wav",
+            label: "Shaker",
+            // color:  colors[1],
+            idx: 4
+        }]
     }
 };
 
@@ -91,14 +113,11 @@ Object.keys(Instruments).map(function (item, idx) {
     InstrumentsByKey[ Instruments[item].key ] = Instruments[item];
 });
 export {InstrumentsByKey};
-// export InstrumentsByKey;
 
-// export const InstrumentsByKey = {
-//     electrokit: Instruments.ELECTRO_KIT,
-//     metronome: Instruments.METRONOME,
-//     tabla: Instruments.TABLA,
-//     technokit: Instruments.BASIC_DRUM_KIT,
-// }
-export const InstrumentsArray = [
-    Instruments.TABLA, Instruments.ELECTRO_KIT, Instruments.METRONOME, Instruments.BASIC_DRUM_KIT
-]
+export const InstrumentsArray = Object.keys(Instruments)
+.map(item => {
+    return Instruments[item]
+});
+// [
+//     //Instruments.TABLA, Instruments.ELECTRO_KIT, Instruments.METRONOME, Instruments.BASIC_DRUM_KIT, Instruments.
+// ]

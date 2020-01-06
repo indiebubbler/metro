@@ -4,18 +4,19 @@ import "./components/SoundMachine";
 import SoundMachine from "./components/SoundMachine";
 import "rc-slider/assets/index.css";
 import "bootstrap/dist/css/bootstrap.css";
-import { Container, Row, Col } from "reactstrap";
-import { withCookies } from "react-cookie";
+import { Badge, Container, Row, Col } from "reactstrap";
 import SimplePanel from "./components/SimplePanel";
 import ReactGA from 'react-ga';
 import Tr from './components/Locale'
+import KeyboardEventHandler from 'react-keyboard-event-handler'
 
 class App extends Component {
+
+	state = {
+		showMask: true
+	}
+
 	componentDidMount() {
-
-		// keyboard listeners
-		document.addEventListener("keydown", e => this.handleKeyDown(e));
-
 		// google analytics
 		ReactGA.initialize({
 			trackingId: 'UA-151010848-1',
@@ -25,71 +26,33 @@ class App extends Component {
 			}
 		});
 		ReactGA.pageview(window.location.pathname + window.location.search);
-
 	}
 
-
-	handleKeyDown(e) {
-		switch (e.keyCode) {
-			case 83: // s
-				this.refs.sm.start();
-				break;
-			case 32: // space
-				// if you prevent you won't be able to use space in preset name...
-				// e.preventDefault();
-				// advance plan or toggle
-				// this.refs.sm.state.isPlaying ? this.refs.sm.refs.planner.stepForward() : this.refs.sm.toggle();
-				break;
-			case 27: // ESC
-				this.refs.sm.stop();
-				// this.refs.sm.refs.planner.resetStep()
-
-				break;
-			case 38: // Arrow up
-				e.preventDefault();
-
-				if (this.refs.sm.state.bpm < 600) {
-					this.refs.sm.setBpm(this.refs.sm.state.bpm + 10);
-				}
-				break;
-			case 40: // arrow down
-				e.preventDefault();
-				if (this.refs.sm.state.bpm > 10) {
-					this.refs.sm.setBpm(this.refs.sm.state.bpm - 10);
-				}
-				break;
-			case 37: // Arrow left
-				e.preventDefault();
-				this.refs.sm.refs.planner.stepBackward();
-				break;
-			case 39: // Arrow right
-				e.preventDefault();
-				this.refs.sm.refs.planner.stepForward();
-				break;
-			default:
-		}
+	removeLoadMask() {
+		console.log('removeMask')
+		// this.refs.loadMask.className = ""
+		this.setState({ showMask: false })
 	}
 
 	render() {
+
+
 		return (
+
 			<div className="App">
-				<Container className="app-container">
+
+				<Container className="app-container ">
 					<Row>
 						<Col>
-							<SoundMachine
-								ref="sm"
-								cookies={this.props.cookies}
-							>
-							</SoundMachine>
+							<SoundMachine ref="sm" onReady={() => this.removeLoadMask()} />
 						</Col>
-
 					</Row>
 					<Row>
 						<Col>
 							<SimplePanel title={Tr("Keyboard controls")} className="about">
-								<div><code>up/down</code> - adjust tempo</div>
+								<div><code>up/down</code> - adjust BPM</div>
 								<div><code>left/right</code> - previous/next step according to plan</div>
-								<div><code>space</code> - start/next step</div>
+								<div><code>s</code> - start/stop</div>
 								<div><code>esc</code> - stop</div>
 							</SimplePanel>
 						</Col>
@@ -97,17 +60,21 @@ class App extends Component {
 					<Row>
 						<Col>
 							<div className="footer">
-								<div>By using this site you agree to the use of cookies to store user defined presets.</div>
-								<div>Created using React and <a href="https://tonejs.github.io/" rel="noopener noreferrer" target="_blank">Tone.js</a>. Source code available <a href="https://github.com/indiebubbler/metro">here</a>. <br />Contact dev at <a href="mailto:indiebubbler@gmail.com?subject=Feedback">indiebubbler@gmail.com</a>.</div>
+								<div>Join discord using <Badge href="https://discord.gg/fAwnmVh" target="blank">this link</Badge> for feedback and improvement suggestions.</div>
+								<div>By using this site you agree to the use of cookies to store user defined presets and analytics.</div>
+								<div>Created using <Badge href="https://reactjs.org/" target="blank" >React</Badge> and <Badge href="https://tonejs.github.io/" target="blank">Tone.js</Badge>. Source code available <Badge href="https://github.com/indiebubbler/metro">here</Badge>.</div>
+								<div>Supported languages are english and polish. If you want to help translating this page into your language please contact me:<Badge href="mailto:indiebubbler@gmail.com?subject=Feedback">indiebubbler@gmail.com</Badge>.</div>
+								<div>&#169; IndieBubbler 2019-2020. Version 2.0 beta</div>
 							</div>
 						</Col>
 					</Row>
 				</Container>
-
+				<div ref="loadMask" className={this.state.showMask === true ? 'loadmask ' : 'loadmask fadeOut'} />
 			</div>
+
 		);
 	}
 
 }
 
-export default withCookies(App);
+export default App;
