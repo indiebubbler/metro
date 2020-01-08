@@ -8,7 +8,6 @@ import { Badge, Container, Row, Col } from "reactstrap";
 import SimplePanel from "./components/SimplePanel";
 import ReactGA from 'react-ga';
 import Tr from './components/Locale'
-import KeyboardEventHandler from 'react-keyboard-event-handler'
 
 class App extends Component {
 
@@ -29,8 +28,6 @@ class App extends Component {
 	}
 
 	removeLoadMask() {
-		console.log('removeMask')
-		// this.refs.loadMask.className = ""
 		this.setState({ showMask: false })
 	}
 
@@ -50,10 +47,10 @@ class App extends Component {
 					<Row>
 						<Col>
 							<SimplePanel title={Tr("Keyboard controls")} className="about">
-								<div><code>up/down</code> - adjust BPM</div>
-								<div><code>left/right</code> - previous/next step according to plan</div>
-								<div><code>s</code> - start/stop</div>
-								<div><code>esc</code> - stop</div>
+								<div><code>{Tr("arrow up/down")}</code> - {Tr("higher/lower BPM")}</div>
+								<div><code>{Tr("arrow left/right")}</code> - {Tr("previous/next step according to plan")}</div>
+								<div><code>s</code> - {Tr("start/stop")}</div>
+								<div><code>esc</code> - {Tr("stop")}</div>
 							</SimplePanel>
 						</Col>
 					</Row>

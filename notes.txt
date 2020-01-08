@@ -1,26 +1,25 @@
 
 BEFORE RELEASE:
-* kolorki na przyciskach
-* language selection
-
-
-
-
 
 
 TODO:
-* dodać reverb
+* dodać volume contro + fx
 * leherki
-
 * more visible discord link
-* language change en/pl
 
+
+
+-----------------------------
+- discrete slider needs redo
+- select Walk This Way, select Funky Drmmer, back to Walk this Way
+* no jednak coś jest nie tak jeszcze z tym jak isntrument ma więcej/mniej sampli
+* kolorki na przyciskach
+* language selection
+* language change en/pl
 * wybrana cyfra powinna być jaśniejsza niż reszta na sliderach itp
 * Save preset modal i18n
 * Rename preset/delete preset
 
-
------------------------------
 * modal musi wyłączać główne mapowanie klawiatury bo inaczej 's' będzie startował aplikację itp
 * display measure number in sequencer
 * zwiększyć max bpm bo dla techno cut time jest za wolny

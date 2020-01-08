@@ -1,6 +1,18 @@
-import Tr, { TrRange } from './Locale'
+import { TrRange, GetNavigatorLanguage } from './Locale'
 
 const Utils = {
+
+	toLocaleDateTime: function (dateTime) {
+		// safety
+		if (!dateTime) return '';
+
+		// go for it
+		return new Date(dateTime).toLocaleString(GetNavigatorLanguage(), {
+			dateStyle: "long",
+			timeStyle: "short"
+		});
+
+	},
 
 	padTime: function (t) {
 		return t < 10 ? "0" + t : t;
@@ -33,10 +45,10 @@ const Utils = {
 
 		if (m !== 0 || h !== 0) {
 			if (h !== 0 && m !== 0) {
-				o += (usePad ? Utils.padTime(m) : m ) + ' ' + TrRange(m, mLabel) + " ";
+				o += (usePad ? Utils.padTime(m) : m) + ' ' + TrRange(m, mLabel) + " ";
 			}
 			else if (m !== 0) {
-				o +=  (usePad ? Utils.padTime(m) : m )  + ' ' + TrRange(m, mLabel) + " ";
+				o += (usePad ? Utils.padTime(m) : m) + ' ' + TrRange(m, mLabel) + " ";
 			}
 			if (s !== 0) {
 				o += "" + (usePad ? Utils.padTime(s) : s) + ' ' + TrRange(s, sLabel)
@@ -45,11 +57,10 @@ const Utils = {
 		else {
 			o += t.getSeconds() + ' ' + TrRange(s, sLabel)
 		}
-		return o;
+		return o.trim();
 	},
 
-
-	storageAvailable: function(type) {
+	storageAvailable: function (type) {
 		var storage;
 		try {
 			storage = window[type];
@@ -58,7 +69,7 @@ const Utils = {
 			storage.removeItem(x);
 			return true;
 		}
-		catch(e) {
+		catch (e) {
 			return e instanceof DOMException && (
 				// everything except Firefox
 				e.code === 22 ||

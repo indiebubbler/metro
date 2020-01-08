@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { accentTypes, accentColor } from "../AccentTypes";
-import { Col, Row } from 'reactstrap'
+import { accentColor } from "../AccentTypes";
+
 
 class TrackRow extends Component {
 
@@ -11,7 +11,6 @@ class TrackRow extends Component {
     activeColor = 'rgb(255, 121, 121)';
 
     setActive(idx) {
-        // this.activeIdx = idx
         this.setState({activeIdx: idx})
     }
 
@@ -31,9 +30,6 @@ class TrackRow extends Component {
                         if (this.state.activeIdx === idx) {
                             style.borderColor = this.activeColor;
                         }
-                        //     this.props.trackRow[idx] === true ?: {}
-                        // }
-
                         return (
                             <div
                                 key={"cell_" + idx}
@@ -43,21 +39,6 @@ class TrackRow extends Component {
                         )
                     })
                 }
-
-
-                {/* <div className={"column " + (this.state.isCurrent === true ? 'activeCol' : '')}> */}
-
-                {/* <div key={"label_" + idx} className="row leftM labelCol"><p className="label">{item.label}</p></div> */}
-
-
-
-
-                {/* {this.props.instrument.samples.map((sample) => {
-                    return <div className={"elsub clickable"} key={"iRow" + sample.idx} style={this.props.value.indexOf(sample.idx) >= 0 ? { backgroundColor: accentColor[sample.idx] } : {}} onClick={() => this.props.onClick(sample.idx)}></div>
-                    // return <div className={"cell clickable"} key={"iRow" + sample.idx} style={this.props.value.indexOf(sample.idx) >= 0 ? {backgroundColor: accentColor[sample.idx]} : {}} onClick={() => this.props.onClick(sample.idx)}></div>
-                    // // this.makeRow(item)
-                }
-                )} */}
             </div>
         )
     }

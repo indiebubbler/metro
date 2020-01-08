@@ -1,13 +1,21 @@
 const pl = {
+    /* App */
+    "arrow up/down": "strzałki góra/dół",
+    "higher/lower BPM": "zwiększ/zmniejsz BPM",
+    "arrow left/right": "strzałki lewa/prawa",
+    "previous/next step according to plan": "poprzedni/następny krok wg planu",
+    "start/stop": "zacznij/zatrzymaj",
+    "stop": "zatrzymaj",
+
     /* SoundMachine */
     "Control": "Kontrola",
     "Start / Stop": "Zacznij / Zatrzymaj",
-    "Instrument" :  "Instrument",
+    "Instrument": "Instrument",
     "Mode": "Tryb",
     "Increase speed": "Zwiększaj prędkość",
     "BPM range": "Zakres BPM",
     "By bar": "Co kilka taktów",
-    "bar" :"takt",
+    "bar": "takt",
     "By time": "Co jakiś czas",
     "Set time": "W ustalonym czasie ćwiczeń",
     "Stable": "Nie zwiększaj",
@@ -16,24 +24,33 @@ const pl = {
     "Up and Down": "Szybciej i wolniej",
     "Shuffle": "Losowo",
     "Exercise Time": "Czas ćwiczenia",
-    "Edit": "Edytuj",
-    "User presets:": "Zapisane ustawienia:",
-    "Presets": "Presety",
     "Total time:": "Całkowity czas:",
-    
+
     /* Planner */
     "Stop": "Zatrzymaj",
     "Continue": "Kontynuuj",
     "Repeat": "Od początku",
     "After plan": "Po zakończeniu",
     "Step order": "Kolejność",
-    "Save current settings": "Zapisz bieżące ustawienia",
+
     "Plan progress": "Postęp planu",
     "Step progress": "Postęp kroku",
 
-    
+    /* Presets */
+    "Title": "Nazwa",
+    "Save current settings": "Zapisz bieżące ustawienia",
+    "Edit": "Edytuj",
+    "User presets": "Zapisane ustawienia",
+    "Presets": "Presety",
+    "Delete": "Usuń",
+    "Save Preset": "Zapisz Ustawienia",
+    "Cancel": "Anuluj",
+    "Are you sure?": "Czy aby na pewno?",
+    "Are you sure to delete current preset?": "Czy jesteś pewien, że chcesz usunąć to ustawienie?",
+    "Save": "Zapisz",
+
     /* TrackView */
-    "Sequencer" : "Sekwencer",
+    "Sequencer": "Sekwencer",
 
     /* Keyboard control panel */
     "Keyboard controls": "Skróty klawiszowe",
@@ -48,14 +65,14 @@ const pl = {
     },
 
     "hours": {
-        1: "godzina", 
+        1: "godzina",
         2: "godziny",
         3: "godziny",
         4: "godziny",
         5: "godzin"
     },
-    
-    "minutes" : {
+
+    "minutes": {
         1: "minuta",
         2: "minuty",
         3: "minuty",
@@ -63,7 +80,7 @@ const pl = {
         5: "minut"
     },
 
-    "seconds" : {
+    "seconds": {
         1: "sekunda",
         2: "sekundy",
         3: "sekundy",

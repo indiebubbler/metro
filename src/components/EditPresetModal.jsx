@@ -7,30 +7,28 @@ import {
 	ModalBody,
 	ModalFooter
 } from "reactstrap";
-import KeyboardEventHandler from 'react-keyboard-event-handler'
 import Tr from "./Locale"
 
 class EditPresetModal extends Component {
 	state = {
 		modal: false,
+		nestedModal: false,
 		preset: null,
+		presetId: null,
 		showDelete: false
 	};
 
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			modal: false
-		};
-		this.toggle = this.toggle.bind(this);
-	}
-
-	toggle() {
+	toggle = () => {
 		this.setState(prevState => ({
-			modal: !prevState.modal
+			modal: !prevState.modal,
+			nestedModal: false
 		}));
 	}
+
+	toggleNested = () => {
+		this.setState({ nestedModal: !this.state.nestedModal })
+	}
+
 
 	handleSave() {
 		const preset = this.state.preset;
@@ -41,11 +39,19 @@ class EditPresetModal extends Component {
 		}
 	}
 
-	edit(preset, showDelete) {
+	edit(preset, presetId, title) {
+
+		// preset = {...presetId};
+		if (presetId && title) {
+			preset.presetId = presetId;
+			preset.title = title;
+
+		}
+		// debugger;
 		this.setState(
 			{
 				preset: preset,
-				showDelete: showDelete
+				showDelete: presetId ? true : false
 			},
 			this.toggle
 		);
@@ -56,32 +62,26 @@ class EditPresetModal extends Component {
 		let preset = { ...this.state.preset };
 		preset.title = newTitle;
 		this.setState({ preset });
-		// this.setState()
-		// this.setState({title: e.target.value}
 	}
 
-	onDeleteBtn() {
+	handleDelete() {
 		this.props.onDeleteBtn(this.state.preset);
 		this.toggle();
 	}
 
 	renderDelete() {
-		 
 		if (this.state.showDelete === true) {
-			return(<Button color="warning" onClick={() => this.onDeleteBtn()}>
-				Delete
-				</Button>
+			return (
+				<Button color="warning" onClick={this.toggleNested}>{Tr("Delete")}</Button>
 			);
 		}
-		
 	}
 
 	render() {
 		return (
-			// <KeyboardEventHandler isExclusive={true}>
 			<>
 				<Button
-					style={{marginTop: '0.5em'}}
+					style={{ marginTop: '0.5em' }}
 					outline
 					size="sm"
 					color="light"
@@ -94,10 +94,11 @@ class EditPresetModal extends Component {
 					toggle={this.toggle}
 					className={this.props.className}
 				>
-					<ModalHeader toggle={this.toggle}>Save Preset</ModalHeader>
+					<ModalHeader toggle={this.toggle}>{Tr("Save Preset")}</ModalHeader>
 					<ModalBody>
 						<Input
 							onChange={e => this.titleChanged(e)}
+							placeholder={Tr("Title")}
 							defaultValue={
 								(this.state.preset &&
 									this.state.preset.title) ||
@@ -107,21 +108,28 @@ class EditPresetModal extends Component {
 						<div className="code">
 							{JSON.stringify(this.state.preset)}
 						</div>
+						<Modal isOpen={this.state.nestedModal} toggle={this.toggleNested}>
+							<ModalHeader toggle={this.toggleNested}>{Tr("Are you sure?")}</ModalHeader>
+							<ModalBody>{Tr("Are you sure to delete current preset?")}</ModalBody>
+							<ModalFooter>
+								<Button color="warning" onClick={() => this.handleDelete()}>{Tr("Delete")}</Button>
+								<Button onClick={this.toggleNested}>{Tr("Cancel")}</Button>
+							</ModalFooter>
+						</Modal>
 					</ModalBody>
 					<ModalFooter>
 						<Button
 							color="primary"
 							onClick={() => this.handleSave()}
 						>
-							Save
+							{Tr("Save")}
 						</Button>{" "}
 						<Button color="secondary" onClick={this.toggle}>
-							Cancel
+							{Tr("Cancel")}
 						</Button>
 						{this.renderDelete()}
 					</ModalFooter>
 				</Modal>
-			{/* </KeyboardEventHandler> */}
 			</>
 		);
 	}
@@ -131,7 +139,7 @@ export default EditPresetModal;
 
 
 EditPresetModal.defaultProps = {
-	onDeleteBtn: function(preset) {},
-	onSave: function(title, preset) {},
-	onSaveBtn: function(e, idx) {}
- };
+	onDeleteBtn: function (preset) { },
+	onSave: function (title, preset) { },
+	onSaveBtn: function (e, idx) { }
+};

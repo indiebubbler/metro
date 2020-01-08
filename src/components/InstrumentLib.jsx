@@ -1,6 +1,5 @@
 import { Component } from "react";
 import SoundMachineInstrument from "./SoundMachineInstrument"
-import Tone from 'tone'
 import { InitPreset } from "./PresetsLib";
 import {InstrumentsByKey} from "./Instruments"
 
@@ -33,53 +32,23 @@ class InstrumentLib extends Component {
         // })
 
         this.setInstrument(InitPreset.instrumentKey)
-
-        // console.log('<InstrumentLib>done constructor')
-
     }
 
-    // setInstrument(instrumentKey) {
-    //     if (this.lib[instrumentKey] === undefined) {
-    //         throw new Error("InstrumentLib has no such instrument with given key: " + instrumentKey)
-    //     }
-    //     this.currentInstrumentKey = instrumentKey;
-    //     return this.getInstrument();
-    // }
 
     loadInstrument(instrumentKey) {
-        console.log('loadInstrument', instrumentKey)        
         if (InstrumentsByKey[instrumentKey] === undefined) {
             throw new Error("Invalid instrumentKey: " + instrumentKey)
         }
-
-        // InstrumentsByKey[instrumentKey].onReady = (smi) => this.onInstrumentReady(smi)
-        const instrument = new SoundMachineInstrument(InstrumentsByKey[instrumentKey], (smi) => this.onInstrumentReady(smi));
+        new SoundMachineInstrument(InstrumentsByKey[instrumentKey], (smi) => this.onInstrumentReady(smi));
     }
 
     onInstrumentReady(smi) {
-        console.log('instrument loaded', smi.key)
         this.lib[smi.key] = smi;
         this.currentInstrumentKey = smi.key;
         smi.toMaster()
         this.props.onInstrumentReady(smi)
-        // return smi;
     }
 
-    // loadInstrument_old(instrumentKey) {
-    //     let newInstrument  = new Promise(
-    //         function(resolve, reject) {
-    //             var smiNew = new SoundMachineInstrument(]
-    //             });
-    //             resolve(smiNew)
-    //         }
-    //     )
-    //     newInstrument.then((fullfilled) => function(fullfilled) {
-    //         console.log('loaded', fullfilled)
-    //         debugger
-    //         this.currentInstrumentKey = instrumentKey;
-    //         return this.getInstrument();
-    //     })
-    // }
 
     hasInstrument(instrumentKey) {
         return this.lib[instrumentKey] !== undefined;
@@ -89,7 +58,6 @@ class InstrumentLib extends Component {
     setInstrument(instrumentKey) {
         if (this.lib[instrumentKey] === undefined) {
             this.loadInstrument(instrumentKey)    
-            // throw new Error("InstrumentLib has no such instrument with given key: " + instrumentKey)
         }
         else {
             this.currentInstrumentKey = instrumentKey;
@@ -104,14 +72,6 @@ class InstrumentLib extends Component {
         }
         return this.lib[instrumentKey]
     }
-    getInstrument_o() {
-        if (this.lib[this.currentInstrumentKey] === undefined) {
-            this.loadInstrument(this.currentInstrumentKey)
-            // throw new Error("There is no such instrument in InstrumentLib: " + this.currentInstrumentKey)
-        }
-        else {
-            return this.lib[this.currentInstrumentKey];
-        }
-    }
+
 }
 export default InstrumentLib;

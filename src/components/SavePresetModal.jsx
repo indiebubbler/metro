@@ -46,7 +46,7 @@ class SavePresetModal extends Component {
 				<ModalHeader toggle={this.toggle}>Save Preset</ModalHeader>
 				<ModalBody>
 					<Input onChange={e => this.setState({title: e.target.value})} value={(this.props.preset && this.props.preset.title) || ''}/>
-					<div>{JSON.stringify(this.props.preset)}</div>
+					{/* <div>{JSON.stringify(this.props.preset)}</div> */}
 				</ModalBody>
 				<ModalFooter>
 					<Button color="primary" onClick={() => this.handleSave()}>Save</Button>{' '}

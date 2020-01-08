@@ -1,5 +1,5 @@
 import pl from '../localization/pl-pl'
-import it from '../localization/it-it'
+// import it from '../localization/it-it'
 
 // A bit rough attempt to i18n
 export function GetNavigatorLanguage() {
@@ -11,10 +11,9 @@ let locale;
 switch ( GetNavigatorLanguage() )
 {
     case 'pl': 
+    case 'pl-PL': 
+    case 'pl-pl': 
         locale = pl;
-        break;
-    case 'it':
-        locale = it;
         break;
     default: 
         locale = {};    // this will default to en

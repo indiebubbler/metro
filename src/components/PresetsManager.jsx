@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Container, Row, Col } from "reactstrap";
+import { Button, Container, Row, Col } from "reactstrap";
 import EditPresetModal from "./EditPresetModal"
 import { PresetsLib, InitPreset } from './PresetsLib'
-import Tr, { GetNavigatorLanguage } from './Locale'
+import Tr from './Locale'
 import SimplePanel from "./SimplePanel";
 import Utils from "./Utils"
 
@@ -19,7 +19,7 @@ class PresetsManager extends Component {
 		// const isStorageAvailable = Utils.storageAvailable('localStorage')
 		// this.userPresets = '{}'
 		const storedPresets = localStorage.getItem('userPresets');
-		this.state.userPresets =  storedPresets ? JSON.parse(storedPresets) : [];
+		this.state.userPresets = storedPresets ? JSON.parse(storedPresets) : [];
 
 		this.state.showDelete = this.state.userPresets ? Array(this.state.userPresets.length).fill(false) : []
 		this.state.showEdit = this.state.userPresets ? Array(this.state.userPresets.length).fill(false) : []
@@ -37,6 +37,8 @@ class PresetsManager extends Component {
 			let track = [];
 			preset.accents.map(item => {
 				track.push([item])
+				// expected te return value in arrow function
+				return true;
 			})
 			preset.track = track;
 		}
@@ -50,21 +52,32 @@ class PresetsManager extends Component {
 	onSavePreset(title, o) {
 		const preset = { title: title, ...o }
 
+		// if it's got presetId then overwrite preset with such id
+		// if no presetId then create it here
+		if (preset.presetId === undefined) {
+			let presetId = 1;
+			if (this.state.userPresets.length > 0) {
+				// find max and add 1
+				presetId = Math.max.apply(Math, this.state.userPresets.map(function (p) { return p.presetId; }));
+				presetId++
+			}
+
+			// assign id
+			preset.presetId = presetId;
+		}
+
+
+		// update date
 		preset.savedDtm = new Date();
-		 
+
 		let userPresets = this.state.userPresets;
 
 		// if (!userPresets) {
 		// 	userPresets = [];
 		// }
-debugger
-		// overwrite by title 
-		let idx = -1;
-		for (let i = 0; i < userPresets.length; i++) {
-			if (userPresets[i].title.toLowerCase() === title.toLowerCase()) {
-				idx = i;
-			}
-		}
+
+		// overwrite by presetId
+		let idx = this.state.userPresets.findIndex(o => o.presetId === preset.presetId);
 
 		if (idx < 0) {
 			userPresets.push(preset)
@@ -73,18 +86,14 @@ debugger
 			userPresets[idx] = preset;
 		}
 
-		// update date
-
 
 		this.saveInLocalStorage(userPresets);
 		// window.localStorage.setItem(preset.title, preset);
 	}
 
 	saveInLocalStorage(presets) {
-		// this.props.cookies.set('userPresets', JSON.stringify(presets), { path: '/' });
 		localStorage.setItem('userPresets', JSON.stringify(presets))
-		this.setState({userPresets: presets})
-		// // this.userPresets = presets;
+		this.setState({ userPresets: presets })
 	}
 
 	showDeleteBtn(e, idx) {
@@ -93,7 +102,7 @@ debugger
 		this.setState({ showDelete });
 	}
 
-	showEditBtn(e, idx) {
+	showEditBtn(e, idx, presetId) {
 		let showEdit = { ...this.state };
 		showEdit[idx] = true;
 		this.setState({ showEdit });
@@ -103,78 +112,86 @@ debugger
 	}
 
 	onPresetDelete(preset) {
-		let idx = this.state.userPresets.indexOf(preset)
+		let idx = this.state.userPresets.findIndex(o => o.presetId === preset.presetId);
+		let newPresets = this.state.userPresets.slice();
+
+		// let idx = this.state.userPresets.indexOf(preset)
 		if (idx < 0) {
 			throw new Error("Selected preset " + preset.title + " has not been found in the store")
 		}
-		const presets = this.state.userPresets.splice(idx, 1);
-		
-		this.saveInLocalStorage(presets);
+
+		// remove preset
+		newPresets.splice(idx, 1);
+		this.saveInLocalStorage(newPresets);
 	}
 
 	onPresetEdit(e, idx) {
-		/// prevent from triggerring onClick 
-		e.stopPropagation()
-
+		var p = this.props.getPreset();
 		if (idx !== undefined) {
-			this.refs.presetEditor.edit(this.state.userPresets[idx], true)
+
+			this.refs.presetEditor.edit(p, this.state.userPresets[idx].presetId, this.state.userPresets[idx].title)
 		}
 		else {
-			// new preset
-			var p = this.props.getPreset();
 			this.refs.presetEditor.edit(p)
 		}
 	}
 
 	renderUserPresets(userPresets) {
-		if (userPresets.length == 0) {
+		if (userPresets.length === 0) {
 			return;
 		}
 
 		return (
 			<>
 				<Row>
-					{Tr("User presets:")}
+					{Tr("User presets")}:
 				</Row>
 				{userPresets.map((item, idx) => (
 					<Row className="presetItem clickable"
-						onMouseEnter={(e) => this.showEditBtn(e, idx)}
-						onMouseLeave={(e) => this.hideEditBtn(e, idx)}
 						onClick={() => this.onPresetClick(item)}
 						key={"preset_" + idx}
 					>
-						{item.title}<div className="userPresetSavedDtm">{item.savedDtm ? new Date(item.savedDtm).toLocaleDateString(GetNavigatorLanguage()) + ' ' + new Date(item.savedDtm).toLocaleTimeString(GetNavigatorLanguage()) : ''}</div>
-						<div className='editBtn clickable' style={{ visibility: this.state.showEdit[idx] ? '' : 'hidden' }} onClick={(e) => this.onPresetEdit(e, idx)}>{Tr("Edit")}</div>
+						<Col style={{textAlign: 'left'}} >
+							{item.title}
+						</Col>
+						<Col xs="auto" className="userPresetSavedDtm">
+							{Utils.toLocaleDateTime(item.savedDtm)}
+						</Col>
+						<Col>
+							<Button  size="sm" outline 
+								onClick={(e) => this.onPresetEdit(e, idx)}>
+								{Tr("Edit")}
+							</Button>
+						</Col>
+						{/* // <div className='editBtn clickable' onClick={(e) =>}></div> */}
 					</Row>
 
 				))}
 			</>
 		);
 	}
-	// setPreset(preset) {
-
-	// }
 
 	render() {
 		const userPresetsJson = localStorage.getItem('userPresets');
-		let userPresets = userPresetsJson ?  JSON.parse(userPresetsJson) : [];
-		
+		let userPresets = userPresetsJson ? JSON.parse(userPresetsJson) : [];
+
 		// let userPresets = [];
 		// // console.log('<PresetsManager>userPresets', userPresets)
 		return (
 			<SimplePanel className="PresetsManager" title={Tr("Presets")}>
 				<Container>
-							{PresetsLib.map((item, idx) => (
-								<Row
-									onClick={() => this.onPresetClick(item)}
-									className={"presetItem clickable"}
-									key={"preset_" + idx}
-								>
-									{item.title}
-								</Row>
-							))}
-							{this.renderUserPresets(userPresets)}
-					<Row>
+					{PresetsLib.map((item, idx) => (
+						<Row
+							onClick={() => this.onPresetClick(item)}
+							className={"presetItem clickable"}
+							key={"preset_" + idx}
+						>
+							{item.title}
+						</Row>
+					))}
+					{this.renderUserPresets(userPresets)}
+					{/* center button */}
+					<Row style={{ justifyContent: 'center' }}>
 						<EditPresetModal ref='presetEditor' onDeleteBtn={(preset) => this.onPresetDelete(preset)} onSaveBtn={(e, idx) => this.onPresetEdit(e, idx)} onSave={(title, preset) => this.onSavePreset(title, preset)} />
 					</Row>
 				</Container>

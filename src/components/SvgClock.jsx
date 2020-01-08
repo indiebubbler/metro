@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { accentColor, accentTypesArr, accentTypes } from './AccentTypes';
+import { accentColor } from './AccentTypes';
 import { InitPreset } from './PresetsLib'
-import Accent from './Accent';
 
 class SvgClock extends Component {
     state = {
@@ -69,8 +68,6 @@ class SvgClock extends Component {
         const pctStep = 1 / this.props.track.length;
         let cumulativePercent = 0;
 
-        // our xy is rotated 90', I had issues rotation seperate text
-        let cnt
         this.props.track.forEach((accent, idx) => {
             let [x, y] = this.getCoordinatesForPercent(cumulativePercent, 0.9);
             // tweak position of labels
@@ -80,8 +77,6 @@ class SvgClock extends Component {
             )
             cumulativePercent += pctStep
         });
-
-
 
         return <g>{labels}</g>;
     }

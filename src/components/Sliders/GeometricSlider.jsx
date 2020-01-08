@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Slider from 'rc-slider'
 import regression from 'regression';
 import {Badge} from 'reactstrap'
-import { InitPreset } from './PresetsLib';
 
 
 class GeometricSlider extends Component {
@@ -12,14 +11,13 @@ class GeometricSlider extends Component {
 	};
 
     constructor(props) {
-        // TOneverDo 
+        // TODO:  
         // currently it works only for min=1 only
         super(props);
         
         const d = [[0,this.props.min],  [100, this.props.max]];
         
         this.state.regression = regression.exponential(d, {precision : 10 })
-        // console.log('slider func', this.state.regression.string)
 
         this.prepareMarks();
 
@@ -34,15 +32,6 @@ class GeometricSlider extends Component {
             this.marks[  this.findX(this.props.marksAt[i]) ]  = this.props.marksAt[i];
         }
     }
-
-    // makeMark(value) {
-    //     return {
-    //         label: this.props.markFormatter(
-    //             Math.floor(value)
-    //         ),
-    //         style: this.props.marksStyle
-    //     };
-    // }
 
     onChange(v) {
         const value =  Math.floor(this.state.regression.predict(v)[1]);
@@ -85,6 +74,5 @@ GeometricSlider.defaultProps = {
     desc: '',
     badgeFormatter: function(v) {return v;},
     markFormatter: function(v) {return v;},
-    // defaultValue: 50,
     marksAt: []
 }

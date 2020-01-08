@@ -111,6 +111,8 @@ export const Instruments = {
 const InstrumentsByKey = {}
 Object.keys(Instruments).map(function (item, idx) {
     InstrumentsByKey[ Instruments[item].key ] = Instruments[item];
+    // expected to return a value from arrow func
+    return true;
 });
 export {InstrumentsByKey};
 
@@ -118,6 +120,3 @@ export const InstrumentsArray = Object.keys(Instruments)
 .map(item => {
     return Instruments[item]
 });
-// [
-//     //Instruments.TABLA, Instruments.ELECTRO_KIT, Instruments.METRONOME, Instruments.BASIC_DRUM_KIT, Instruments.
-// ]

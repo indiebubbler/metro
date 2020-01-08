@@ -55,13 +55,10 @@ class Planner extends Component {
 			segments.push(segment);
 		}
 		else if (s.playMode === PlayModes.SET_TIME) {
-			// debugger
 			const duration = s.exerciseTime  / (s.stepsNum );
-			// console.log('exerciseTime', s.exerciseTime)
 			
 			let bpm = s.bpmRange[0];
 			const bpmStep = (s.bpmRange[1] - s.bpmRange[0]) / (s.stepsNum -1 );
-			// console.log('steps bpmStep', bpmStep)
 			while (bpm <= max) {
 				const segment = {
 					duration: duration,
@@ -103,26 +100,13 @@ class Planner extends Component {
 	}
 
 	onPlanStep(idx) {
-		// this.props.transport.stop()
-		console.log("<Planner>onPlanStep", idx);
-		// const idx = this.state.currentStepIdx;
-		// this.nextStepIdx = this.getNextStepIdx(idx);
-		// this.startStep(idx)
-
-		// debugger
 		this.setState({ currentStepIdx: idx }, this.stepChanged)
 	}
 
 	updateProgress() {
- 
-		// let stepProgress = 0;
 		const step = this.getStep(this.state.currentStepIdx);
-		
 		const stepProgress = (this.props.transport.ticks - step.startTimeTicks) / (Tone.Time(step.duration).toTicks());
-
 		const planProgress =  this.props.transport.ticks  / this.endTime;
-
-		//  this.clamp(this.props.transport.ticks  / this.endTime) 
 		this.setState({ stepProgress: this.clamp(stepProgress), planProgress: this.clamp(planProgress) })
 	}
 
@@ -131,14 +115,10 @@ class Planner extends Component {
 	}
 
 	setPlan(config, stepIdx = 0) {
-		// debugger
-		console.log("<Planner>SetPlan", config)
-		// console.log('exerciseTime', config.exerciseTime)
 		const plan = this.makePlan(config);
 		this.baseBpm = this.props.transport.bpm.value
 
 		const timeSignature = config.track.length;
-		console.log('planner received timeSignature: ', timeSignature)
 		let t = 0;
 		this.events = [];
 		let steps = []
@@ -147,8 +127,6 @@ class Planner extends Component {
 		for (let i = 0; i < plan.length; i++) {
 			const s = plan[i];
 			const beatDuration = 60 / s.bpm;
-			// copy bpm so we can pass it to onPlanStep, not sure how to achieve it otherwise
-			let b = s.bpm;
 
 			// create  step end event
 			this.props.transport.schedule((time) => this.onPlanStep(i), t)
@@ -160,8 +138,6 @@ class Planner extends Component {
 			const bar = {
 				bpm: s.bpm,
 				duration: duration,
-				durationBars: durationInBars,
-				durationFormatted: Utils.formatTime(duration),
 				durationBars: durationInBars.toFixed(1),
 				durationFormatted: Utils.formatTime(duration),
 				stepIdx: i,
@@ -191,21 +167,9 @@ class Planner extends Component {
 
 		}
 
-		// console.log('steps', steps)
-
 		this.props.transport.schedule((time) => this.onPlanEnd(time), t);
 		this.endTime = Tone.Time(t).toTicks();
 		
-		// add an end plan event
-		// if (config.playMode === PlayModes.BY_BAR) {
-		// 	// console.log('end event at', "+" + plan[0].duration * plan.length + "m")
-		// 	// this.props.transport.schedule((time) => this.onPlanEnd(time), "+" + plan[0].duration * plan.length + "m")
-		// }
-		// else {
-		// 	// console.log('end event at', t)
-		// 	// this.props.transport.schedule((time) => this.onPlanEnd(time), t)
-		// }
-
 		this.setState(
 			prevState => ({
 				totalPlanTime: totalPlanTime,
@@ -223,16 +187,9 @@ class Planner extends Component {
 
 	}
 
-	// stop() {
-	// 	// console.log("lockBpm", this.props.lockBpm);
-	// 	this.resetStep();
-	// }
-
 	startStep(stepIdx) {
 		if (this.state.currentStepIdx !== stepIdx) {
-			console.log("setStep", stepIdx)
 			const s = this.getStep(stepIdx);
-			// const event = this.getTimelineEvent(this.events[stepIdx])
 			this.props.transport.ticks = s.startTimeTicks;
 			this.setState({ currentStepIdx: stepIdx }, this.stepChanged)
 		}
@@ -242,27 +199,14 @@ class Planner extends Component {
 		return this.state.steps[idx];
 	}
 
-	// isLastStep(idx) {
-	// 	return idx === this.state.steps.length - 1;
-	// }
-
-	// isFirstStep(idx) {
-	// 	return idx === 0;
-	// }
-
 	stepForward() {
-		// console.log("<Planner>stepForward()")
 		// check if we're not at the end of plan
 		if (this.state.currentStepIdx + 1 < this.state.steps.length) {
 			this.startStep(this.state.currentStepIdx + 1)
 		}
-		else {
-			// console.log('no more steps')
-		}
 	}
 
 	stepBackward() {
-		// console.log("<Planner>stepBackward()")
 		if (this.state.currentStepIdx - 1 >= 0) {
 			this.startStep(this.state.currentStepIdx - 1)
 		}
@@ -277,15 +221,9 @@ class Planner extends Component {
 		}
 	}
 	stepChanged() {
-		
-		// console.log("<Planner>stepChanged", this.getCurrentStep().stepIdx)
 		const bpm = this.getCurrentStep().bpm
 		this.props.onPlanStep(bpm)
 	}
-
-	// resetStep() {
-	// 	this.startStep(0)
-	// }
 
 	getCurrentStep() {
 		if (this.state.currentStepIdx >= this.state.steps.length) {

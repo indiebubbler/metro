@@ -1,5 +1,5 @@
 import { Sampler } from 'tone'
-import { accentTypesArr, AccentNotes } from './AccentTypes';
+import { AccentNotes } from './AccentTypes';
 
 
 class SoundMachineInstrument extends Sampler {
@@ -14,6 +14,8 @@ class SoundMachineInstrument extends Sampler {
         let samplerMapping = {}
         props.samples.map(function (item, idx) {
             samplerMapping[ AccentNotes[idx] ] = item.file;
+            // expected to return a value in function
+            return true;
         })
 
         super(samplerMapping, {

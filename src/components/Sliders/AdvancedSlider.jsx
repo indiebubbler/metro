@@ -30,9 +30,3 @@ class AdvancedSlider extends Slider {
 }
 
 export default AdvancedSlider;
-
-
-// AdvancedSlider.defaultProps = {
-// 	badgeFormatter: function(v) {return v;}
-// 	// markFormatter: function(v) {return v;}
-// }
