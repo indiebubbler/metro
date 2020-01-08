@@ -1,7 +1,7 @@
 # metro
-Speed Trainer Metronome
+Speed Trainer Metronome / Drum Machine
 
-Free Online Speed Trainer Metronome 
+Free Online Speed Trainer Metronome/Drum Machine
 
 Developed for musicians willing to improve speed of their excercises/routines/ideas.
  
@@ -9,15 +9,14 @@ Developed for musicians willing to improve speed of their excercises/routines/id
 - works on smartphones and tablets
 - completely free
 - highly customizable to your preferences
-- can serve just as regular metronome
-- supports odd rhythms (3-16 beats per measure)
-- 3 instruments currently available (Electronic drum kit, Metronome click sound and indian Tabla)
-- create cool grooves using accents
-- store and recall your ideas (save/load presets) without any login requirements
-
+- can serve just as a regular metronome
+- supports odd rhythms (1-24 beats per measure)
+- 5 instruments available (Electronic drum kit, Metronome click sound, Basic Drum Kit, Yamaha RX 5 and indian Tabla)
+- store and recall your ideas (save/load presets) in your browser (no need to login)
+- supports multiple languages (currently polish and english); contact me if you're willing to help translating it into your language :)
 
 Available at: https://indiebubbler.github.io/metro/
 
-Uses Tone.js (https://tonejs.github.io/) - great javascript sound library.
+Uses ReactJS and Tone.js (https://tonejs.github.io/) - amazing javascript sound library.
 
 Contact: indiebubbler@gmail.com
