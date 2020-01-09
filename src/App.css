@@ -75,6 +75,10 @@ body {
 	margin: 0 0 !important;
 }
 
+.advancedSlider .inlineBtn {
+	font-size: 0.7em;
+}
+
 .App .pane {
 	/* background-color: #222; */
 	/* border: thin solid #fff; */
@@ -338,7 +342,13 @@ body {
 	/* flex: 0 0 1em; */
 	/* vertical-align: middle;
 	margin: auto 0; */
-	align-self: center;
+	margin: auto;
+	/* vertical-align: center !import#ant; */
+	/* align-self: center !important; */
+}
+
+.trackview .beatsCntBadge {
+	font-size: x-large;
 }
 
 .trackview .trackRow {

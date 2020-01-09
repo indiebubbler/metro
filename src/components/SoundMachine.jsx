@@ -374,6 +374,9 @@ class SoundMachine extends Component {
 								onChange={() => this.onControlChange()}
 							/>
 						</Col>
+						<Col style={{margin: 'auto'}}>
+							<SvgClock ref="svgClock" instrument={this.state.instrument} track={this.state.track} />
+						</Col>
 					</Row>
 					<Row>
 						<Col>
@@ -405,9 +408,7 @@ class SoundMachine extends Component {
 						</Col>
 					</Row>
 					<Row>
-						<Col>
-							<SvgClock ref="svgClock" instrument={this.state.instrument} track={this.state.track} />
-						</Col>
+					
 					</Row>
 
 				</Container >

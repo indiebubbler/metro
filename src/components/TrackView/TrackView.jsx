@@ -87,8 +87,10 @@ class TrackView extends Component {
                         <ButtonGroup size="sm" vertical>
                             <Button onClick={() => this.addBeat()}>+</Button>
                             <Button onClick={() => this.removeBeat()}>-</Button>
-                            <h3><Badge color="dark">{this.props.track.length}</Badge></h3>
                         </ButtonGroup>
+                        <div height="1em">
+                        <Badge className="beatsCntBadge" color="dark">{this.props.track.length}</Badge>
+                        </div>
                     </div>
 
 

@@ -24,12 +24,12 @@ export const Instruments = {
             label: "Kick",
             idx: 0
         }, {
-            file: "HiHat.wav",
-            label: "Hi Hat",
-            idx: 1
-        }, {
             file: "Snare.wav",
             label: "Snare",
+            idx: 1
+        }, {
+            file: "HiHat.wav",
+            label: "Hi Hat",
             idx: 2
         }]
     },

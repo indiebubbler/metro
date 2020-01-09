@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import Slider from "rc-slider";
 import { Badge } from "reactstrap";
-// import {Container, Row, Col} from 'reactstrap'
 
 class DiscreteSlider extends Component {
 
@@ -13,19 +12,30 @@ class DiscreteSlider extends Component {
 
         super(props);
 
-        this.state.value = this.props.marks.find(el => el.value === this.props.defaultValue).value;
-        this.state.innerValue = this.props.marks.findIndex(el => el.value === this.props.defaultValue);
+        // set defaultValue
+        this.state.value = this.props.marks[this.props.defaultValue].value;
+        
+        // find the index of defaultValue and set that on our innerSlider
+        this.state.innerValue = Object.keys(this.props.marks).indexOf(this.props.defaultValue + '');
+
+        // helpful to display marks properly (need to be an object)
+        this.state.innerMarks = {};
+        Object.values(this.props.marks).map((el, idx)  => {
+            this.state.innerMarks[idx] = {label: el.label};
+            return true;
+        })
     }
 
-    onSliderChange = (sliderValue) => {
-        this.setState({ innerValue: sliderValue, value: this.props.marks[sliderValue].value})        
-        this.props.onChange(this.props.marks[sliderValue].value)
+    onSliderChange(sliderValue) {
+        const value = Object.values(this.props.marks)[sliderValue].value;
+        this.setState({ innerValue: sliderValue, value: value })
+        this.props.onChange(value)
     }
 
     setValue(v) {
-        const innerValue = this.props.marks.findIndex(el => el.value === v);
-        const value = this.props.marks.find(el => el.value === v).value;
-        this.setState({value: value, innerValue: innerValue})
+        // find index of new value
+        const innerValue = Object.keys(this.props.marks).indexOf(v+'');//this.props.marks.findIndex(el => el.value === v);
+        this.setState({ value: v, innerValue: innerValue })
     }
 
     render() {
@@ -40,18 +50,16 @@ class DiscreteSlider extends Component {
                     </Badge>
                 </div>
                 {/* render it slightly narrower so we fit marks which usually falls outside the container */}
-                <div style={{ height: "3.5em", width: '95%', margin: 'auto', whiteSpace: 'nowrap' }}>   
-                    <Slider ref="slider" 
+                <div style={{ height: "3.5em", width: '95%', margin: 'auto', whiteSpace: 'nowrap' }}>
+                    <Slider ref="slider"
                         included={false}
-                        // defaultValue={this.findValueByKey(this.props.marks[this.props.defaultValue])}
                         value={this.state.innerValue}
                         style={{ height: '3.5em' }}
-                        onChange={this.onSliderChange}
-                        // onAfterChange={this.onAfterChange}
+                        onChange={(v) => this.onSliderChange(v)}
                         min={0}
-                        max={this.props.marks.length - 1}
+                        max={Object.keys(this.props.marks).length - 1}
                         step={1}
-                        marks={this.props.marks} />
+                        marks={this.state.innerMarks} />
                 </div>
             </>
         );

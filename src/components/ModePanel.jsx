@@ -131,13 +131,20 @@ class ModePanel extends Component {
 
 
 	renderTimeSlider() {
+		const marks = {}
+		const mArr = [300,600,900,1200,1800,3600,7200,10800]
+		
+		mArr.map(el => {
+			marks[el] = {value: el, label: Utils.formatTime(el)};
+			return true;
+		});
 		return (<div>
 			{Tr("Exercise Time")}
 			<DiscreteSlider
 				ref="exerciseTimeSlider"
 				badgeFormatter={Utils.formatTimeLong}
 				markFormatter={Utils.formatTime}
-				marks={[300,600,900,1200,1800,3600,7200,10800].map(el => {return {value: el, label: Utils.formatTime(el)}})}
+				marks={marks}
 				defaultValue={this.state.exerciseTime}
 				
 				onChange={(value) => this.onExerciseTimeSliderChange(value)}
@@ -272,8 +279,9 @@ class ModePanel extends Component {
 							ref="constantBpmSlider"
 							included={false}
 							min={10}
+							btnStep={10}
 							max={1200}
-							marks={{ 30: '30', 100: '100', 200: '200', 300: '300', 400: '400', 500: '500', 600: '600',700: '700',800: '800', 900: '900', 1000: '1000', 1100: '1100', 1200: '1200' }}
+							marks={{ 30: '30', 200: '200', 400: '400', 600: '600', 800: '800', 1000: '1000',  1200: '1200' }}
 							value={this.state.constantBpmSlider}
 							onChange={this.onBpmSliderChange}
 						/>
