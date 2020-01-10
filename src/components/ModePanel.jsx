@@ -63,7 +63,7 @@ class ModePanel extends Component {
 	setValue(o) {
 		this.refs.byBarSlider.setValue(o.byBarInterval || InitPreset.byBarInterval)
 		this.refs.byTimeSlider.setValue(o.byTimeInterval || InitPreset.byTimeInterval)
-		this.refs.exerciseTimeSlider.setValue(o.exerciseTime || InitPreset.exerciseTime);
+		// this.refs.exerciseTimeSlider.setValue(o.exerciseTime || InitPreset.exerciseTime);
 
 		this.refs.bpmRange.setState({ bounds: o.bpmRange })
 		this.setState(
@@ -145,8 +145,7 @@ class ModePanel extends Component {
 				badgeFormatter={Utils.formatTimeLong}
 				markFormatter={Utils.formatTime}
 				marks={marks}
-				defaultValue={this.state.exerciseTime}
-				
+				value={this.state.exerciseTime}
 				onChange={(value) => this.onExerciseTimeSliderChange(value)}
 			/>
 			
@@ -162,7 +161,7 @@ class ModePanel extends Component {
 				included={false}
 				max={100}
 				marks={{ 1: '1', 5: '5', 10: '10', 15: '15', 20: '20', 30: '30', 40: '40', 50: '50', 60: '60', 70: '70', 80: '80', 90: '90', 100: '100' }}
-				defaultValue={10}
+				value={this.state.stepsNum}
 				onChange={(value) => this.onStepsSliderChange(value)}
 			/>
 		</div>);

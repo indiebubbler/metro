@@ -186,7 +186,7 @@ class SoundMachine extends Component {
 		if (bpm !== this.transport.bpm.value) {
 			Tone.Transport.bpm.value = bpm;
 			this.setState({ bpm: bpm })
-			document.title = bpm + ' | ' + this.documentTitle
+			document.title = bpm.toFixed(0) + ' | ' + this.documentTitle
 		}
 	};
 

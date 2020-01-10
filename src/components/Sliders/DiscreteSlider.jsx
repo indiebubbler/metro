@@ -5,19 +5,13 @@ import { Badge } from "reactstrap";
 class DiscreteSlider extends Component {
 
     state = {
-        value: undefined
+        value: undefined,
+        innerValue: 0
     }
 
     constructor(props) {
 
         super(props);
-
-        // set defaultValue
-        this.state.value = this.props.marks[this.props.defaultValue].value;
-        
-        // find the index of defaultValue and set that on our innerSlider
-        this.state.innerValue = Object.keys(this.props.marks).indexOf(this.props.defaultValue + '');
-
         // helpful to display marks properly (need to be an object)
         this.state.innerMarks = {};
         Object.values(this.props.marks).map((el, idx)  => {
@@ -26,18 +20,24 @@ class DiscreteSlider extends Component {
         })
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        // TODO: apply this componentDidUpdate to remaining custom sliders
+        var value = this.props.value;
+        var theValue = value !== undefined ? value : prevState.value;
+        var innerValue = Object.keys(this.props.marks).indexOf(theValue+ '');
+        
+        if ( innerValue !== prevState.innerValue) {
+            this.setState({innerValue: innerValue, value: value});
+        }
+    }
+
     onSliderChange(sliderValue) {
         const value = Object.values(this.props.marks)[sliderValue].value;
         this.setState({ innerValue: sliderValue, value: value })
         this.props.onChange(value)
     }
 
-    setValue(v) {
-        // find index of new value
-        const innerValue = Object.keys(this.props.marks).indexOf(v+'');//this.props.marks.findIndex(el => el.value === v);
-        this.setState({ value: v, innerValue: innerValue })
-    }
-
+    
     render() {
         return (
             <>

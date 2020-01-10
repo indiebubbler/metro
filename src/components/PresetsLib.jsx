@@ -57,8 +57,8 @@ export const PresetsLib = [
 
 
     // ancient ones, but leave them for compaitibility
-    {title: "Balkan 1", "bpmRange":[241,400],",accents":[0,2,1,0,2,1,2],"instrument":Instruments.ELECTRO_KIT,"playMode":"by_bar","interval":20,"bpmStep":30},
-    {title: "Balkan 2", "bpmRange":[293,400],",accents":[0,1,2,0,1,2,1],"instrument":Instruments.TABLA,"playMode":"by_bar","interval":300,"bpmStep":50},
+    {title: "Balkan 1", "bpmRange":[241,400],"accents":[0,2,1,0,2,1,2],"instrument":Instruments.ELECTRO_KIT,"playMode":"by_bar","interval":20,"bpmStep":30},
+    {title: "Balkan 2", "bpmRange":[293,400],"accents":[0,1,2,0,1,2,1],"instrument":Instruments.TABLA,"playMode":"by_bar","interval":300,"bpmStep":50},
     {title: "Groove 1", "bpmRange":[222,262],"accents":[0,1,2,1,2,0,2,2],"instrument":Instruments.ELECTRO_KIT,"playMode":"by_time","interval":600,"bpmStep":50},
     {title: "Groove 2", "bpmRange":[222,400],"accents":[0,1,0,1,1,1,0,2],"instrument":Instruments.ELECTRO_KIT,"playMode":"by_bar","interval":20,"bpmStep":50},
 

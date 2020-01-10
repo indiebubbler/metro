@@ -6,7 +6,9 @@ class SvgClock extends Component {
     state = {
         track: this.props.track
     }
-    colorEmpty = "#333"
+    colorEmpty = "#333";
+    strokeColor = "#444";
+    strokeWidth="0.001em"
 
     setProgress(progress) {
         this.line.style.transform = 'rotate(' + progress * 360 + 'deg)'
@@ -57,7 +59,7 @@ class SvgClock extends Component {
 
             // create a <path> and append it to the <svg> element
             paths.push(
-                <path key={"pie_" + idx} stroke="#444" strokeWidth="0.5%" d={pathData} fill={slice.color} />
+                <path key={"pie_" + idx} d={pathData} fill={slice.color} stroke={this.strokeColor} strokeWidth={this.strokeWidth}  />
             )
         });
         return paths
@@ -82,7 +84,6 @@ class SvgClock extends Component {
     }
 
     render() {
-        // console.log('vis render')
         if (!this.props.instrument) {
             return <div>Instrument not loaded</div>
         }
@@ -93,6 +94,9 @@ class SvgClock extends Component {
         for (let i = 0; i < this.props.instrument.samples.length; i++) {
             circles.push(this.drawSvg(0.8 -radiusIncrement * i, i));
         }
+        circles.push( 
+            <circle key="innerCircle" cx="0" cy="0" r={0.8 - radiusIncrement * this.props.instrument.samples.length} fill={this.colorEmpty} stroke={this.strokeColor}  strokeWidth={this.strokeWidth}  />
+        )
 
         return (
             <div ref={el => (this.container = el)} className="visClockContainer">
@@ -101,20 +105,10 @@ class SvgClock extends Component {
 
                         {
                             circles
-                            // .map(function (item) {
-                            //     debugger
-                            // })
                         }
-                            {/* // this.props.instrument.samples.map(() => function (sample) { */}
-
-
-                        {/* {this.drawSvg(0.6, accentTypes.MIDDLE)
-                        {this.drawSvg(0.4, accentTypes.DOWN)} */}
                         {this.drawText()}
                         <line ref={el => (this.line = el)} strokeLinecap="round" x1="0" y1="0" x2=".7" y2="0" stroke="rgba(255,255,255,0.5)" strokeWidth="0.1" />
                     </g>
-
-
                 </svg>
             </div>
         );
