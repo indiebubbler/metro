@@ -12,10 +12,6 @@ class SimpleVis extends Component {
         this.myRef = React.createRef();
     }
     setActive(idx)  {
-        //  console.log('setActive',idx)
-        // cap idx
-        // idx = idx % this.props.beats;
-
         if (this.lastEl) {
            this.lastEl.classList.remove('active')
         }
@@ -28,14 +24,10 @@ class SimpleVis extends Component {
         }
     }
 
-    componentDidUpdate(a,b) {
-        //  console.log('<SimpleVis>componentDidUpdate');
-
+    componentDidUpdate() {
         // reposition elements
         const width = this.myRef.current.offsetWidth;
 
-        // let radius = width / 2 - 5;
-        // console.log('radius', radius)
         let radDelta = 2*Math.PI / this.props.beats;
 
         for (let i = 0 ; i < this.props.beats ; i++) {
@@ -51,9 +43,7 @@ class SimpleVis extends Component {
 
     renderCells(cell) {
         let o = [];
-        // console.log('radDelta',radDelta)
         for (let i = 0 ; i < this.props.beats ; i++) {
-            
             o.push(<div ref={"el" + i}>{i+1}</div>);
         }
         return o

@@ -105,9 +105,9 @@ class EditPresetModal extends Component {
 								""
 							}
 						/>
-						<div className="code">
+						{/* <div className="code">
 							{JSON.stringify(this.state.preset)}
-						</div>
+						</div> */}
 						<Modal isOpen={this.state.nestedModal} toggle={this.toggleNested}>
 							<ModalHeader toggle={this.toggleNested}>{Tr("Are you sure?")}</ModalHeader>
 							<ModalBody>{Tr("Are you sure to delete current preset?")}</ModalBody>

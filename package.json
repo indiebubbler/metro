@@ -1,7 +1,6 @@
 {
     "name": "metro",
-    "version": "2.0.0",
-    "private": true,
+    "version": "2.1.0",
     "homepage": "https://indiebubbler.github.io/metro",
     "dependencies": {
         "bootstrap": "^4.4.1",
@@ -24,8 +23,8 @@
     "scripts": {
         "predeploy": "npm run build",
         "deploy": "gh-pages -d build",
-        "start": "react-scripts start",
-        "build": "react-scripts build",
+        "start": "react-scripts --max_old_space_size=8192 start",
+        "build": "react-scripts --max_old_space_size=8192 build",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
     },

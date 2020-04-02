@@ -4,82 +4,139 @@ import SimplePanel from "../SimplePanel";
 import { Badge, Button, ButtonGroup } from 'reactstrap'
 import { InitPreset } from "../PresetsLib";
 import Tr from "../Locale"
+import Config from "../Config";
 
 class TrackView extends Component {
     state = {
-        track: this.props.track
+        // track: this.props.track,
+        // trackInstruments: [],
+        timeSignature: this.props.timeSignature
     }
 
     rowRefs = [];
 
-    handleColumnClick(sampleIdx, columnIdx) {
+    handleCellClick(sampleIdx, columnIdx) {
         // copy array
         let track = [...this.props.track];
-        let newColumn = [...this.props.track[columnIdx]];
 
-        const idx = this.props.track[columnIdx].indexOf(sampleIdx);
-        if (idx < 0) {
-            // add
-            newColumn.push(sampleIdx)
+        let v = track[sampleIdx][columnIdx];
+
+        if (v > 0) {
+            track[sampleIdx][columnIdx] = 0;
         }
         else {
-            // remove
-            newColumn.splice(idx, 1);
+            track[sampleIdx][columnIdx] = 1;
         }
-        track[columnIdx] = newColumn
-        this.props.onChange(track)
+        this.props.onChange(track, this.props.timeSignature);
     }
 
-    setActiveColumn(idx) {
-        this.rowRefs.map((ref) => {
-            if (ref.current) {
-                ref.current.setActive(idx);
-            }
-            return true;
-        })
+    setProgress(progress) {
+        this.indicator.style.left = this.indicator.minLeft + progress * (this.indicator.maxRight - this.indicator.minLeft) + 'px'
+    }
+
+    updateDimensions() {
+        // TODO: this is quite ugly
+        const cellsBBtop = this.refs.trackRow_0.refs.cellsDiv.getBoundingClientRect();
+        const cellsBBbottom = this.refs.trackRow_3.refs.cellsDiv.getBoundingClientRect();
+        const box = { left: cellsBBtop.left, top: cellsBBtop.top, bottom: cellsBBbottom.bottom, right: cellsBBbottom.right };
+        const indicator = this.refs.indicator;
+
+        const left = this.refs.trackRow_0.refs.cellsDiv.offsetLeft;
+        indicator.minLeft = this.refs.trackRow_0.refs.cellsDiv.offsetLeft;
+        const right = left + this.refs.trackRow_0.refs.cellsDiv.offsetWidth;
+        indicator.style.left = left + 'px'
+        indicator.maxRight = right;
+
+        indicator.style.height = box.bottom - box.top + 'px'
+        this.indicator = indicator;
+
+
+    }
+    componentDidMount() {
+        window.addEventListener('resize', () => this.updateDimensions());
+        this.updateDimensions();
     }
 
     addBeat() {
-        if (this.props.track.length < 24) {
+        // add silent beat to each track, make sure we don't exceed max allowed timesignature
+
+        if (this.props.timeSignature < Config.MAXIMUM_TIMESIGNATURE) {
             let track = [...this.props.track]
-            // add empty beat
-            track.push([]);
-            this.props.onChange(track, true)
+
+            for (let i = 0; i < track.length; i++) {
+                if (track[i].length < Config.MAXIMUM_TIMESIGNATURE) {
+                    track[i].push(0)
+                }
+            }
+            this.props.onChange(track, this.props.timeSignature + 1)
         }
     }
 
     removeBeat() {
-        if (this.props.track.length > 1) {
+        // remove a beat from each track, making sure there won't be negative timeSignatures on any track
+
+        if (this.props.timeSignature > 1) {
             let track = [...this.props.track];
-            track.splice(track.length - 1, 1);
-            this.props.onChange(track, true)
+
+            for (let i = 0; i < track.length; i++) {
+                if (track[i].length > 1) {
+                    track[i].pop()
+                }
+            }
+            this.props.onChange(track, this.props.timeSignature - 1)
+
         }
     }
 
-    filterTrack(sampleIdx) {
-        return this.props.track.map(item => {
-            return item.indexOf(sampleIdx) >= 0;
-        })
+    onTrackRowSignatureChange(trackId, newTimeSignature) {
+
+        if (newTimeSignature < 24) {
+            let track = [...this.props.track]
+            if (newTimeSignature > track[trackId].length) {
+                // add silent beat
+                track[trackId].push(0);
+
+            }
+            else {
+                track[trackId].pop();
+            }
+
+            this.props.onChange(track, this.props.timeSignature)
+        }
+    }
+
+    componentDidUpdate() {
+        this.updateDimensions();
     }
 
     render() {
-        if (this.props.instrument === undefined) {
-            return <div>No instrument loaded</div>
+
+        let indicatorProgress = 0;
+        if (this.indicator) {
+            indicatorProgress = this.indicator.minLeft + this.props.partProgress * (this.indicator.maxRight - this.indicator.minLeft) + 'px';
         }
 
-        this.props.instrument.samples.map(sample => {
-            this.rowRefs.push(React.createRef());
-            return true;
-        })
-
         return (
-
             <SimplePanel style={{ padding: '15px' }} title={Tr("Sequencer")}>
-                <div className="trackview">
+                <div className="trackView">
                     <div className="trackContainer">
+                        <div className="indicator" ref='indicator' style={{ left: indicatorProgress }} />
                         {
-                            this.props.instrument.samples.map(sample => {
-                                return <TrackRow ref={this.rowRefs[sample.idx]} key={"trackRow_" + sample.idx} sample={sample} trackRow={this.filterTrack(sample.idx)} onClick={(sampleIdx, trackIdx) => this.handleColumnClick(sampleIdx, trackIdx)} />
+                            // TODO: get rid of this hardcoded stuff
+                            [0, 1, 2, 3].map(idx => {
+                                return (
+                                    <TrackRow
+                                        idx={idx}
+                                        ref={"trackRow_" + idx}
+                                        soundLibrary={this.props.soundLibrary}//.use(idx, instrument, file);
+                                        onMeasureChange={(newTimeSignature) => this.onTrackRowSignatureChange(idx, newTimeSignature)}
+                                        key={"trackRow_" + idx}
+                                        timeSignature={this.props.timeSignature}
+                                        progress={this.props.progress}
+                                        trackRow={this.props.track[idx]}
+                                        onClick={(sampleIdx, trackIdx) => this.handleCellClick(sampleIdx, trackIdx)}
+                                    />
+                                )
                             })
                         }
                     </div>
@@ -89,7 +146,7 @@ class TrackView extends Component {
                             <Button onClick={() => this.removeBeat()}>-</Button>
                         </ButtonGroup>
                         <div height="1em">
-                        <Badge className="beatsCntBadge" color="dark">{this.props.track.length}</Badge>
+                            <Badge className="beatsCntBadge" color="dark">{this.props.timeSignature}</Badge>
                         </div>
                     </div>
 

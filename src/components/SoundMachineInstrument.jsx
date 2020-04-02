@@ -5,7 +5,6 @@ import { AccentNotes } from './AccentTypes';
 class SoundMachineInstrument extends Sampler {
 
     constructor(props, onReadyCb) {
-        // console.log('<SoundMachineInstrument>constructor', props.key)
         
         if (props.samples.length > AccentNotes.length) {
             throw new Error("Limited to " + AccentNotes.length + " samples per instrument")

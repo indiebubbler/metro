@@ -9,21 +9,7 @@ class Vis extends Component {
     latencyFallback = 0.05
 
     redraw() {
-
-        // this.ctx.clearRect(0,0, this.width, this.height);
-        // this.ctx.fillStyle = "rgba(0,0,0,1)";
-        // this.ctx.fill();
-
-        // console.log('redraw called')
-        // this.ctx.clearRect(0, 0,this.width,this.height);
-        // console.log('<Vis>redraw', this.width, this.height)
-        // this.ctx.clearRect(0,0,this.width, this.height)
-
-        // this.ctx.rect(0, 0, this.width, this.height);
-        // this.ctx.stroke();
-        // console.log('w',this.width)
         this.radius = (this.width /2)  - 10;
-        // console.log('this.radius',this.radius)
         this.drawFace(this.ctx, this.radius)
         this.drawBeats(this.ctx, this.radius * .8)
 
@@ -56,14 +42,7 @@ class Vis extends Component {
             ctx.rotate(angleStep);
 
         }
-        // console.log('angleStep after', angleStep)
         ctx.rotate(-2 * Math.PI);
-        // ctx.rotate()
-
-        // ctx.arc(0, 0, 2, 0, 2*Math.PI);
-        // ctx.fillStyle = 'red';
-        // ctx.fill();
-
     }
 
     drawHand(ctx, pos, length, width) {
@@ -117,11 +96,7 @@ class Vis extends Component {
 
 
     componentDidMount() {
-        // console.log('vis mount')
-        // this.ctx.translate( 50, 20 )
         this.ctx = this.refs.canvas.getContext("2d");
-        //this.container.offsetWidth
-        console.log('container offsetWidth', this.container.offsetWidth);
         window.addEventListener("resize", () => this.updateDimensions());
         this.updateDimensions()
         this.redraw();
@@ -129,19 +104,12 @@ class Vis extends Component {
 
     updateDimensions() {
         let { clientWidth, clientHeight, offsetWidth, offsetHeight } = this.container;
-        // const min = Math.min(clientHeight, clientWidth)
-        // console.log('cW', offsetWidth, offsetHeight)
 
         this.width = offsetWidth / 2;
-        // this.height = offsetHeight;
-
-        // const min = Math.max(clientWidth, clientHeight)
         this.refs.canvas.width = this.width
         this.refs.canvas.height = this.width;
 
 
-        // this.height = clientHeight;
-        // this.height = clientHeight;
         this.ctx.translate(this.width / 2, this.width / 2)
 
         this.redraw();

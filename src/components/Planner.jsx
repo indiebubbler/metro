@@ -55,6 +55,7 @@ class Planner extends Component {
 			segments.push(segment);
 		}
 		else if (s.playMode === PlayModes.SET_TIME) {
+			
 			const duration = s.exerciseTime  / (s.stepsNum );
 			
 			let bpm = s.bpmRange[0];
@@ -118,7 +119,7 @@ class Planner extends Component {
 		const plan = this.makePlan(config);
 		this.baseBpm = this.props.transport.bpm.value
 
-		const timeSignature = config.track.length;
+		const timeSignature = config.timeSignature;
 		let t = 0;
 		this.events = [];
 		let steps = []
@@ -132,7 +133,6 @@ class Planner extends Component {
 			this.props.transport.schedule((time) => this.onPlanStep(i), t)
 
 			const duration = config.playMode === PlayModes.BY_BAR ? beatDuration * timeSignature * s.duration : s.duration;
-
 			const durationInBars = config.playMode === PlayModes.BY_BAR ? s.duration : s.duration / (beatDuration * timeSignature);
 
 			const bar = {

@@ -10,12 +10,12 @@ export function GetNavigatorLanguage() {
 let locale;
 switch ( GetNavigatorLanguage() )
 {
-    case 'pl': 
-    case 'pl-PL': 
-    case 'pl-pl': 
+    case 'pl':
+    case 'pl-PL':
+    case 'pl-pl':
         locale = pl;
         break;
-    default: 
+    default:
         locale = {};    // this will default to en
         break;
 }
@@ -39,8 +39,8 @@ export function TrRange(number, label) {
     }
     else {
         const l =  locale[label];
-        // If it's not specified then return last defined term 
-        // Bit dodgy, but should do the job. 
+        // If it's not specified then return last defined term
+        // Bit dodgy, but should do the job.
         return l[Object.keys(l)[Object.keys(l).length -1]]
     }
 }

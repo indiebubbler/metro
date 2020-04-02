@@ -1,9 +1,20 @@
 
 BEFORE RELEASE:
+* current step scroll into view
+* more polyrhytms examples	
+
+DONE:
+* reverb, volume
+* nicer track pos indicator
+* paypal link
+
+
+HMMM:
+* reverse colors on circle
 
 
 TODO:
-* dodać volume contro + fx
+* add volume control + fx
 * leherki
 * more visible discord link
 

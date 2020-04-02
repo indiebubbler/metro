@@ -10,6 +10,8 @@ const pl = {
     /* SoundMachine */
     "Control": "Kontrola",
     "Start / Stop": "Zacznij / Zatrzymaj",
+    "Volume": "Głośność",
+    // "Reverb": "Reverb",
     "Instrument": "Instrument",
     "Mode": "Tryb",
     "Increase speed": "Zwiększaj prędkość",
@@ -18,13 +20,16 @@ const pl = {
     "bar": "takt",
     "By time": "Co jakiś czas",
     "Set time": "W ustalonym czasie ćwiczeń",
-    "Stable": "Nie zwiększaj",
+    "Constant": "Nie zwiększaj",
     "Increase speed every": "Zwiększ prędkość co",
     "Number of steps": "Ilość kroków",
     "Up and Down": "Szybciej i wolniej",
     "Shuffle": "Losowo",
     "Exercise Time": "Czas ćwiczenia",
     "Total time:": "Całkowity czas:",
+    "Please select": "Proszę wybrać",
+    "Select": "Wybierz",
+    // "BPM": "BPM"
 
     /* Planner */
     "Stop": "Zatrzymaj",
@@ -48,6 +53,13 @@ const pl = {
     "Are you sure?": "Czy aby na pewno?",
     "Are you sure to delete current preset?": "Czy jesteś pewien, że chcesz usunąć to ustawienie?",
     "Save": "Zapisz",
+    "Polyrhythms": "Polirytmy",
+    "Basic": "Podstawowe",
+    "Drum Patterns": "Motywy perkusyjne",
+    "Afro-Cuban": "Afro-Kubańskie",
+    "Other": "Inne",
+
+
 
     /* TrackView */
     "Sequencer": "Sekwencer",
@@ -56,6 +68,7 @@ const pl = {
     "Keyboard controls": "Skróty klawiszowe",
 
     /* Utils */
+
     "bars": {
         1: "takt",
         2: "takty",

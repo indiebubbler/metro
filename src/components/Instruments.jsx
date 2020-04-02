@@ -1,122 +1,119 @@
 export const Instruments = {
     TABLA: {
         key: 'tabla',
-        label: 'Tabla',
-        samples: [{
-            file: "dha-slide.wav",
-            label: "Dha",
-            idx: 0
-        }, {
-            file: "dhin-slide.wav",
-            label: "Dhin",
-            idx: 1
-        }, {
-            file: "tin.wav",
-            label: "Tin",
-            idx: 2
-        }]
+        label: 'Tabla'
     },
     ELECTRO_KIT: {
         key: 'electrokit',
-        label: 'Electronic Kit',
-        samples: [{
-            file: "Kick.wav",
-            label: "Kick",
-            idx: 0
-        }, {
-            file: "Snare.wav",
-            label: "Snare",
-            idx: 1
-        }, {
-            file: "HiHat.wav",
-            label: "Hi Hat",
-            idx: 2
-        }]
+        label: 'Electronic Kit'
+        
     },
     METRONOME: {
         key: 'metronome',
-        label: 'Metronome',
-        samples: [{
-            file: "tap.wav",
-            label: "Tap",
-            idx: 0
-        }, {
-            file: "down.wav",
-            label: "Down",
-            idx: 1
-        }, {
-            file: "up.wav",
-            label: "Up",
-            idx: 2
-        }]
+        label: 'Metronome'
+        
     },
     BASIC_DRUM_KIT: {
         key: 'basicdrumkit',
-        label: 'Basic Drum Kit',
-        samples: [{
-            file: "Kick.wav",
-            label: "Kick",
-            // color:  colors[0],
-            idx: 0
-        }, {
-            file: "Snare.wav",
-            label: "Snare",
-            // color:  colors[3],
-            idx: 1
-        }, {
-            file: "ClosedHat.wav",
-            label: "Closed Hat",
-            // color:  colors[2],
-            idx: 2
-        }, {
-            file: "OpenHat.wav",
-            label: "Open Hat",
-            // color:  colors[1],
-            idx: 3
-        }]
+        label: 'Basic Drum Kit'
+        
     },
     YAMAHA_RX5: {
         key: 'yamaha_rx5',
-        label: 'Yamaha RX 5',
-        samples: [{
-            file: "Kick.wav",
-            label: "Kick",
-            // color:  colors[0],
-            idx: 0
-        }, {
-            file: "Rim.wav",
-            label: "Rim",
-            // color:  colors[3],
-            idx: 1
-        }, {
-            file: "Ride.wav",
-            label: "Ride",
-            // color:  colors[2],
-            idx: 2
-        }, {
-            file: "Cowbell.wav",
-            label: "Cowbell",
-            // color:  colors[1],
-            idx: 3
-        }, {
-            file: "Shaker.wav",
-            label: "Shaker",
-            // color:  colors[1],
-            idx: 4
-        }]
+        label: 'Yamaha RX 5'
     }
 };
 
 
+export const Samples = [
+{
+        file: "dha-slide.wav",
+        label: "Dha",
+        instrumentKey: 'tabla'
+    }, {
+        file: "dhin-slide.wav",
+        label: "Dhin",
+        instrumentKey: 'tabla'
+    }, {
+        file: "tin.wav",
+        label: "Tin",
+        instrumentKey: 'tabla'
+    },{
+        file: "Kick.wav",
+        label: "Kick",
+        instrumentKey: 'electrokit'
+    }, {
+        file: "Snare.wav",
+        label: "Snare",
+        instrumentKey: 'electrokit'
+    }, {
+        file: "HiHat.wav",
+        label: "Hi Hat",
+        instrumentKey: 'electrokit'
+    }, {
+        file: "tap.wav",
+        label: "Tap",
+        instrumentKey: 'metronome'
+    }, {
+        file: "down.wav",
+        label: "Down",
+        instrumentKey: 'metronome'
+    }, {
+        file: "up.wav",
+        label: "Up",
+        instrumentKey: 'metronome'
+    },
+    {
+        file: "Kick.wav",
+        label: "Kick",
+        instrumentKey: 'basicdrumkit'
+    }, {
+        file: "Snare.wav",
+        label: "Snare",
+        instrumentKey: 'basicdrumkit'
+    }, {
+        file: "ClosedHat.wav",
+        label: "Closed Hat",
+        instrumentKey: 'basicdrumkit'
+    }, {
+        file: "OpenHat.wav",
+        label: "Open Hat",
+        instrumentKey: 'basicdrumkit'
+    },
+    {
+        file: "Kick.wav",
+        label: "Kick",
+        instrumentKey: 'yamaha_rx5'
+    }, {
+        file: "Rim.wav",
+        label: "Rim",
+        instrumentKey: 'yamaha_rx5'
+    }, {
+        file: "Ride.wav",
+        label: "Ride",
+        instrumentKey: 'yamaha_rx5'
+    }, {
+        file: "Cowbell.wav",
+        label: "Cowbell",
+        instrumentKey: 'yamaha_rx5'
+    }, {
+        file: "Shaker.wav",
+        label: "Shaker",
+        instrumentKey: 'yamaha_rx5'
+    }
+];
+
+
+
 const InstrumentsByKey = {}
 Object.keys(Instruments).map(function (item, idx) {
-    InstrumentsByKey[ Instruments[item].key ] = Instruments[item];
+    InstrumentsByKey[Instruments[item].key] = Instruments[item];
     // expected to return a value from arrow func
     return true;
 });
-export {InstrumentsByKey};
+export { InstrumentsByKey };
 
 export const InstrumentsArray = Object.keys(Instruments)
-.map(item => {
-    return Instruments[item]
-});
+    .map(item => {
+        return Instruments[item]
+    });

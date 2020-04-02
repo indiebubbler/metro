@@ -16,7 +16,6 @@ class Vis extends Component {
         this.ctx = this.refs.canvas.getContext("2d");
         
         // this.ctx.clearRect(0, 0,this.width,this.height);
-        // console.log('<Vis>redraw', this.width, this.height)
         this.ctx.clearRect(0,0,this.width, this.height)
         this.ctx.rect(0, 0, this.width, this.height);
         // this.ctx.stroke();
@@ -54,21 +53,6 @@ class Vis extends Component {
         }
 
     }
-
-    // drawBar(val) {
-    //     // if (val > 0) {
-    //         console.log('val',val)
-    //     // }
-    //     // this.ctx.clearRect(0, 0, this.width, this., canvasHeight);
-    //     var barWidth = this.width / val.size;
-    //     debugger
-    //     for (var i = 0, len = values.length; i < len; i++){
-    //         var x = canvasWidth * (i / len);
-    //         var y = (values[i] + 140) * 2;
-    //         fftContext.fillStyle = "rgba(0, 0, 0, " + i/len + ")";
-    //         fftContext.fillRect(x, canvasHeight - y, barWidth, canvasHeight);
-    //     }
-    // }
 
     componentDidMount() {
         window.addEventListener("resize", () => this.updateDimensions());

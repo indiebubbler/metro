@@ -4,6 +4,9 @@
 	--pane-title-bgcolor: #222;
 	--pane-body-bgcolor_1: #333;
 	--pane-body-bgcolor_2: #222;
+	--indicator-color: rgba(255,255,255,0.5);
+	--indicator-outline-color: rgba(30,30,30,0.5);
+	--active-color: #f55;
 
 }
 
@@ -14,7 +17,7 @@ body {
 	/* color: var(--main-text-color); */
 	background-size: cover;
 	/* background-color: #19212e; */
-	
+
 	-webkit-box-shadow: 14px 10px 413px 3px rgba(0, 0, 0, 0.6);
 	-moz-box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.6);
 	box-shadow: 14px 10px 43px 3px rgba(0, 0, 0, 0.6);
@@ -40,17 +43,38 @@ body {
 @-webkit-keyframes fadeOut {
 	0% {opacity: 1;}
 	100% {opacity: 0;visibility: hidden;}
- }
+}
 
- @keyframes fadeOut {
+@keyframes fadeOut {
 	0% {opacity: 1;}
 	100% {opacity: 0;visibility: hidden;}
- }
+}
 
- .fadeOut {
+.fadeOut {
 	-webkit-animation-name: fadeOut;
 	animation-name: fadeOut;
- }
+}
+
+.bpm-info {
+	/* border: 10px solid red; */
+	background-color: #343a40;
+	-webkit-animation-duration: 1s;animation-duration: 1s;
+}
+
+@keyframes bump {
+	0% {background-color: var(--active-color)}
+	100% {background-color: #343a40;}
+}
+
+@-webkit-keyframes bump {
+	0% {background-color: var(--active-color)}
+	100% {background-color: #343a40;}
+}
+
+.bump {
+	 -webkit-animation-name: bump;
+	 animation-name: bump
+}
 
 .App {
 	text-align: center;
@@ -71,10 +95,6 @@ body {
 	background-color: rgb(255, 85, 85);
 }
 
-.App .app-container {
-	margin: 0 0 !important;
-}
-
 .advancedSlider .inlineBtn {
 	font-size: 0.7em;
 }
@@ -88,10 +108,16 @@ body {
 	box-shadow: 10px 10px 30px 3px rgba(0,0,0, 0.15);
 }
 
+.App .app-container {
+	margin-top:1rem;
+	/* margin: 0 0 !important; */
+}
+
+
 .App .container {
 	/* padding: 0px; */
-	margin: 10px 0;
-	padding-bottom: 10px;
+	margin-bottom: 1rem;
+	padding-bottom: 1rem;
 	border-radius: 5px;
 	/* padding-top: 10px; */
 }
@@ -112,6 +138,18 @@ body {
 	padding: 1rem;
 }
 
+.App .bpm-info {
+	padding: 0.3rem;
+	margin: 0.5rem;
+	-webkit-transition: padding 0.1s ease-out;
+	-moz-transition: margin 0.2s ease-out;
+	-o-transition: margin 0.2s ease-out;
+}
+
+/* .App .bump {
+	color: red;
+	padding: 0.8rem;
+} */
 
 .App .rc-slider-dot-active {
 	border-color: #f55;
@@ -128,7 +166,7 @@ body {
 	border-color: #f55;
 }
 
-.App .ModePanel .badge-light {
+.App .badge-light {
 	color: var(--main-text-color);
 	font-weight: lighter;
 	border: 0px solid #ccc;
@@ -284,7 +322,7 @@ body {
 	fill: var(--main-text-color);
 }
 
-.trackview {
+.trackView {
 	display: flex;
 	flex-wrap: nowrap;
 	/* margin: 0 15px; */
@@ -329,14 +367,14 @@ body {
 }*/
 
 
-.trackview .trackContainer {
+.trackView .trackContainer {
 	margin: auto;
 	padding: 0 0.5em;
 	/* align-self: center; */
 	width: 100%;
 }
 
-.trackview .btnContainer {
+.trackView .btnContainer {
 	/* display: table-cell; */
 	/* width: 2em; */
 	/* flex: 0 0 1em; */
@@ -347,31 +385,40 @@ body {
 	/* align-self: center !important; */
 }
 
-.trackview .beatsCntBadge {
+.trackView .beatsCntBadge {
 	font-size: x-large;
 }
 
-.trackview .trackRow {
+.trackView .btn-xs, .btn-group-xs > .btn {
+    padding: 0.15rem 0.35rem;
+    font-size: 0.575rem;
+    line-height: 1;
+	border-radius: 0.1rem;
+	/* margin-left: 0.1rem; */
+}
+
+.trackRow {
 	display: flex;
-	/* flex: 0 0 1em; */
-	/* flex: 1; */
-	min-height: 2em;
+	margin-bottom:10px;
 }
 
-.trackview .label {
-	flex: 0 0 4em;
-	/* flex-grow: 2; */
-	font-size: 0.8em;
-	margin: 0 0.2em;
-	/* border: solid 1px red; */
-	/* width: 5em; */
-	text-align: right;
-	align-self: center;
+.trackRow .label {
+	display: flex;
+}
+.trackRow .cells {
+	display: flex;
+	width: 100%;
 }
 
-.trackview .cell {
-	/* width: 100%; */
-
+.trackView .indicator {
+	width: 0.3rem;
+	border-radius: 2px;
+	background-color:  var(--indicator-color);
+	border: 1px solid var(--indicator-outline-color);
+	position: absolute;
+}
+ 
+.trackRow .cell {
 	min-width: 0.5em;
 	min-height: 2em;
 	margin: auto;
@@ -380,6 +427,7 @@ body {
 	margin: 0.1em;
 	border-radius: 0.2em;
 }
+
 
 .presetItem .btn {
 	line-height: 0.8;

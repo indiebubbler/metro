@@ -32,13 +32,10 @@ class App extends Component {
 	}
 
 	render() {
-
-
 		return (
-
 			<div className="App">
-
 				<Container className="app-container ">
+				{/* <Container className="app-container "> */}
 					<Row>
 						<Col>
 							<SoundMachine ref="sm" onReady={() => this.removeLoadMask()} />
@@ -49,7 +46,7 @@ class App extends Component {
 							<SimplePanel title={Tr("Keyboard controls")} className="about">
 								<div><code>{Tr("arrow up/down")}</code> - {Tr("higher/lower BPM")}</div>
 								<div><code>{Tr("arrow left/right")}</code> - {Tr("previous/next step according to plan")}</div>
-								<div><code>s</code> - {Tr("start/stop")}</div>
+								<div><code>space, s</code> - {Tr("start/stop")}</div>
 								<div><code>esc</code> - {Tr("stop")}</div>
 							</SimplePanel>
 						</Col>
@@ -57,10 +54,11 @@ class App extends Component {
 					<Row>
 						<Col>
 							<div className="footer">
+								<div><h6>If you like this app consider donation to a developer using following <Badge href="https://paypal.me/indiebubblerdev" target="blank">link</Badge></h6></div>
 								<div>Join discord using <Badge href="https://discord.gg/fAwnmVh" target="blank">this link</Badge> for feedback and improvement suggestions.</div>
 								<div>By using this site you agree to the use of cookies to store user defined presets and analytics.</div>
 								<div>Created using <Badge href="https://reactjs.org/" target="blank" >React</Badge> and <Badge href="https://tonejs.github.io/" target="blank">Tone.js</Badge>. Source code available <Badge href="https://github.com/indiebubbler/metro">here</Badge>.</div>
-								<div>Supported languages are english and polish. If you want to help translating this page into your language please contact me:<Badge href="mailto:indiebubbler@gmail.com?subject=Feedback">indiebubbler@gmail.com</Badge>.</div>
+								<div>If you want help translating this page please contact <Badge href="mailto:indiebubbler@gmail.com?subject=Feedback">indiebubbler@gmail.com</Badge>.</div>
 								<div>&#169; IndieBubbler 2019-2020. Version 2.0 beta</div>
 							</div>
 						</Col>

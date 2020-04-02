@@ -21,7 +21,7 @@ class ModePanel extends Component {
 	state = {
 		bpmStep: this.props.bpmStep,
 		bpmRange: this.props.bpmRange,
-		currentBpm: this.props.bpmRange[0],
+		// currentBpm: this.props.bpmRange[0],
 		playbackMode: this.props.playbackMode,
 		playMode: this.props.playMode,
 		stepsNum: this.props.stepsNum,
@@ -29,7 +29,7 @@ class ModePanel extends Component {
 		bpmStepDropdownOpen: false,
 		byTimeInterval: this.props.byTimeInterval,
 		byBarInterval: this.props.byBarInterval,
-		constantBpmSlider: 300
+		constantBpmSlider: this.props.constantBpmSlider
 	}
 
 	onAfterChange(e) {
@@ -37,7 +37,15 @@ class ModePanel extends Component {
 	}
 
 	onModeChange(newMode) {
-		this.setState({ playMode: newMode }, this.onAfterChange);
+
+		let newState = {...this.state};
+
+		// maintain current bpm when changing to CONSTANT playmode
+		if (newMode === PlayModes.CONSTANT && newMode !== this.state.playMode) {
+			newState.constantBpmSlider =  this.props.transport.bpm.value;
+		}
+		newState.playMode = newMode;
+		this.setState(newState, this.onAfterChange);
 	}
 
 
@@ -219,7 +227,7 @@ class ModePanel extends Component {
 						onClick={() => this.onModeChange(PlayModes.CONSTANT)}
 						active={this.state.playMode === PlayModes.CONSTANT}
 					>
-						{Tr("Stable")}
+						{Tr("Constant")}
 					</Button>
 				</ButtonGroup>
 
@@ -272,7 +280,7 @@ class ModePanel extends Component {
 
 				<Collapse isOpen={this.state.playMode === PlayModes.CONSTANT}>
 					<div>
-						Choose bpm
+						{Tr("BPM")}
 
 						<AdvancedSlider
 							ref="constantBpmSlider"
@@ -304,6 +312,7 @@ ModePanel.defaultProps = {
 	byBarInterval: InitPreset.byBarInterval,
 	stepsNum: InitPreset.stepsNum,
 	exerciseTime: InitPreset.exerciseTime,
-	currentBpm: InitPreset.bpmRange[0],
+	constantBpmSlider: InitPreset.constantBpmSlider,
+	// currentBpm: InitPreset.bpmRange[0],
 	onAfterChange: null
 };

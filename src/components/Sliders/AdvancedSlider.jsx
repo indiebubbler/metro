@@ -23,7 +23,7 @@ class AdvancedSlider extends Slider {
 		return (
 			<>
 				<div className="advancedSlider">
-					<Button size="sm" outline className="inlineBtn" onClick={this.onMinusClick}>-</Button>
+					{this.props.disableBtns === true ? '' : <Button size="sm" outline className="inlineBtn" onClick={this.onMinusClick}>-</Button>}
 					<Badge
 						color="light"
 						className="d-i"
@@ -31,7 +31,7 @@ class AdvancedSlider extends Slider {
 						{this.state.value}
 						{/* {this.props.badgeFormatter(this.state.value)} */}
 					</Badge>
-					<Button size="sm" outline className="inlineBtn" onClick={this.onPlusClick}>+</Button>
+					{this.props.disableBtns ===true ? '' : <Button size="sm" outline className="inlineBtn" onClick={this.onPlusClick}>+</Button>}
 				</div>
 				<div style={{ height: "30px" }}>
 					<div>{super.render()}</div>

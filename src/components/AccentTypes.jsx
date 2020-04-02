@@ -9,13 +9,3 @@ Object.keys(AccentNotes).map(function (item, idx) {
 });
 export {accentTypes};
 
-// set of colors for accents
-export const accentColor = {	
-	0: '#ff6355',
-	1: '#ff7155',
-	2: '#ff8055',
-	3: '#ff8e55',
-	4: '#ff9955',
-	5: '#ff9c55',
-	6: '#ffaa55'
-}

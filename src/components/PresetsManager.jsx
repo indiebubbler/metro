@@ -2,9 +2,11 @@ import React, { Component } from "react";
 import { Button, Container, Row, Col } from "reactstrap";
 import EditPresetModal from "./EditPresetModal"
 import { PresetsLib, InitPreset } from './PresetsLib'
+import { Samples } from "./Instruments"
 import Tr from './Locale'
 import SimplePanel from "./SimplePanel";
 import Utils from "./Utils"
+import Config from "./Config";
 
 class PresetsManager extends Component {
 	state = {
@@ -16,8 +18,6 @@ class PresetsManager extends Component {
 	constructor(props) {
 		super(props);
 
-		// const isStorageAvailable = Utils.storageAvailable('localStorage')
-		// this.userPresets = '{}'
 		const storedPresets = localStorage.getItem('userPresets');
 		this.state.userPresets = storedPresets ? JSON.parse(storedPresets) : [];
 
@@ -31,8 +31,7 @@ class PresetsManager extends Component {
 
 		preset.byBarInterval = preset.byBarInterval || preset.interval || InitPreset.byBarInterval;
 		preset.byTimeInterval = preset.byTimeInterval || preset.interval || InitPreset.byTimeInterval;
-		preset.instrumentKey = preset.instrumentKey || preset.instrument.key;
-
+		// change from accents into track
 		if (!preset.track) {
 			let track = [];
 			preset.accents.map(item => {
@@ -42,7 +41,36 @@ class PresetsManager extends Component {
 			})
 			preset.track = track;
 		}
+
+
+		// if no timeSignature then we're dealing with tracks made before polyrythm support. Fix them now.
+		if (!preset.timeSignature) {
+			const timeSignature = preset.track.length
+			preset.timeSignature = timeSignature
+
+			var track = new Array(Config.TRACKS_NUMBER).fill(0).map(x => new Array(timeSignature).fill(0));
+
+
+			for (let beatIdx = 0; beatIdx < preset.track.length; beatIdx++) {
+				const beats = preset.track[beatIdx];
+				for (let beat = 0; beat < beats.length; beat++) {
+					track[beats[beat]][beatIdx] = 1;	// set volume to one, effectively enabling it
+				}
+			}
+			preset.track = track;
+		}
+
+		if (!preset.samples) {
+			preset.samples = this.convertInstrumentKeyToSamples(preset.instrumentKey)
+		}
+
 		return preset;
+	}
+
+	convertInstrumentKeyToSamples(instrumentKey) {
+		// desired result: "samples": [{instrumentKey: 'tabla', file: 'dha-slide.wav' }, {instrumentKey: 'electrokit', file: 'Kick.wav'}, {instrumentKey: 'metronome', file: 'tap.wav'}],
+		const samples = Samples.filter(el => el.instrumentKey === instrumentKey);
+		return samples;
 	}
 
 	onPresetClick(preset) {
@@ -127,6 +155,7 @@ class PresetsManager extends Component {
 
 	onPresetEdit(e, idx) {
 		var p = this.props.getPreset();
+		
 		if (idx !== undefined) {
 
 			this.refs.presetEditor.edit(p, this.state.userPresets[idx].presetId, this.state.userPresets[idx].title)
@@ -151,14 +180,14 @@ class PresetsManager extends Component {
 						onClick={() => this.onPresetClick(item)}
 						key={"preset_" + idx}
 					>
-						<Col style={{textAlign: 'left'}} >
+						<Col style={{ textAlign: 'left' }} >
 							{item.title}
 						</Col>
 						<Col xs="auto" className="userPresetSavedDtm">
 							{Utils.toLocaleDateTime(item.savedDtm)}
 						</Col>
 						<Col>
-							<Button  size="sm" outline 
+							<Button size="sm" outline
 								onClick={(e) => this.onPresetEdit(e, idx)}>
 								{Tr("Edit")}
 							</Button>
@@ -175,20 +204,32 @@ class PresetsManager extends Component {
 		const userPresetsJson = localStorage.getItem('userPresets');
 		let userPresets = userPresetsJson ? JSON.parse(userPresetsJson) : [];
 
-		// let userPresets = [];
-		// // console.log('<PresetsManager>userPresets', userPresets)
 		return (
 			<SimplePanel className="PresetsManager" title={Tr("Presets")}>
 				<Container>
-					{PresetsLib.map((item, idx) => (
-						<Row
-							onClick={() => this.onPresetClick(item)}
-							className={"presetItem clickable"}
-							key={"preset_" + idx}
-						>
-							{item.title}
-						</Row>
-					))}
+					{PresetsLib.map((item, idx) => {
+						if (item.isHeader) {
+							return (
+								<Row
+									className={"presetHeader"}
+									key={"header_" + idx}
+								>
+									{Tr(item.title)}:
+								</Row>
+							);
+						}
+						else {
+							return (
+								<Row
+									onClick={() => this.onPresetClick(item)}
+									className={"presetItem clickable"}
+									key={"preset_" + idx}
+								>
+									{item.title}
+								</Row>
+							);
+						}
+					})}
 					{this.renderUserPresets(userPresets)}
 					{/* center button */}
 					<Row style={{ justifyContent: 'center' }}>
