@@ -59,7 +59,12 @@ const pl = {
     "Afro-Cuban": "Afro-Kubańskie",
     "Other": "Inne",
 
-
+    /* Import Dialog */
+    "Import from file": "Importuj z pliku",
+    "Export to file": "Eksportuj do pliku",
+    "Confirm": "Potwierdź",
+    "I can't read this file.": "Nie mogę odczytać pliku.",
+    
 
     /* TrackView */
     "Sequencer": "Sekwencer",

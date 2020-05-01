@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Button, Container, Row, Col } from "reactstrap";
 import EditPresetModal from "./EditPresetModal"
+import ImportDialog from "./ImportDialog"
 import { PresetsLib, InitPreset } from './PresetsLib'
 import { Samples } from "./Instruments"
 import Tr from './Locale'
@@ -155,7 +156,7 @@ class PresetsManager extends Component {
 
 	onPresetEdit(e, idx) {
 		var p = this.props.getPreset();
-		
+
 		if (idx !== undefined) {
 
 			this.refs.presetEditor.edit(p, this.state.userPresets[idx].presetId, this.state.userPresets[idx].title)
@@ -163,6 +164,10 @@ class PresetsManager extends Component {
 		else {
 			this.refs.presetEditor.edit(p)
 		}
+	}
+
+	onImportBtn(e) {
+		this.refs.importDialog.open()
 	}
 
 	renderUserPresets(userPresets) {
@@ -200,6 +205,27 @@ class PresetsManager extends Component {
 		);
 	}
 
+	onExport() {
+
+		const a = document.createElement('a');
+		const file = new Blob([JSON.stringify(this.state.userPresets)], { type: 'application/json' });
+		a.href = URL.createObjectURL(file);
+		a.download = 'presets.json';
+		a.click();
+	}
+
+	onPresetsImport(presets) {
+		presets.forEach(p => {
+			p = this.validatePreset(p);
+			// unset presetId so we won't overwrite anything that's there already
+			p.presetId = undefined
+			this.onSavePreset(p.title, p);
+		})
+		
+		this.refs.importDialog.close();
+		// onSavePreset(preset.title, presets)
+	}
+
 	render() {
 		const userPresetsJson = localStorage.getItem('userPresets');
 		let userPresets = userPresetsJson ? JSON.parse(userPresetsJson) : [];
@@ -234,6 +260,8 @@ class PresetsManager extends Component {
 					{/* center button */}
 					<Row style={{ justifyContent: 'center' }}>
 						<EditPresetModal ref='presetEditor' onDeleteBtn={(preset) => this.onPresetDelete(preset)} onSaveBtn={(e, idx) => this.onPresetEdit(e, idx)} onSave={(title, preset) => this.onSavePreset(title, preset)} />
+						<ImportDialog ref='importDialog' onImportBtn={() => this.onImportBtn()} onJsonReady={(presets) => this.onPresetsImport(presets)}/>
+						<Button style={{ marginTop: '0.5em' }} outline  size="sm" color="light" onClick={() => this.onExport()}>{Tr("Export to file")}</Button>
 					</Row>
 				</Container>
 			</SimplePanel>
