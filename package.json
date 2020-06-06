@@ -1,6 +1,6 @@
 {
     "name": "metro",
-    "version": "2.2",
+    "version": "2.2.0",
     "homepage": "https://indiebubbler.github.io/metro",
     "dependencies": {
         "bootstrap": "^4.4.1",
