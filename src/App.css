@@ -4,15 +4,14 @@
 	--pane-title-bgcolor: #222;
 	--pane-body-bgcolor_1: #333;
 	--pane-body-bgcolor_2: #222;
-	--indicator-color: rgba(255,255,255,0.5);
-	--indicator-outline-color: rgba(30,30,30,0.5);
+	--indicator-color: rgba(255, 255, 255, 0.5);
+	--indicator-outline-color: rgba(30, 30, 30, 0.5);
 	--active-color: #f55;
-
 }
 
 body {
-	background-image: url('./images/bg.jpg');
-	 background-color: #333 !important;
+	background-image: url("./images/bg.jpg");
+	background-color: #333 !important;
 	/*background-image: radial-gradient(#666, #455);  */
 	/* color: var(--main-text-color); */
 	background-size: cover;
@@ -24,30 +23,41 @@ body {
 }
 
 .clickable {
-	cursor: pointer
+	cursor: pointer;
 }
 
-.loadmask
-{
+.loadmask {
 	position: fixed;
 	left: 0px;
 	top: 0px;
 	width: 100%;
 	height: 100%;
 	z-index: 9999;
-	background: url('./images/spinner.gif') center no-repeat #000;
-	-webkit-animation-duration: 1s;animation-duration: 1s;
-	-webkit-animation-fill-mode: both;animation-fill-mode: both;
+	background: url("./images/spinner.gif") center no-repeat #000;
+	-webkit-animation-duration: 1s;
+	animation-duration: 1s;
+	-webkit-animation-fill-mode: both;
+	animation-fill-mode: both;
 }
 
 @-webkit-keyframes fadeOut {
-	0% {opacity: 1;}
-	100% {opacity: 0;visibility: hidden;}
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		visibility: hidden;
+	}
 }
 
 @keyframes fadeOut {
-	0% {opacity: 1;}
-	100% {opacity: 0;visibility: hidden;}
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		visibility: hidden;
+	}
 }
 
 .fadeOut {
@@ -58,22 +68,31 @@ body {
 .bpm-info {
 	/* border: 10px solid red; */
 	background-color: #343a40;
-	-webkit-animation-duration: 1s;animation-duration: 1s;
+	/* -webkit-animation-duration: 1s;
+	animation-duration: 1s; */
 }
 
 @keyframes bump {
-	0% {background-color: var(--active-color)}
-	100% {background-color: #343a40;}
+	0% {
+		background-color: var(--active-color);
+	}
+	100% {
+		background-color: #343a40;
+	}
 }
 
 @-webkit-keyframes bump {
-	0% {background-color: var(--active-color)}
-	100% {background-color: #343a40;}
+	0% {
+		background-color: var(--active-color);
+	}
+	100% {
+		background-color: #343a40;
+	}
 }
 
 .bump {
-	 -webkit-animation-name: bump;
-	 animation-name: bump
+	-webkit-animation-name: bump;
+	animation-name: bump;
 }
 
 .App {
@@ -102,17 +121,19 @@ body {
 .App .pane {
 	/* background-color: #222; */
 	/* border: thin solid #fff; */
-	background-image: linear-gradient(var(--pane-body-bgcolor_1), var(--pane-body-bgcolor_2));
-	-webkit-box-shadow:  10px 10px 30px 3px rgba(0,0,0, 0.15);
-	-moz-box-shadow:  10px 10px 30px 3px rgba(0,0,0, 0.15);
-	box-shadow: 10px 10px 30px 3px rgba(0,0,0, 0.15);
+	background-image: linear-gradient(
+		var(--pane-body-bgcolor_1),
+		var(--pane-body-bgcolor_2)
+	);
+	-webkit-box-shadow: 10px 10px 30px 3px rgba(0, 0, 0, 0.15);
+	-moz-box-shadow: 10px 10px 30px 3px rgba(0, 0, 0, 0.15);
+	box-shadow: 10px 10px 30px 3px rgba(0, 0, 0, 0.15);
 }
 
 .App .app-container {
-	margin-top:1rem;
+	margin-top: 1rem;
 	/* margin: 0 0 !important; */
 }
-
 
 .App .container {
 	/* padding: 0px; */
@@ -141,9 +162,9 @@ body {
 .App .bpm-info {
 	padding: 0.3rem;
 	margin: 0.5rem;
-	-webkit-transition: padding 0.1s ease-out;
+	/* -webkit-transition: padding 0.1s ease-out;
 	-moz-transition: margin 0.2s ease-out;
-	-o-transition: margin 0.2s ease-out;
+	-o-transition: margin 0.2s ease-out; */
 }
 
 /* .App .bump {
@@ -152,7 +173,7 @@ body {
 } */
 
 .input-group-text {
-    min-width:4em;
+	min-width: 4em;
 }
 .App .rc-slider-dot-active {
 	border-color: #f55;
@@ -242,8 +263,8 @@ body {
 
 .PresetsManager .editBtn {
 	color: #f5f5f5;
-    background-color: #f55;
-    padding: 0 1em;
+	background-color: #f55;
+	padding: 0 1em;
 	margin-left: 1em;
 }
 
@@ -305,12 +326,11 @@ body {
 
 .footer {
 	font-size: 0.7em;
-	color: #777
-
+	color: #777;
 }
 .footer .badge {
 	background-color: transparent;
-	font-weight:normal;
+	font-weight: normal;
 }
 
 .about code {
@@ -318,57 +338,15 @@ body {
 	color: #f55;
 }
 
-
-
 .svgText {
-	font-size: 1%  ;
+	font-size: 1%;
 	fill: var(--main-text-color);
 }
 
 .trackView {
 	display: flex;
 	flex-wrap: nowrap;
-	/* margin: 0 15px; */
-	/* border: 3px solid gray;
-	border-radius: 1em;
-	margin: 0 15px */
 }
-/*
-.trackview .labelCol {
-	display: table;
-}
-
-.trackview .label {
-	display: table-cell;
-	vertical-align: middle;
-	text-align: left;
-	white-space: nowrap;
-} */
-/*
-.trackview .column .cell {
-    flex: 1;
-	/* margin: 1px; */
-
-	/* padding: 1px; */
-	/* padding:10px; */
-    /* background-color:  */
-	/* transition: background-color 0s; */
-	/* border: 1px solid #a55;
-	min-height: 2em;
-	display: table-cell;
-	border-radius: 3px; */
-/* } */
-
-
-
-
-/*
-.trackview > div{
-	margin: auto;
-	flex-basis: 50
-
-}*/
-
 
 .trackView .trackContainer {
 	margin: auto;
@@ -378,31 +356,25 @@ body {
 }
 
 .trackView .btnContainer {
-	/* display: table-cell; */
-	/* width: 2em; */
-	/* flex: 0 0 1em; */
-	/* vertical-align: middle;
-	margin: auto 0; */
 	margin: auto;
-	/* vertical-align: center !import#ant; */
-	/* align-self: center !important; */
 }
 
 .trackView .beatsCntBadge {
 	font-size: x-large;
 }
 
-.trackView .btn-xs, .btn-group-xs > .btn {
-    padding: 0.15rem 0.35rem;
-    font-size: 0.575rem;
-    line-height: 1;
+.trackView .btn-xs,
+.btn-group-xs > .btn {
+	padding: 0.15rem 0.35rem;
+	font-size: 0.575rem;
+	line-height: 1;
 	border-radius: 0.1rem;
 	/* margin-left: 0.1rem; */
 }
 
 .trackRow {
 	display: flex;
-	margin-bottom:10px;
+	margin-bottom: 10px;
 }
 
 .trackRow .label {
@@ -416,11 +388,11 @@ body {
 .trackView .indicator {
 	width: 0.3rem;
 	border-radius: 2px;
-	background-color:  var(--indicator-color);
+	background-color: var(--indicator-color);
 	border: 1px solid var(--indicator-outline-color);
 	position: absolute;
 }
- 
+
 .trackRow .cell {
 	min-width: 0.5em;
 	min-height: 2em;
@@ -430,7 +402,6 @@ body {
 	margin: 0.1em;
 	border-radius: 0.2em;
 }
-
 
 .presetItem .btn {
 	line-height: 0.8;

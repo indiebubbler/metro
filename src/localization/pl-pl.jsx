@@ -62,7 +62,9 @@ const pl = {
     /* Import Dialog */
     "Import Presets": "Wczytaj Presety",
     "I can't read this file": "Nie potrafię odczytać tego pliku",
-
+    "Import from file": "Importuj z pliku",
+    "Export to file": "Eksportuj do pliku",
+    "Confirm": "Potwierdź",
 
     /* TrackView */
     "Sequencer": "Sekwencer",

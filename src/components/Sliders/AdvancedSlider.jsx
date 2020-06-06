@@ -34,7 +34,7 @@ class AdvancedSlider extends Slider {
 					<Badge
 						onClick={this.props.editInPlace ? (e) => this.onBadgeClick(e) : function(){}}
 						color="light"
-						className="d-i"
+						className={this.props.editInPlace? "clickable" : ''}
 					>
 						{this.state.value}
 						{/* {this.props.badgeFormatter(this.state.value)} */}

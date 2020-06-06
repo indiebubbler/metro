@@ -9,10 +9,8 @@ class AdvancedRange extends Range {
 	}
 
 	onEdit(v) {
-		// console.
-		
 		this.setState({ bounds: [v.min, v.max] }, () => this.props.onAfterChange(this.state.bounds))
-		// this.state.bounds
+		
 	}
 	render() {
 		return (
@@ -21,7 +19,7 @@ class AdvancedRange extends Range {
 					<Badge
 						color="light"
 						onClick={this.props.editInPlace ? () => this.onBadgeClick() : function () { }}
-						className="d-i"
+						className={this.props.editInPlace? "clickable" : ''}
 					>
 						{this.state.bounds[0]} - {this.state.bounds[1]}
 					</Badge>

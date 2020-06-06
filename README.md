@@ -13,7 +13,7 @@ Developed for musicians willing to improve speed of their excercises/routines/id
 - supports polyrhythms 
 - supports odd rhythms (1-24 beats per measure)
 - 5 instruments available (Electronic drum kit, Metronome click sound, Basic Drum Kit, Yamaha RX 5 and indian Tabla)
-- store and recall your ideas (save/load presets) in your browser (no need to login)
+- store and recall your ideas (save/load presets) in your browser, import/export from file (no need to login),
 - supports multiple languages (english, polish). Contact me if you can help me translating it.
 
 Available at: https://indiebubbler.github.io/metro/
@@ -21,6 +21,10 @@ Available at: https://indiebubbler.github.io/metro/
 Uses ReactJS and Tone.js (https://tonejs.github.io/) - amazing javascript sound library.
 
 Contact: indiebubbler@gmail.com
+
+Changes in version 2.2:
+- added file import/export of user's presets
+- added ability to enter value for desired BPM and BPM range
 
 Changes in version 2.1:
 - added polyrhythms
