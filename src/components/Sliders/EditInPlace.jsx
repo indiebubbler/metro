@@ -16,12 +16,6 @@ class EditInPlace extends Component {
         value: this.props.value
     };
 
-    toggle = () => {
-        this.setState(prevState => ({
-            modal: !prevState.modal
-        }));
-    }
-
     open() {
         this.setState({modal: true, value: this.props.value})
     }
@@ -45,10 +39,8 @@ class EditInPlace extends Component {
             <>
                 <Modal
                     isOpen={this.state.modal}
-                    toggle={this.toggle}
                     className={this.props.className}
                 >
-                    {/* <ModalHeader toggle={this.toggle}>{this.props.title}</ModalHeader> */}
                     <ModalBody>
                         <InputGroup>
                             <InputGroupAddon addonType="prepend">{this.props.title}</InputGroupAddon>

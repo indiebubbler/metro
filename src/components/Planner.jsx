@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Tone from 'tone'
-import Tr, {TrRange} from './Locale'
+import Tr, { TrRange } from './Locale'
 import { Collapse, ButtonGroup, Button } from "reactstrap";
 import SimplePanel from "./SimplePanel"
 import { PlayModes } from "./PlayModes";
@@ -55,11 +55,11 @@ class Planner extends Component {
 			segments.push(segment);
 		}
 		else if (s.playMode === PlayModes.SET_TIME) {
-			
-			const duration = s.exerciseTime  / (s.stepsNum );
-			
+
+			const duration = s.exerciseTime / (s.stepsNum);
+
 			let bpm = s.bpmRange[0];
-			const bpmStep = (s.bpmRange[1] - s.bpmRange[0]) / (s.stepsNum -1 );
+			const bpmStep = (s.bpmRange[1] - s.bpmRange[0]) / (s.stepsNum - 1);
 			// we compare against max+1 as there might be some fractions that will make last step ignored
 			while (bpm <= max + 1) {
 				const segment = {
@@ -108,11 +108,11 @@ class Planner extends Component {
 	updateProgress() {
 		const step = this.getStep(this.state.currentStepIdx);
 		const stepProgress = (this.props.transport.ticks - step.startTimeTicks) / (Tone.Time(step.duration).toTicks());
-		const planProgress =  this.props.transport.ticks  / this.endTime;
+		const planProgress = this.props.transport.ticks / this.endTime;
 		this.setState({ stepProgress: this.clamp(stepProgress), planProgress: this.clamp(planProgress) })
 	}
 
-	clamp(value, min = 0 , max = 1) {
+	clamp(value, min = 0, max = 1) {
 		return Math.min(Math.max(value, min), max);
 	}
 
@@ -170,7 +170,7 @@ class Planner extends Component {
 
 		this.props.transport.schedule((time) => this.onPlanEnd(time), t);
 		this.endTime = Tone.Time(t).toTicks();
-		
+
 		this.setState(
 			prevState => ({
 				totalPlanTime: totalPlanTime,
@@ -247,7 +247,7 @@ class Planner extends Component {
 			>
 				{
 					b.duration !== Infinity
-						? <>{b.durationFormatted} ({b.durationBars} {TrRange(Math.floor(b.durationBars),"bars")}) </>
+						? <>{b.durationFormatted} ({b.durationBars} {TrRange(Math.floor(b.durationBars), "bars")}) </>
 						: ''}
 				@ {b.bpm.toFixed(0)} bpm
 			</div>
@@ -263,7 +263,7 @@ class Planner extends Component {
 	}
 	render() {
 		if (this.state.playMode === PlayModes.CONSTANT) {
-			return <div/>
+			return <div />
 		}
 		return (
 
@@ -277,8 +277,8 @@ class Planner extends Component {
 					isPaused:
 					{this.state.isPaused === true ? "paused" : "normal"}
 				</Button> */}
-					
-					<div style={{height: '200px', overflow: 'auto'}}>
+
+					<div style={{ height: '200px', overflow: 'auto' }}>
 						{this.state.steps.map(bar => this.barRender(bar))}
 					</div>
 					<div>

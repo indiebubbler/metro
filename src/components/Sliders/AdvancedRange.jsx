@@ -10,7 +10,7 @@ class AdvancedRange extends Range {
 
 	onEdit(v) {
 		this.setState({ bounds: [v.min, v.max] }, () => this.props.onAfterChange(this.state.bounds))
-		
+
 	}
 	render() {
 		return (
@@ -19,17 +19,17 @@ class AdvancedRange extends Range {
 					<Badge
 						color="light"
 						onClick={this.props.editInPlace ? () => this.onBadgeClick() : function () { }}
-						className={this.props.editInPlace? "clickable" : ''}
+						className={this.props.editInPlace ? "clickable" : ''}
 					>
 						{this.state.bounds[0]} - {this.state.bounds[1]}
 					</Badge>
-					{this.props.editInPlace ? <RangeEditInPlace
+					<RangeEditInPlace
 						ref={"editor"}
 						title={this.props.title}
 						value={{ min: this.state.bounds[0], max: this.state.bounds[1] }}
 						min={this.props.min}
 						max={this.props.max}
-						onChange={(v) => this.onEdit(v)} /> : ''}
+						onChange={(v) => this.onEdit(v)} />
 				</div>
 				<div style={{ height: "30px" }}>
 					{super.render()}

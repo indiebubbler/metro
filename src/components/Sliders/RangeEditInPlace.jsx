@@ -18,14 +18,8 @@ class RangeEditInPlace extends Component {
         showInvalidRange: false
     };
 
-    toggle = () => {
-        this.setState(prevState => ({
-            modal: !prevState.modal
-        }));
-    }
-
     open() {
-        this.setState({ modal: true, showInvalidRange: false })
+        this.setState({ modal: true, value: this.props.value, showInvalidRange: false })
     }
 
     close() {
@@ -34,7 +28,7 @@ class RangeEditInPlace extends Component {
 
     onOk() {
         if (this.state.value.min >= this.state.value.max) {
-            this.setState({showInvalidRange: true})
+            this.setState({ showInvalidRange: true })
             return
         }
         this.props.onChange(this.state.value)
@@ -45,21 +39,17 @@ class RangeEditInPlace extends Component {
     onMinValueChange(e) {
         let v = Number(e.target.value);
 
-        // if (v < this.state.value.max) {
-            let value = this.state.value;
-            value.min = v;
-            this.setState({ value: value })
-        // }
+        let value = this.state.value;
+        value.min = v;
+        this.setState({ value: value })
     }
 
     onMaxValueChange(e) {
         let v = Number(e.target.value);
 
-        // if (v > this.state.value.min) {
-            let value = this.state.value;
-            value.max = v;
-            this.setState({ value: value })
-        // }
+        let value = this.state.value;
+        value.max = v;
+        this.setState({ value: value })
     }
 
     render() {
@@ -68,10 +58,8 @@ class RangeEditInPlace extends Component {
 
                 <Modal
                     isOpen={this.state.modal}
-                    toggle={this.toggle}
                     className={this.props.className}
                 >
-                    {/* <ModalHeader toggle={this.toggle}>{this.props.title}</ModalHeader> */}
                     <ModalBody>
                         <InputGroup>
                             <InputGroupAddon addonType="prepend">{Tr("From")}</InputGroupAddon>
@@ -100,7 +88,6 @@ class RangeEditInPlace extends Component {
     }
 }
 export default RangeEditInPlace;
-
 
 RangeEditInPlace.defaultProps = {
     onChange: function () { },

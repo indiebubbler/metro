@@ -60,7 +60,7 @@ class App extends Component {
 								<div>By using this site you agree to the use of cookies to store user defined presets and analytics.</div>
 								<div>Created using <Badge href="https://reactjs.org/" target="blank" >React</Badge> and <Badge href="https://tonejs.github.io/" target="blank">Tone.js</Badge>. Source code available <Badge href="https://github.com/indiebubbler/metro">here</Badge>.</div>
 								<div>If you want help translating this page please contact <Badge href="mailto:indiebubbler@gmail.com?subject=Feedback">indiebubbler@gmail.com</Badge>.</div>
-								<div>&#169; IndieBubbler 2019-2020. Version 2.0 beta</div>
+								<div>&#169; IndieBubbler 2019-2020. Version 2.2</div>
 							</div>
 						</Col>
 					</Row>
