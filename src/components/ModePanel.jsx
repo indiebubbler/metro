@@ -17,6 +17,7 @@ import DiscreteSlider from "./Sliders/DiscreteSlider"
 import Utils from "./Utils";
 import { InitPreset } from "./PresetsLib";
 import Tr, { TrRange } from "./Locale"
+import Config from "./Config";
 class ModePanel extends Component {
 	state = {
 		bpmStep: this.props.bpmStep,
@@ -141,7 +142,7 @@ class ModePanel extends Component {
 	renderTimeSlider() {
 		const marks = {}
 		const mArr = [300,600,900,1200,1800,3600,7200,10800]
-		
+
 		mArr.map(el => {
 			marks[el] = {value: el, label: Utils.formatTime(el)};
 			return true;
@@ -156,7 +157,7 @@ class ModePanel extends Component {
 				value={this.state.exerciseTime}
 				onChange={(value) => this.onExerciseTimeSliderChange(value)}
 			/>
-			
+
 		</div>);
 	}
 
@@ -179,12 +180,13 @@ class ModePanel extends Component {
 			{Tr("BPM range")}
 			<AdvancedRange
 				ref="bpmRange"
-				min={30}
-				max={1200}
+				min={Config.MIN_BPM}
+				max={Config.MAX_BPM}
 				defaultValue={[
 					this.state.bpmRange[0],
 					this.state.bpmRange[1]
 				]}
+				editInPlace={true}
 				pushable={true}
 				onAfterChange={(value) => this.onBpmRangeChange(value)}
 			/>
@@ -284,10 +286,12 @@ class ModePanel extends Component {
 
 						<AdvancedSlider
 							ref="constantBpmSlider"
+							title= {Tr("BPM")}
 							included={false}
-							min={10}
+							editInPlace={true}
+							min={Config.MIN_BPM}
 							btnStep={10}
-							max={1200}
+							max={Config.MAX_BPM}
 							marks={{ 30: '30', 200: '200', 400: '400', 600: '600', 800: '800', 1000: '1000',  1200: '1200' }}
 							value={this.state.constantBpmSlider}
 							onChange={this.onBpmSliderChange}

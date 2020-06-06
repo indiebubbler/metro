@@ -60,7 +60,8 @@ class Planner extends Component {
 			
 			let bpm = s.bpmRange[0];
 			const bpmStep = (s.bpmRange[1] - s.bpmRange[0]) / (s.stepsNum -1 );
-			while (bpm <= max) {
+			// we compare against max+1 as there might be some fractions that will make last step ignored
+			while (bpm <= max + 1) {
 				const segment = {
 					duration: duration,
 					bpm: bpm

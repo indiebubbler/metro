@@ -1,4 +1,5 @@
 
+* vis kazdy instrument inny kanal vis i jakies paseczki, heartbeat? 
 BEFORE RELEASE:
 * current step scroll into view
 * more polyrhytms examples	

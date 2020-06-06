@@ -59,6 +59,9 @@ const pl = {
     "Afro-Cuban": "Afro-Kubańskie",
     "Other": "Inne",
 
+    /* Import Dialog */
+    "Import Presets": "Wczytaj Presety",
+    "I can't read this file": "Nie potrafię odczytać tego pliku",
 
 
     /* TrackView */

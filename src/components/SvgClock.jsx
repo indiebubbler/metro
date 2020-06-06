@@ -25,9 +25,9 @@ class SvgClock extends Component {
 
     drawSlices(radius, trackIdx) {
         // Drawing pie charts by David Gilbertson, taken from https://medium.com/hackernoon/a-simple-pie-chart-in-svg-dbdd653b6936
-        if (this.props.track[trackIdx] === undefined) {
-            debugger
-        }
+        // if (this.props.track[trackIdx] === undefined) {
+        //     // debugger
+        // }
         let pctStep = 1 / this.props.track[trackIdx].length;
         let slices = [];
         // let step = pctStep;

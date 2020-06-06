@@ -151,6 +151,9 @@ body {
 	padding: 0.8rem;
 } */
 
+.input-group-text {
+    min-width:4em;
+}
 .App .rc-slider-dot-active {
 	border-color: #f55;
 }

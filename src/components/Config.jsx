@@ -25,6 +25,8 @@ const ColorThemes = {
 const Config = {
     TRACKS_NUMBER: 4,
     MAXIMUM_TIMESIGNATURE: 24,
+    MIN_BPM: 10,
+    MAX_BPM: 1200,
     PROGRESS_UPDATE_FPS: 30, // TODO: Set this according to device. higher values might cause slower devices to stutter
     COLOR_PALETTE: ColorThemes['rainbow']
 }
