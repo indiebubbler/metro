@@ -19,7 +19,7 @@ class App extends Component {
 		// google analytics
 		ReactGA.initialize({
 			trackingId: 'UA-151010848-1',
-			debug: true,
+			debug: false,
 			gaOptions: {
 				cookieDomain: 'none'
 			}
@@ -35,7 +35,6 @@ class App extends Component {
 		return (
 			<div className="App">
 				<Container className="app-container ">
-				{/* <Container className="app-container "> */}
 					<Row>
 						<Col>
 							<SoundMachine ref="sm" onReady={() => this.removeLoadMask()} />
@@ -58,8 +57,10 @@ class App extends Component {
 								<div><h6>If you like this app consider donation to a developer using following <Badge href="https://paypal.me/indiebubblerdev" target="blank">link</Badge></h6></div>
 								<div>Join discord using <Badge href="https://discord.gg/fAwnmVh" target="blank">this link</Badge> for feedback and improvement suggestions.</div>
 								<div>By using this site you agree to the use of cookies to store user defined presets and analytics.</div>
-								<div>Created using <Badge href="https://reactjs.org/" target="blank" >React</Badge> and <Badge href="https://tonejs.github.io/" target="blank">Tone.js</Badge>. Source code available <Badge href="https://github.com/indiebubbler/metro">here</Badge>.</div>
+
 								<div>If you want help translating this page please contact <Badge href="mailto:indiebubbler@gmail.com?subject=Feedback">indiebubbler@gmail.com</Badge>.</div>
+								<div>Made using <Badge href="https://reactjs.org/" target="blank" >React</Badge> and <Badge href="https://tonejs.github.io/" target="blank">Tone.js</Badge>.</div>
+								<div>Ideas for visualisation and presets taken from <Badge href="http://www.ethanhein.com/wp/my-nyu-masters-thesis" target="blank">Ethan Hein's site</Badge>.</div>
 								<div>&#169; IndieBubbler 2019-2020. Version 2.2</div>
 							</div>
 						</Col>
