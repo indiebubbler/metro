@@ -54,7 +54,7 @@ class App extends Component {
 						<Col>
 							<div className="footer">
 								{/* TODO: i18n */}
-								<div><h6>If you like this app consider donation to a developer using following <Badge href="https://paypal.me/indiebubblerdev" target="blank">link</Badge></h6></div>
+								<div><h6>If you like this app consider donation to a developer using following <Badge href="https://www.buymeacoffee.com/indiebubbler" target="blank">link</Badge></h6></div>
 								<div>Join discord using <Badge href="https://discord.gg/fAwnmVh" target="blank">this link</Badge> for feedback and improvement suggestions.</div>
 								<div>By using this site you agree to the use of cookies to store user defined presets and analytics.</div>
 
