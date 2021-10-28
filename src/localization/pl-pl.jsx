@@ -1,6 +1,6 @@
 const pl = {
     /* App */
-    "arrow up/down": "strzałki góra/dół",
+    "(shift) arrow up/down": "(shift) strzałki góra/dół",
     "higher/lower BPM": "zwiększ/zmniejsz BPM",
     "arrow left/right": "strzałki lewa/prawa",
     "previous/next step according to plan": "poprzedni/następny krok wg planu",

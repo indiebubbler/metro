@@ -43,7 +43,7 @@ class App extends Component {
 					<Row>
 						<Col>
 							<SimplePanel title={Tr("Keyboard controls")} className="about">
-								<div><code>{Tr("arrow up/down")}</code> - {Tr("higher/lower BPM")}</div>
+								<div><code>{Tr("(shift) arrow up/down")}</code> - {Tr("higher/lower BPM")}</div>
 								<div><code>{Tr("arrow left/right")}</code> - {Tr("previous/next step according to plan")}</div>
 								<div><code>space, s</code> - {Tr("start/stop")}</div>
 								<div><code>esc</code> - {Tr("stop")}</div>

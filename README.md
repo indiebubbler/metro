@@ -22,6 +22,9 @@ Uses ReactJS and Tone.js (https://tonejs.github.io/) - amazing javascript sound 
 
 Contact: indiebubbler@gmail.com
 
+Changes in version 2.2.1:
+- modified keyboard bindings, arrows up/down changes bpm by 1, shift+up/down changes bmp by 10 
+
 Changes in version 2.2:
 - added file import/export of user's presets
 - added ability to enter value for desired BPM and BPM range

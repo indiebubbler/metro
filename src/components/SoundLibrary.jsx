@@ -22,7 +22,7 @@ class SoundLibrary  {
     use(idx, instrumentKey, file) {
         const instrument = InstrumentsByKey[instrumentKey];
 
-        console.log('process', process)
+        // console.log('process', process)
         this.players.add('player_' + idx, './audio/' + instrumentKey + '/' + file);// (player) => this.onLoad(player));
         
         let player = this.players.get('player_' + idx);
