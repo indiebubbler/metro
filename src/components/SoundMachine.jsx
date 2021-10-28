@@ -161,7 +161,6 @@ class SoundMachine extends Component {
 
 	onControlChange() {
 		const v = this.getConfig();
-
 		this.setPlan(v);
 	}
 
@@ -193,18 +192,15 @@ class SoundMachine extends Component {
 
 	onVolumeChange(newVolume) {
 		this.tone.Master.volume.value = -60 + (newVolume * 60 / 100) + 6
-		// this.soundLibrary.setVolume(newVolume / 100)
 	}
 
 	onReverbChange(value) {
 		this.soundLibrary.setReverb(value / 100)
-		// console.log('reverb',value)
 	}
 
 	handleKey(key, e) {
 		e.preventDefault();
 		switch (key) {
-
 			case 's':
 			case 'space':
 				this.toggle();
@@ -219,16 +215,25 @@ class SoundMachine extends Component {
 				this.refs.planner.stepForward()
 				break;
 			case 'up':
-				if (this.state.bpm < 600) {
-					this.setBpm(this.state.bpm + 10);
+				if (this.state.bpm < 1200) {
+					this.setBpm(this.state.bpm + 1);
 				}
 				break;
 			case 'down':
 				if (this.state.bpm > 10) {
+					this.setBpm(this.state.bpm - 1);
+				}
+				break;
+			case 'shift+up':
+				if (this.state.bpm < 1200) {
+					this.setBpm(this.state.bpm + 10);
+				}
+				break;
+			case 'shift+down':
+				if (this.state.bpm > 10) {
 					this.setBpm(this.state.bpm - 10);
 				}
 				break;
-
 			default:
 				break;
 		}
@@ -237,7 +242,7 @@ class SoundMachine extends Component {
 		return (
 
 			<>
-				<KeyboardEventHandler handleKeys={['s', 'space', 'esc', 'left', 'right', 'up', 'down']} onKeyEvent={(key, e) => this.handleKey(key, e)} />
+				<KeyboardEventHandler handleKeys={['s', 'space', 'esc', 'left', 'right', 'up', 'down', 'shift+up', 'shift+down']} onKeyEvent={(key, e) => this.handleKey(key, e)} />
 				<Container>
 					<Row>
 						<Col>
