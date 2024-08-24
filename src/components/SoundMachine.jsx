@@ -30,7 +30,21 @@ class SoundMachine extends Component {
     isPlaying: false,
     bpm: Tone.Transport.bpm.value,
     showClock: true,
+    tempoMarking: this.getTempoMarking(Tone.Transport.bpm.value),
   };
+
+  getTempoMarking(bpm) {
+    if (bpm <= 24) return "Larghissimo";
+    if (bpm <= 40) return "Grave";
+    if (bpm <= 66) return "Largo";
+    if (bpm <= 76) return "Adagio";
+    if (bpm <= 108) return "Andante";
+    if (bpm <= 120) return "Moderato";
+    if (bpm <= 156) return "Allegro";
+    if (bpm <= 176) return "Vivace";
+    if (bpm <= 200) return "Presto";
+    return "Prestissimo";
+  }
 
   transport = Tone.Transport;
   tone = Tone;
@@ -168,9 +182,10 @@ class SoundMachine extends Component {
     if (bpm !== this.transport.bpm.value) {
       Tone.Transport.bpm.rampTo(bpm, 0.1); // Smooth transition
       document.title = bpm.toFixed(0) + " | " + this.documentTitle;
-      this.setState({ bpm: bpm }, () => {
+      const tempoMarking = this.getTempoMarking(bpm);
+      this.setState({ bpm: bpm, tempoMarking: tempoMarking }, () => {
         if (this.props.onBpmChange) {
-          this.props.onBpmChange(bpm);
+          this.props.onBpmChange(bpm, tempoMarking);
         }
         this.triggerBpmAnimation();
       });
@@ -299,9 +314,12 @@ class SoundMachine extends Component {
             className={`fas fa-${this.state.isPlaying ? "pause" : "play"}`}
           ></i>
         </Button>
-        <span className="bpm-info" id="bpm-display">
-          BPM: {Math.round(this.state.bpm).toString().padStart(3, "0")}
-        </span>
+        <div className="d-flex align-items-center">
+          <span className="bpm-info" id="bpm-display">
+            BPM: {Math.round(this.state.bpm).toString().padStart(3, "0")}
+          </span>
+          <span className="tempo-marking ml-2">{this.state.tempoMarking}</span>
+        </div>
         <div className="d-flex align-items-center">
           <span className="mr-2">{Tr("Volume")}</span>
           <AdvancedSlider

@@ -74,6 +74,13 @@ body {
   transition: color 0.3s ease;
 }
 
+.tempo-marking {
+  font-size: 1.2rem;
+  color: #00cccc;
+  font-family: "Open 24 Display St", "Orbitron", sans-serif;
+  margin-left: 10px;
+}
+
 .bpm-info.bump {
   color: #ff9900;
 }
