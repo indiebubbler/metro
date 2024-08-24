@@ -3,10 +3,8 @@ import "./App.css";
 import SoundMachine from "./components/SoundMachine";
 import "rc-slider/assets/index.css";
 import "bootstrap/dist/css/bootstrap.css";
-import { Badge, Container, Row, Col, Navbar, Nav, Button } from "reactstrap";
-import SimplePanel from "./components/SimplePanel";
-import ReactGA from "react-ga";
-import Tr from "./components/Locale";
+import { Container, Row, Col, Navbar, Nav, Button } from "reactstrap";
+//import ReactGA from "react-ga";
 import { getPlayModeFromUrl } from "./components/PlayModes";
 import Config, { ColorThemes } from "./components/Config";
 import SettingsModal from "./components/SettingsModal";
@@ -21,21 +19,17 @@ class App extends Component {
     showPresets: false,
   };
 
-  componentDidMount() {
-    this.updateThemeColor();
-  }
-
   updateThemeColor = () => {
     const themeColor = ColorThemes[this.state.currentTheme][0];
-    document.documentElement.style.setProperty('--theme-color-0', themeColor);
-    document.documentElement.style.setProperty('--active-color', themeColor);
-  }
+    document.documentElement.style.setProperty("--theme-color-0", themeColor);
+    document.documentElement.style.setProperty("--active-color", themeColor);
+  };
 
   toggleSettingsModal = () => {
-    this.setState(prevState => ({
-      showSettingsModal: !prevState.showSettingsModal
+    this.setState((prevState) => ({
+      showSettingsModal: !prevState.showSettingsModal,
     }));
-  }
+  };
 
   handleThemeChange = (newTheme) => {
     this.setState({ currentTheme: newTheme }, () => {
@@ -46,19 +40,20 @@ class App extends Component {
         this.soundMachine.forceUpdate();
       }
     });
-  }
+  };
 
   handleBpmChange = (bpm, tempoMarking) => {
     this.setState({ bpm, tempoMarking });
-  }
+  };
 
   togglePresetsVisibility = () => {
-    this.setState(prevState => ({
-      showPresets: !prevState.showPresets
+    this.setState((prevState) => ({
+      showPresets: !prevState.showPresets,
     }));
-  }
+  };
 
   componentDidMount() {
+    this.updateThemeColor();
     // google analytics
     //ReactGA.initialize({
     //trackingId: "UA-151010848-1",
@@ -78,9 +73,9 @@ class App extends Component {
     return (
       <div className="App">
         <Navbar
-          style={{ 
-            backgroundColor: 'var(--main-bg-color)',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+          style={{
+            backgroundColor: "var(--main-bg-color)",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
           }}
           dark
           expand="md"
@@ -97,8 +92,8 @@ class App extends Component {
             <Button color="light" onClick={this.toggleSettingsModal}>
               <i className="fas fa-cog"></i>
             </Button>
-            <Button 
-              color={this.state.showPresets ? "primary" : "light"} 
+            <Button
+              color={this.state.showPresets ? "primary" : "light"}
               onClick={this.togglePresetsVisibility}
             >
               <i className="fas fa-list"></i>
@@ -131,8 +126,8 @@ class App extends Component {
             this.state.showMask === true ? "loadmask " : "loadmask fadeOut"
           }
         />
-        <SettingsModal 
-          isOpen={this.state.showSettingsModal} 
+        <SettingsModal
+          isOpen={this.state.showSettingsModal}
           toggle={this.toggleSettingsModal}
           currentTheme={this.state.currentTheme}
           onThemeChange={this.handleThemeChange}
