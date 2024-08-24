@@ -85,7 +85,8 @@ class SoundMachine extends Component {
   initProgressUpdate() {
     let lastTime = 0;
     const animateProgress = (time) => {
-      if (time - lastTime >= 1000 / 60) {  // Cap at 60 FPS
+      if (time - lastTime >= 1000 / 60) {
+        // Cap at 60 FPS
         this.onProgress();
         lastTime = time;
       }
@@ -257,11 +258,14 @@ class SoundMachine extends Component {
   }
 
   toggleClockVisibility = () => {
-    this.setState(prevState => ({ showClock: !prevState.showClock }), () => {
-      // Force a re-render of the TrackView to adjust its size
-      this.forceUpdate();
-    });
-  }
+    this.setState(
+      (prevState) => ({ showClock: !prevState.showClock }),
+      () => {
+        // Force a re-render of the TrackView to adjust its size
+        this.forceUpdate();
+      }
+    );
+  };
 
   handleKey(key, e) {
     e.preventDefault();
@@ -344,11 +348,10 @@ class SoundMachine extends Component {
             onChange={(newVolume) => this.onReverbChange(newVolume)}
           />
         </div>
-        <Button
-          onClick={this.toggleClockVisibility}
-          color="light"
-        >
-          <i className={`fas fa-${this.state.showClock ? 'eye-slash' : 'eye'}`}></i>
+        <Button onClick={this.toggleClockVisibility} color="light">
+          <i
+            className={`fas fa-${this.state.showClock ? "eye-slash" : "eye"}`}
+          ></i>
         </Button>
       </>
     );
@@ -397,11 +400,13 @@ class SoundMachine extends Component {
             )}
           </Row>
           <Row>
-            <ModePanel
-              ref="modePanel"
-              transport={this.transport}
-              onChange={() => this.onControlChange()}
-            />
+            <Col>
+              <ModePanel
+                ref="modePanel"
+                transport={this.transport}
+                onChange={() => this.onControlChange()}
+              />
+            </Col>
           </Row>
           <Row>
             <Col>
