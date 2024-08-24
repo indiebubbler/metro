@@ -8,6 +8,7 @@ import { Badge, Container, Row, Col } from "reactstrap";
 import SimplePanel from "./components/SimplePanel";
 import ReactGA from 'react-ga';
 import Tr from './components/Locale'
+import { getPlayModeFromUrl } from './components/PlayModes';
 
 class App extends Component {
 
@@ -37,7 +38,11 @@ class App extends Component {
 				<Container className="app-container ">
 					<Row>
 						<Col>
-							<SoundMachine ref="sm" onReady={() => this.removeLoadMask()} />
+							<SoundMachine 
+								ref="sm" 
+								onReady={() => this.removeLoadMask()} 
+								initialPlayMode={getPlayModeFromUrl()}
+							/>
 						</Col>
 					</Row>
 					<Row>

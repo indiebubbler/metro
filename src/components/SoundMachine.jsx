@@ -14,13 +14,14 @@ import KeyboardEventHandler from 'react-keyboard-event-handler'
 import Config from './Config'
 import SoundLibrary from "./SoundLibrary";
 import AdvancedSlider from "./Sliders/AdvancedSlider";
+import { PlayModes } from './PlayModes';
 
 class SoundMachine extends Component {
 	soundLibrary = new SoundLibrary();
 
 	state = {
 		initialized: false,
-		config: InitPreset,
+		config: { ...InitPreset, playMode: this.props.initialPlayMode || PlayModes.CONSTANT },
 		track: this.props.track,
 		timeSignature: this.props.timeSignature
 	};
@@ -37,15 +38,16 @@ class SoundMachine extends Component {
 		// this.part.humanize = true;
 		this.part.start(0)
 
-
 		const config = this.getConfig();
 		this.setPlan(config);
 
 		this.initProgressUpdate();
 		this.documentTitle = document.title;
 
-		this.setState({ initialized: true })
-		this.props.onReady();
+		this.setState({ initialized: true }, () => {
+			this.refs.modePanel.setValue({ ...this.refs.modePanel.state, playMode: this.state.config.playMode });
+			this.props.onReady();
+		});
 	}
 
 	getConfig() {
@@ -378,5 +380,6 @@ SoundMachine.defaultProps = {
 	instrument: InitPreset.instrument,
 	track: InitPreset.track,
 	timeSignature: InitPreset.timeSignature,
+	initialPlayMode: PlayModes.CONSTANT,
 	onReady: function () { }
 };
