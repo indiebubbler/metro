@@ -15,6 +15,7 @@ class App extends Component {
   state = {
     showMask: true,
     bpm: 120,
+    tempoMarking: "Moderato",
     showSettingsModal: false,
     currentTheme: "muted",
   };
@@ -32,6 +33,10 @@ class App extends Component {
     if (this.soundMachine) {
       this.soundMachine.forceUpdate();
     }
+  }
+
+  handleBpmChange = (bpm, tempoMarking) => {
+    this.setState({ bpm, tempoMarking });
   }
 
   componentDidMount() {
@@ -87,9 +92,7 @@ class App extends Component {
                   this.setState({ soundMachine: this.soundMachine });
                 }}
                 initialPlayMode={getPlayModeFromUrl()}
-                onBpmChange={(bpm) => {
-                  this.setState({ bpm });
-                }}
+                onBpmChange={this.handleBpmChange}
               >
                 {this.soundMachine && this.soundMachine.renderControlPanel()}
               </SoundMachine>
