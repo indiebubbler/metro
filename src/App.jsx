@@ -18,7 +18,18 @@ class App extends Component {
     tempoMarking: "Moderato",
     showSettingsModal: false,
     currentTheme: "muted",
+    showPresets: false,
   };
+
+  componentDidMount() {
+    this.updateThemeColor();
+  }
+
+  updateThemeColor = () => {
+    const themeColor = ColorThemes[this.state.currentTheme][0];
+    document.documentElement.style.setProperty('--theme-color-0', themeColor);
+    document.documentElement.style.setProperty('--active-color', themeColor);
+  }
 
   toggleSettingsModal = () => {
     this.setState(prevState => ({
@@ -27,16 +38,24 @@ class App extends Component {
   }
 
   handleThemeChange = (newTheme) => {
-    this.setState({ currentTheme: newTheme });
-    Config.COLOR_PALETTE = ColorThemes[newTheme];
-    // You might need to trigger a re-render of components that use the theme
-    if (this.soundMachine) {
-      this.soundMachine.forceUpdate();
-    }
+    this.setState({ currentTheme: newTheme }, () => {
+      Config.COLOR_PALETTE = ColorThemes[newTheme];
+      this.updateThemeColor();
+      // You might need to trigger a re-render of components that use the theme
+      if (this.soundMachine) {
+        this.soundMachine.forceUpdate();
+      }
+    });
   }
 
   handleBpmChange = (bpm, tempoMarking) => {
     this.setState({ bpm, tempoMarking });
+  }
+
+  togglePresetsVisibility = () => {
+    this.setState(prevState => ({
+      showPresets: !prevState.showPresets
+    }));
   }
 
   componentDidMount() {
@@ -78,6 +97,12 @@ class App extends Component {
             <Button color="light" onClick={this.toggleSettingsModal}>
               <i className="fas fa-cog"></i>
             </Button>
+            <Button 
+              color={this.state.showPresets ? "primary" : "light"} 
+              onClick={this.togglePresetsVisibility}
+            >
+              <i className="fas fa-list"></i>
+            </Button>
           </Nav>
         </Navbar>
         <Container className="app-container">
@@ -93,29 +118,10 @@ class App extends Component {
                 }}
                 initialPlayMode={getPlayModeFromUrl()}
                 onBpmChange={this.handleBpmChange}
+                showPresets={this.state.showPresets}
               >
                 {this.soundMachine && this.soundMachine.renderControlPanel()}
               </SoundMachine>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <SimplePanel title={Tr("Keyboard controls")} className="about">
-                <div>
-                  <code>{Tr("(shift) arrow up/down")}</code> -{" "}
-                  {Tr("higher/lower BPM")}
-                </div>
-                <div>
-                  <code>{Tr("arrow left/right")}</code> -{" "}
-                  {Tr("previous/next step according to plan")}
-                </div>
-                <div>
-                  <code>space, s</code> - {Tr("start/stop")}
-                </div>
-                <div>
-                  <code>esc</code> - {Tr("stop")}
-                </div>
-              </SimplePanel>
             </Col>
           </Row>
         </Container>

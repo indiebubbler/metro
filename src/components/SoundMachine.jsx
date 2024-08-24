@@ -420,6 +420,7 @@ class SoundMachine extends Component {
                 ref="presetsManager"
                 getPreset={() => this.getConfig()}
                 onSelect={(preset) => this.onPresetSelect(preset)}
+                show={this.props.showPresets}
               />
             </Col>
           </Row>

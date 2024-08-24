@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import { Button, Container, Row, Col } from "reactstrap";
 import EditPresetModal from "./EditPresetModal"
 import ImportDialog from "./ImportDialog"
+import SimplePanel from "./SimplePanel"
 import { PresetsLib, InitPreset } from './PresetsLib'
 import { Samples } from "./Instruments"
 import Tr from './Locale'
-import SimplePanel from "./SimplePanel";
 import Utils from "./Utils"
 import Config from "./Config";
 
@@ -227,6 +227,10 @@ class PresetsManager extends Component {
 	}
 
 	render() {
+		if (!this.props.show) {
+			return null;
+		}
+
 		const userPresetsJson = localStorage.getItem('userPresets');
 		let userPresets = userPresetsJson ? JSON.parse(userPresetsJson) : [];
 

@@ -151,6 +151,10 @@ body {
   font-size: 1.2rem;
 }
 
+.top-menubar button {
+  margin-left: 10px;
+}
+
 .App .rc-slider-handle {
   border: solid 2px #ff5555;
   background-color: #fff;
@@ -253,7 +257,7 @@ body {
 
 .SimpleProgress .bar {
   padding: 1px;
-  background-color: #f55;
+  background-color: var(--active-color, #f55);
 }
 
 .SimpleVis {
