@@ -75,7 +75,6 @@ class App extends Component {
         <Navbar
           style={{
             backgroundColor: "var(--main-bg-color)",
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
           }}
           dark
           expand="md"
