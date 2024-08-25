@@ -11,8 +11,8 @@
   --pane-title-bgcolor: #222;
   --pane-body-bgcolor_1: #333;
   --pane-body-bgcolor_2: #222;
-  --indicator-color: rgba(255, 255, 255, 0.5);
-  --indicator-outline-color: rgba(30, 30, 30, 0.5);
+  --indicator-color: rgba(255, 255, 255, 1);
+  --indicator-outline-color: rgba(255, 255, 255, 1);
   --active-color: #f55;
 }
 
@@ -447,7 +447,7 @@ body {
 }
 
 .trackView .indicator {
-  width: 0.3rem;
+  width: 3px;
   border-radius: 2px;
   background-color: var(--indicator-color);
   border: 1px solid var(--indicator-outline-color);
