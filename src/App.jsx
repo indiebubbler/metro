@@ -3,7 +3,7 @@ import "./App.css";
 import SoundMachine from "./components/SoundMachine";
 import "rc-slider/assets/index.css";
 import "bootstrap/dist/css/bootstrap.css";
-import { Container, Row, Col, Navbar, Nav, Button } from "reactstrap";
+import { Container, Row, Col, Navbar, Nav, Button, ButtonGroup } from "reactstrap";
 //import ReactGA from "react-ga";
 import { getPlayModeFromUrl } from "./components/PlayModes";
 import Config, { ColorThemes } from "./components/Config";
@@ -88,15 +88,17 @@ class App extends Component {
             {this.state.soundMachine && (
               <>{this.state.soundMachine.renderControlPanel()}</>
             )}
-            <Button
-              color={this.state.showPresets ? "primary" : "light"}
-              onClick={this.togglePresetsVisibility}
-            >
-              <i className="fas fa-list"></i>
-            </Button>
-            <Button color="light" onClick={this.toggleSettingsModal}>
-              <i className="fas fa-cog"></i>
-            </Button>
+            <ButtonGroup>
+              <Button
+                color={this.state.showPresets ? "primary" : "light"}
+                onClick={this.togglePresetsVisibility}
+              >
+                <i className="fas fa-list"></i>
+              </Button>
+              <Button color="light" onClick={this.toggleSettingsModal}>
+                <i className="fas fa-cog"></i>
+              </Button>
+            </ButtonGroup>
           </Nav>
         </Navbar>
         <Container className="app-container">
