@@ -88,14 +88,14 @@ class App extends Component {
             {this.state.soundMachine && (
               <>{this.state.soundMachine.renderControlPanel()}</>
             )}
-            <Button color="light" onClick={this.toggleSettingsModal}>
-              <i className="fas fa-cog"></i>
-            </Button>
             <Button
               color={this.state.showPresets ? "primary" : "light"}
               onClick={this.togglePresetsVisibility}
             >
               <i className="fas fa-list"></i>
+            </Button>
+            <Button color="light" onClick={this.toggleSettingsModal}>
+              <i className="fas fa-cog"></i>
             </Button>
           </Nav>
         </Navbar>
