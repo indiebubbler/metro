@@ -4,6 +4,7 @@
     "homepage": ".",
     "dependencies": {
         "bootstrap": "^4.5.0",
+        "firebase": "^11.0.1",
         "gh-pages": "^2.2.0",
         "jquery": "^3.5.1",
         "rc-slider": "^8.7.1",
